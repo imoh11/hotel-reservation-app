@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة الحجوزات المتقدم</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css"> 
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Rosemary Hotel</h2>
+            <p>إدارة الحجوزات </p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('newReservation', this)">حجز جديد</button>
+            <button class="tab-button" onclick="openTab('editReservation', this)">تعديل حجز</button>
+            <button class="tab-button" onclick="openTab('cancelReservationTab', this)">إلغاء حجز</button>
+            <button class="tab-button" onclick="openTab('query', this)">الحجوزات القادمة</button>
+        </div>
+
+
+        <div id="newReservation" class="tab-content active">
+            <h3>إضافة حجز جديد</h3>
+            <form id="newReservationForm">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="type_new">نوع الحجز</label>
+                        <select id="type_new" class="form-control" required>
+                            <option value="جديد">جديد</option>
+                            <option value="مؤكد">مؤكد</option>
+                            <option value="قيد الانتظار">قيد الانتظار</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="counter_new">الكونتر</label>
+                        <select id="counter_new" class="form-control" required>
+                            <option value="" disabled selected>اختر الكونتر</option>
+                            <option value="A1">A1</option>
+                            <option value="A2">A2</option>
+                            <option value="A3">A3</option>
+                            <option value="A4">A4</option>
+                            <option value="A5">A5</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="guestName_new">اسم النزيل</label>
+                    <input type="text" id="guestName_new" class="form-control" placeholder="الاسم الكامل" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone_new">رقم الجوال</label>
+                    <input type="tel" id="phone_new" class="form-control" placeholder="مثال: 05XXXXXXXX" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="source_new">جهة الحجز</label>
+                        <select id="source_new" class="form-control">
+                            <option value="">اختر جهة الحجز</option>
+                            <option value="WhatsApp">WhatsApp</option>
+                            <option value="Booking">Booking</option>
+                            <option value="Counter">Counter</option>
+                            <option value="Management">Management</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount_new">المبلغ</label>
+                        <input type="text" id="amount_new" class="form-control" placeholder="مثال: 500">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <h3 style="margin-top: 25px;">تفاصيل الأجنحة المحجوزة</h3>
+                    <div id="suitesContainer_new" class="suite-selection-container">
+                        
+                        <div class="suite-toggle-item">
+                            <span>جناح ضيافة <span id="guest_summary_new" style="font-size: 0.8rem; font-weight: 400; color: var(--secondary-dark);"></span></span>
+                            <button type="button" class="toggle-button" data-suite="guest" onclick="toggleSuiteDetails('new', 'guest', this)">➕</button>
+                        </div>
+                        <div id="suiteDetails_new_guest" class="suite-details-area">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="guestArrival_new">وصول</label>
+                                    <input type="date" id="guestArrival_new" class="form-control suite-date-input" onchange="calculateDaysPerSuite('new', 'guest')">
+                                </div>
+                                <div class="form-group">
+                                    <label for="guestDeparture_new">مغادرة</label>
+                                    <input type="date" id="guestDeparture_new" class="form-control suite-date-input" onchange="calculateDaysPerSuite('new', 'guest')">
+                                </div>
+                                <div class="form-group">
+                                    <label for="guestDays_new">عدد الأيام</label>
+                                    <input type="number" id="guestDays_new" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="guestSuiteCount_new">عدد الغرف</label>
+                                <input type="number" id="guestSuiteCount_new" class="form-control" value="" min="0" placeholder="0" oninput="updateSuiteSummary('new', 'guest')">
+                            </div>
+                        </div>
+
+                        <div class="suite-toggle-item">
+                            <span>جناح VIP <span id="vip_summary_new" style="font-size: 0.8rem; font-weight: 400; color: var(--secondary-dark);"></span></span>
+                            <button type="button" class="toggle-button" data-suite="vip" onclick="toggleSuiteDetails('new', 'vip', this)">➕</button>
+                        </div>
+                        <div id="suiteDetails_new_vip" class="suite-details-area">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="vipArrival_new">وصول</label>
+                                    <input type="date" id="vipArrival_new" class="form-control suite-date-input" onchange="calculateDaysPerSuite('new', 'vip')">
+                                </div>
+                                <div class="form-group">
+                                    <label for="vipDeparture_new">مغادرة</label>
+                                    <input type="date" id="vipDeparture_new" class="form-control suite-date-input" onchange="calculateDaysPerSuite('new', 'vip')">
+                                </div>
+                                <div class="form-group">
+                                    <label for="vipDays_new">عدد الأيام</label>
+                                    <input type="number" id="vipDays_new" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="vipSuiteCount_new">عدد الغرف</label>
+                                <input type="number" id="vipSuiteCount_new" class="form-control" value="" min="0" placeholder="0" oninput="updateSuiteSummary('new', 'vip')">
+                            </div>
+                        </div>
+
+                        <div class="suite-toggle-item" style="border-bottom: none;">
+                            <span>جناح ملكي <span id="royal_summary_new" style="font-size: 0.8rem; font-weight: 400; color: var(--secondary-dark);"></span></span>
+                            <button type="button" class="toggle-button" data-suite="royal" onclick="toggleSuiteDetails('new', 'royal', this)">➕</button>
+                        </div>
+                        <div id="suiteDetails_new_royal" class="suite-details-area">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="royalArrival_new">وصول</label>
+                                    <input type="date" id="royalArrival_new" class="form-control suite-date-input" onchange="calculateDaysPerSuite('new', 'royal')">
+                                </div>
+                                <div class="form-group">
+                                    <label for="royalDeparture_new">مغادرة</label>
+                                    <input type="date" id="royalDeparture_new" class="form-control suite-date-input" onchange="calculateDaysPerSuite('new', 'royal')">
+                                </div>
+                                <div class="form-group">
+                                    <label for="royalDays_new">عدد الأيام</label>
+                                    <input type="number" id="royalDays_new" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="royalSuiteCount_new">عدد الغرف</label>
+                                <input type="number" id="royalSuiteCount_new" class="form-control" value="" min="0" placeholder="0" oninput="updateSuiteSummary('new', 'royal')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="font-weight: 600;">
+                        اسم المحول وتاريخ التحويل
+                        <button type="button" class="toggle-button" id="transfererToggleButton_new" onclick="toggleTransferer('new', this)">➕</button>
+                    </label>
+                    <div id="transfererField_new" class="optional-field form-row">
+                        <div class="form-group">
+                            <label for="transfererName_new">اسم المحول</label>
+                            <input type="text" id="transfererName_new" class="form-control" placeholder="اسم الشخص الذي قام بالتحويل">
+                        </div>
+                        <div class="form-group">
+                            <label for="currentDate_new">تاريخ التحويل</label>
+                            <input type="date" id="currentDate_new" class="form-control">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes_new">ملاحظات</label>
+                    <textarea id="notes_new" rows="3" class="form-control" placeholder="أي ملاحظات إضافية..."></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">حفظ الحجز</button>
+                    <button type="reset" class="btn btn-outline">مسح الحقول</button>
+                </div>
+                <div class="status-message-container">
+                    <div id="statusMessage_newReservation" class="status-message" style="display: none;"></div>
+                </div>
+            </form>
+        </div>
+
+        <div id="editReservation" class="tab-content">
+            <h3>تعديل حجز موجود (قيد الإنشاء)</h3>
+            <div id="editReservationContent">
+                <p class="info status-message active" style="display: block; margin-bottom: 15px;">**قسم التعديل قيد الإنشاء حالياً**.</p>
+            </div>
+        </div>
+
+        <div id="cancelReservationTab" class="tab-content">
+            <h3>إلغاء حجز (قيد الإنشاء)</h3>
+            <div id="cancelReservationContent">
+                   <p class="info status-message active" style="display: block; margin-bottom: 15px;">**قسم الإلغاء قيد الإنشاء حالياً**.</p>
+            </div>
+        </div>
+
+        <div id="query" class="tab-content">
+            <h3>استعراض الحجوزات القادمة (المؤكدة)</h3>
+            <p class="info status-message active" style="display: block; margin-bottom: 15px;">يتم جلب الحجوزات المؤكدة التي تبدأ من اليوم أو في المستقبل، بالاعتماد على عرض **'حجوزات قادمة'** في Airtable.</p>
+            
+            <div class="form-group">
+                <button type="button" class="btn btn-primary" onclick="loadFutureReservations()">تحديث/جلب الحجوزات يدوياً</button>
+            </div>
+
+            <div class="status-message-container">
+                <div id="statusMessage_query" class="status-message" style="display: none;"></div>
+            </div>
+
+            <div id="reservationsTableContainer" style="margin-top: 20px; overflow-x: auto;">
+                </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script> 
+</body>
+</html>
