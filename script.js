@@ -1,11 +1,10 @@
 // =================================================================
 // مفاتيح API (سيتم جلبها من Netlify Environment Variables)
 // =================================================================
-// 🚨🚨🚨 هام: لحذف المفتاح للأمان، سنستخدم قيمة مؤقتة هنا.
-// 🚨🚨🚨 عند النشر على Netlify، يجب تعريف AIRTABLE_API_KEY كـ Environment Variable 🚨🚨🚨
+// 🚨🚨🚨 هام: يجب أن يكون هذا Placeholder ليتم استبداله بأمر البناء في Netlify 🚨🚨🚨
 const AIRTABLE_API_KEY = "AIRTABLE_API_KEY_PLACEHOLDER"; 
 const BASE_ID = 'appZm1T1ecVIlWOwy';
-const TABLE_NAME = 'tbloqjxnWuD2aH66H';
+const TABLE_NAME = 'tbloqjxnWuD2aH66H'; // يجب أن يكون Table ID
 const AIRTABLE_API_URL = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`;
 
 // =================================================================
@@ -41,16 +40,26 @@ const FIELD_IDS = {
 };
 
 // ===============================================
-// وظائف الواجهة
+// وظائف الواجهة (تم تحديثها لاستخدام الفئات بدلاً من style.display)
 // ===============================================
 function showStatus(message, type = 'info', tabId) {
     const statusDiv = document.getElementById(`statusMessage_${tabId}`);
     if (!statusDiv) return;
-    statusDiv.classList.remove('info', 'success', 'error');
+    
+    // إزالة الفئات القديمة
+    statusDiv.classList.remove('info', 'success', 'error', 'hidden'); 
+    
+    // إضافة الفئة الجديدة
     statusDiv.classList.add(type);
     statusDiv.innerText = message;
-    statusDiv.style.display = 'block';
-    setTimeout(() => { statusDiv.style.display = 'none'; }, 5000);
+    
+    // إظهار الرسالة (إزالة 'hidden')
+    statusDiv.classList.remove('hidden'); 
+    
+    // إخفاء الرسالة بعد 5 ثواني
+    setTimeout(() => { 
+        statusDiv.classList.add('hidden'); 
+    }, 5000);
 }
 
 function openTab(tabName, element) {
@@ -58,7 +67,9 @@ function openTab(tabName, element) {
     document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
     document.getElementById(tabName).classList.add('active');
     element.classList.add('active');
-    document.querySelectorAll('.status-message').forEach(msg => msg.style.display = 'none');
+    
+    // إخفاء جميع رسائل الحالة عند التبديل
+    document.querySelectorAll('.status-message').forEach(msg => msg.classList.add('hidden'));
     
     if (tabName === 'query') {
         loadFutureReservations(); 
@@ -67,11 +78,14 @@ function openTab(tabName, element) {
 
 function toggleTransferer(prefix, buttonElement) {
     const field = document.getElementById(`transfererField_${prefix}`);
-    const isVisible = field.style.display === 'flex';
+    const isVisible = field.classList.contains('active');
+
     if (isVisible) {
+        field.classList.remove('active'); // نستخدم هنا active/optional-field لتشغيل display: flex/none
         field.style.display = 'none';
         buttonElement.textContent = '➕';
     } else {
+        field.classList.add('active');
         field.style.display = 'flex';
         buttonElement.textContent = '➖';
     }
@@ -211,8 +225,7 @@ async function saveNewReservation() {
         const response = await fetch(AIRTABLE_API_URL, {
             method: 'POST',
             headers: {
-                // نستخدم هنا المفتاح الوهمي، لكن Netlify سيستبدله بالقيمة الحقيقية
-                'Authorization': `Bearer ${AIRTABLE_API_KEY}`, 
+                'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -297,21 +310,18 @@ function renderReservationsTable(reservations) {
     container.innerHTML = ''; 
 
     if (!reservations || reservations.length === 0) {
-        container.innerHTML = `<p class="info status-message active" style="display: block;">لا توجد حجوزات قادمة مؤكدة حالياً.</p>`;
+        container.innerHTML = `<p class="info status-message active info-message-block">لا توجد حجوزات قادمة مؤكدة حالياً.</p>`;
         return;
     }
 
     const table = document.createElement('table');
     table.className = 'reservations-table';
-    table.style.width = '100%';
-    table.style.borderCollapse = 'collapse';
-    table.style.fontSize = '0.85rem'; 
     
     table.innerHTML = `
         <thead>
-            <tr style="background-color: var(--primary-dark); color: white;">
-                <th style="width: 30%; padding: 10px; border: 1px solid #ddd;">النزيل (معرف الحجز)</th> 
-                <th style="width: 70%; padding: 10px; border: 1px solid #ddd;">تفاصيل الحجز</th> 
+            <tr>
+                <th>النزيل (معرف الحجز)</th> 
+                <th>تفاصيل الحجز</th> 
             </tr>
         </thead>
         <tbody>
@@ -327,18 +337,14 @@ function renderReservationsTable(reservations) {
         const summaryText = fields[FIELD_IDS.SUMMARY_COLUMN] || '- لا توجد تفاصيل -';
 
         const tr = document.createElement('tr');
-        tr.style.backgroundColor = '#ffffff'; 
-        tr.style.borderBottom = '1px solid #eee';
+        
 
         tr.innerHTML = `
-            <td style="padding: 10px; border: 1px solid #ddd; text-align: right; font-weight: 600;">${guestName}</td>
-            <td class="summary-cell" style="padding: 10px; border: 1px solid #ddd; font-size: 0.8rem;">${summaryText}</td>
+            <td>${guestName}</td>
+            <td class="summary-cell">${summaryText}</td>
         `;
         tbody.appendChild(tr);
     });
 
     container.appendChild(table);
-
 }
-
-
