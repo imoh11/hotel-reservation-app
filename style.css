@@ -1,17 +1,21 @@
 :root {
-    --primary: #3498db; /* أزرق */
-    --primary-dark: #2980b9;
-    --secondary: #2ecc71; /* أخضر */
-    --secondary-dark: #27ae60;
-    --danger: #e74c3c; /* أحمر */
-    --danger-dark: #c0392b;
-    --info: #007bff; /* أزرق معلومات */
-    --dark: #343a40;
-    --gray: #6c757d;
-    --gray-light: #e9ecef;
-    --border-radius: 6px;
-    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    --transition: all 0.2s ease;
+    --primary: #4361ee; /* أزرق أنيق */
+    --primary-dark: #3a56d4;
+    --secondary: #00b4d8; /* أزرق فاتح */
+    --secondary-dark: #0096c7;
+    --accent: #7209b7; /* بنفسجي */
+    --success: #2ec4b6; /* تركواز */
+    --success-dark: #24a195;
+    --danger: #e71d36; /* أحمر */
+    --danger-dark: #c81e34;
+    --warning: #ff9e00; /* برتقالي */
+    --dark: #2b2d42;
+    --gray: #8d99ae;
+    --gray-light: #edf2f4;
+    --light: #f8f9fa;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --transition: all 0.3s ease;
 }
 
 * {
@@ -22,12 +26,12 @@
 
 body {
     font-family: 'Tajawal', sans-serif;
-    line-height: 1.5;
+    line-height: 1.6;
     color: var(--dark);
-    background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
-    padding: 15px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+    padding: 20px;
     min-height: 100vh;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
 }
 
 .container {
@@ -40,37 +44,56 @@ body {
 }
 
 .header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
     color: white;
-    padding: 20px 25px;
+    padding: 25px;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: rotate(45deg);
 }
 
 .tabs {
     display: flex;
-    background-color: var(--gray-light); 
+    background-color: var(--light);
     border-bottom: 1px solid var(--gray-light);
 }
 
 .tab-button {
     flex: 1;
-    padding: 12px 15px;
+    padding: 14px 15px;
     text-align: center;
     background: none;
     border: none;
     cursor: pointer;
     font-family: 'Tajawal', sans-serif;
-    font-weight: 500;
-    font-size: 0.9rem;
+    font-weight: 600;
+    font-size: 0.95rem;
     color: var(--gray);
     transition: var(--transition);
     position: relative;
     outline: none;
 }
 
+.tab-button:hover {
+    color: var(--primary);
+    background-color: rgba(67, 97, 238, 0.05);
+}
+
 .tab-button.active {
     color: var(--primary);
     background-color: white;
+    font-weight: 700;
 }
 
 .tab-button.active::after {
@@ -79,12 +102,12 @@ body {
     bottom: 0;
     right: 0;
     width: 100%;
-    height: 2px;
-    background-color: var(--primary);
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
 }
 
 .tab-content {
-    padding: 25px;
+    padding: 30px;
     display: none;
     animation: fadeIn 0.4s ease;
 }
@@ -95,32 +118,32 @@ body {
 
 h3 {
     color: var(--primary);
-    margin-bottom: 15px;
-    padding-bottom: 8px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
     border-bottom: 1px solid var(--gray-light);
-    font-weight: 600;
-    font-size: 1.2rem;
+    font-weight: 700;
+    font-size: 1.3rem;
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 6px;
-    font-weight: 500;
+    margin-bottom: 8px;
+    font-weight: 600;
     color: var(--dark);
-    font-size: 0.9rem;
+    font-size: 0.95rem;
 }
 
 .form-control {
     width: 100%;
-    padding: 10px 12px;
+    padding: 12px 15px;
     border: 1px solid var(--gray-light);
     border-radius: var(--border-radius);
     font-family: 'Tajawal', sans-serif;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     transition: var(--transition);
     background-color: white;
 }
@@ -128,132 +151,57 @@ h3 {
 .form-control:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
 }
 
 .form-control[readonly] {
-    background-color: var(--gray-light);
+    background-color: var(--light);
     cursor: not-allowed;
-}
-
-.optional-field {
-    margin-top: 8px;
-    display: none;
-}
-
-.toggle-button {
-    background: none;
-    border: none;
-    font-size: 1.1rem;
-    cursor: pointer;
-    color: var(--primary);
-    margin-right: 4px;
-    transition: var(--transition);
-    line-height: 1;
-    padding: 0;
-    vertical-align: middle;
-}
-
-/* تنسيقات الأجنحة المحجوزة */
-.suite-details-title {
-    margin-top: 25px; 
-}
-.suite-selection-container {
-    border: 1px solid var(--gray-light);
-    border-radius: var(--border-radius);
-    padding: 10px;
-    background-color: #fafafa;
-}
-
-.suite-toggle-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--gray-light);
-    font-weight: 600;
-    color: var(--primary-dark);
-}
-
-.suite-toggle-item:last-child,
-.last-suite-item {
-    border-bottom: none; /* تم النقل */
-}
-
-.suite-summary {
-    font-size: 0.8rem;
-    font-weight: 400;
-    color: var(--secondary-dark); /* تم النقل */
-}
-
-.suite-details-area {
-    display: none;
-    margin-top: 8px;
-    padding: 15px;
-    border-top: 1px dashed var(--gray-light);
-    background-color: #ffffff;
-    border-radius: var(--border-radius);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-}
-
-.transferer-label {
-    font-weight: 600; /* تم النقل */
-}
-
-
-.form-row {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.form-row .form-group {
-    flex: 1;
-    min-width: 180px;
-}
-
-.button-group {
-    display: flex;
-    gap: 8px;
-    margin-top: 20px;
-    flex-wrap: wrap;
+    color: var(--gray);
 }
 
 .btn {
     display: inline-block;
-    padding: 10px 20px;
+    padding: 12px 25px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
     border: none;
     border-radius: var(--border-radius);
-    font-family: 'Tajawal', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 500;
     cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
     transition: var(--transition);
     text-align: center;
-    outline: none;
 }
 
-.btn-primary {
-    background-color: var(--primary);
-    color: white;
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
 }
 
-.btn-outline {
-    background-color: transparent;
-    border: 1px solid var(--gray-light);
-    color: var(--gray);
+.btn-success {
+    background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
 }
- 
-/* رسائل الحالة */
-.status-message-container {
-    margin-top: 15px;
+
+.btn-success:hover {
+    box-shadow: 0 4px 12px rgba(46, 196, 182, 0.3);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--danger) 0%, var(--danger-dark) 100%);
+}
+
+.btn-danger:hover {
+    box-shadow: 0 4px 12px rgba(231, 29, 54, 0.3);
 }
 
 .status-message {
-    padding: 12px;
+    padding: 15px;
     border-radius: var(--border-radius);
-    font-weight: 500;
-    font-size: 0.85rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: 15px;
 }
 
 .hidden {
@@ -261,62 +209,99 @@ h3 {
 }
 
 .success {
-    background-color: rgba(46, 204, 113, 0.15);
-    color: var(--secondary-dark);
-    border: 1px solid rgba(46, 204, 113, 0.3);
+    background-color: rgba(46, 196, 182, 0.15);
+    color: var(--success-dark);
+    border: 1px solid rgba(46, 196, 182, 0.3);
 }
 
 .error {
-    background-color: rgba(231, 76, 60, 0.15);
+    background-color: rgba(231, 29, 54, 0.15);
     color: var(--danger-dark);
-    border: 1px solid rgba(231, 76, 60, 0.3);
+    border: 1px solid rgba(231, 29, 54, 0.3);
 }
 
 .info {
-    background-color: rgba(52, 152, 219, 0.15);
+    background-color: rgba(67, 97, 238, 0.15);
     color: var(--primary-dark);
-    border: 1px solid rgba(52, 152, 219, 0.3);
+    border: 1px solid rgba(67, 97, 238, 0.3);
 }
 
 .info-message-block {
     display: block !important;
-    margin-bottom: 15px; /* تم النقل */
+    margin-bottom: 20px;
 }
  
 /* تصميم جدول الحجوزات القادمة */
 .table-container {
-    margin-top: 20px; /* تم النقل */
+    margin-top: 25px;
     overflow-x: auto;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--gray-light);
 }
 
 .reservations-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 15px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-top: 0;
 }
 
 .reservations-table th, .reservations-table td {
-    padding: 10px;
-    border: 1px solid #ddd;
+    padding: 12px 15px;
+    border: 1px solid var(--gray-light);
     text-align: right;
     vertical-align: top; 
 }
 
 .reservations-table thead tr {
-    background-color: var(--primary-dark);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
     color: white;
 }
 
+.reservations-table th {
+    font-weight: 600;
+    padding: 15px;
+}
+
 .reservations-table tbody tr:nth-child(even) {
-    background-color: #f7f7f7;
+    background-color: var(--light);
 }
 
 .reservations-table tbody tr:hover {
-    background-color: #f0f0f0;
+    background-color: rgba(67, 97, 238, 0.05);
+    transform: scale(1.01);
+    transition: var(--transition);
 }
  
 .summary-cell {
     white-space: pre-wrap; 
     text-align: right;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* تحسينات للاستجابة */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+    
+    .tab-content {
+        padding: 20px;
+    }
+    
+    .header {
+        padding: 20px;
+    }
+    
+    .form-control {
+        padding: 10px 12px;
+    }
+    
+    .reservations-table th, .reservations-table td {
+        padding: 8px 10px;
+    }
 }
