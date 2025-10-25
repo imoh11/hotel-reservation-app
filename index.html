@@ -75,12 +75,12 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <h3 style="margin-top: 25px;">تفاصيل الأجنحة المحجوزة</h3>
+                <div class="form-group suite-details-group"> 
+                    <h3 class="suite-details-title">تفاصيل الأجنحة المحجوزة</h3>
                     <div id="suitesContainer_new" class="suite-selection-container">
                         
                         <div class="suite-toggle-item">
-                            <span>جناح ضيافة <span id="guest_summary_new" style="font-size: 0.8rem; font-weight: 400; color: var(--secondary-dark);"></span></span>
+                            <span>جناح ضيافة <span id="guest_summary_new" class="suite-summary"></span></span>
                             <button type="button" class="toggle-button" data-suite="guest" onclick="toggleSuiteDetails('new', 'guest', this)">➕</button>
                         </div>
                         <div id="suiteDetails_new_guest" class="suite-details-area">
@@ -105,7 +105,7 @@
                         </div>
 
                         <div class="suite-toggle-item">
-                            <span>جناح VIP <span id="vip_summary_new" style="font-size: 0.8rem; font-weight: 400; color: var(--secondary-dark);"></span></span>
+                            <span>جناح VIP <span id="vip_summary_new" class="suite-summary"></span></span>
                             <button type="button" class="toggle-button" data-suite="vip" onclick="toggleSuiteDetails('new', 'vip', this)">➕</button>
                         </div>
                         <div id="suiteDetails_new_vip" class="suite-details-area">
@@ -129,8 +129,8 @@
                             </div>
                         </div>
 
-                        <div class="suite-toggle-item" style="border-bottom: none;">
-                            <span>جناح ملكي <span id="royal_summary_new" style="font-size: 0.8rem; font-weight: 400; color: var(--secondary-dark);"></span></span>
+                        <div class="suite-toggle-item last-suite-item">
+                            <span>جناح ملكي <span id="royal_summary_new" class="suite-summary"></span></span>
                             <button type="button" class="toggle-button" data-suite="royal" onclick="toggleSuiteDetails('new', 'royal', this)">➕</button>
                         </div>
                         <div id="suiteDetails_new_royal" class="suite-details-area">
@@ -157,7 +157,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight: 600;">
+                    <label class="transferer-label">
                         اسم المحول وتاريخ التحويل
                         <button type="button" class="toggle-button" id="transfererToggleButton_new" onclick="toggleTransferer('new', this)">➕</button>
                     </label>
@@ -183,7 +183,7 @@
                     <button type="reset" class="btn btn-outline">مسح الحقول</button>
                 </div>
                 <div class="status-message-container">
-                    <div id="statusMessage_newReservation" class="status-message" style="display: none;"></div>
+                    <div id="statusMessage_newReservation" class="status-message hidden"></div>
                 </div>
             </form>
         </div>
@@ -191,30 +191,30 @@
         <div id="editReservation" class="tab-content">
             <h3>تعديل حجز موجود (قيد الإنشاء)</h3>
             <div id="editReservationContent">
-                <p class="info status-message active" style="display: block; margin-bottom: 15px;">**قسم التعديل قيد الإنشاء حالياً**.</p>
+                <p class="info status-message active info-message-block">**قسم التعديل قيد الإنشاء حالياً**.</p>
             </div>
         </div>
 
         <div id="cancelReservationTab" class="tab-content">
             <h3>إلغاء حجز (قيد الإنشاء)</h3>
             <div id="cancelReservationContent">
-                   <p class="info status-message active" style="display: block; margin-bottom: 15px;">**قسم الإلغاء قيد الإنشاء حالياً**.</p>
+                   <p class="info status-message active info-message-block">**قسم الإلغاء قيد الإنشاء حالياً**.</p>
             </div>
         </div>
 
         <div id="query" class="tab-content">
             <h3>استعراض الحجوزات القادمة (المؤكدة)</h3>
-            <p class="info status-message active" style="display: block; margin-bottom: 15px;">يتم جلب الحجوزات المؤكدة التي تبدأ من اليوم أو في المستقبل، بالاعتماد على عرض **'حجوزات قادمة'** في Airtable.</p>
+            <p class="info status-message active info-message-block">يتم جلب الحجوزات المؤكدة التي تبدأ من اليوم أو في المستقبل، بالاعتماد على عرض **'حجوزات قادمة'** في Airtable.</p>
             
-            <div class="form-group">
+            <div class="form-group query-actions-group">
                 <button type="button" class="btn btn-primary" onclick="loadFutureReservations()">تحديث/جلب الحجوزات يدوياً</button>
             </div>
 
             <div class="status-message-container">
-                <div id="statusMessage_query" class="status-message" style="display: none;"></div>
+                <div id="statusMessage_query" class="status-message hidden"></div>
             </div>
 
-            <div id="reservationsTableContainer" style="margin-top: 20px; overflow-x: auto;">
+            <div id="reservationsTableContainer" class="table-container">
                 </div>
         </div>
     </div>
