@@ -1,7 +1,6 @@
 // =================================================================
 // 1. إعدادات Airtable الأساسية - يجب تعديلها
 // =================================================================
-// 🚨🚨🚨 هام: يجب أن يكون هذا Placeholder ليتم استبداله بأمر البناء في Netlify 🚨🚨🚨
 const AIRTABLE_API_KEY = "AIRTABLE_API_KEY_PLACEHOLDER";
 const BASE_ID = 'appZm1T1ecVIlWOwy';
 const TABLE_NAME = 'tbloqjxnWuD2aH66H'; // Table ID الخاص بك
@@ -11,19 +10,15 @@ const AIRTABLE_API_URL = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`;
 // 2. FIELD IDS (معرّفات الحقول الثابتة) - تم تأكيدها
 // =================================================================
 const FIELD_IDS = {
-    // الحقول الأساسية
-    RES_NUMBER: 'fldMTOwOZ7jM8axbf', // ✨ رقم الحجز التسلسلي (للقراءة فقط أو التعبئة الآلية)
+    // ... (باقي تعريفات الحقول لم تتغير)
+    RES_NUMBER: 'fldMTOwOZ7jM8axbf',
     RES_TYPE: 'fldMUvsWgpp2LuTf2',
     COUNTER: 'flduEC9m8ruQ6tzi8',
     SOURCE: 'fldHrwuzi8LxIeKVX',
     GUEST_NAME: 'fldI2sYu4qIu2PIGe',
     PHONE: 'fldZxjo1fzU9FQR2Q',
     AMOUNT: 'fldbsNQcjGZni1Z6w',
-
-    // حقل الملخص الذي يجب عرضه
     SUMMARY_COLUMN: 'fldv0jKm0o4PWiQbX',
-
-    // حقول تفاصيل الأجنحة
     GUEST_ARRIVAL: 'fldMUosyFGqomDcy0',
     GUEST_DEPARTURE: 'fldqigNkyfC2ZRfxJ',
     GUEST_COUNT: 'fldm5R1GFdeJaNCwp',
@@ -33,24 +28,12 @@ const FIELD_IDS = {
     ROYAL_ARRIVAL: 'fldbjG9dQHT0inlXx',
     ROYAL_DEPARTURE: 'fldkC8A1Bh7iIrBwk',
     ROYAL_COUNT: 'fldQeliMpdLeT3Zdb',
-
-    // حقول التحويل والملاحظات
     TRANSFERER_NAME: 'fldWIoRdNmBtAX3zt',
     TRANSFER_DATE: 'fldXVNY3cwQ99Zcpn',
     NOTES: 'fld6J3886d7hSle25'
 };
 
-// ===============================================
-// 3. وظائف الواجهة المساعدة
-// ===============================================
-
-/**
- * دالة لعرض رسالة حالة للمستخدم
- * @param {string} message - نص الرسالة.
- * @param {('info'|'success'|'error')} type - نوع الرسالة.
- * @param {('newReservation'|'editReservation'|'query')} tabId - مُعرّف التبويبة لعرض الرسالة فيها.
- * @param {boolean} autoHide - إخفاء الرسالة تلقائياً بعد 5 ثوان.
- */
+// ... (الدوال المساعدة showStatus, updateSuiteSummary, calculateDaysPerSuite لم تتغير)
 function showStatus(message, type = 'info', tabId, autoHide = true) {
     const statusDiv = document.getElementById(`statusMessage_${tabId}`);
     if (!statusDiv) return;
@@ -63,22 +46,15 @@ function showStatus(message, type = 'info', tabId, autoHide = true) {
     if (autoHide) {
         setTimeout(() => {
             statusDiv.classList.add('hidden');
-            statusDiv.innerHTML = ''; // مسح المحتوى
+            statusDiv.innerHTML = '';
         }, 5000);
     }
 }
-
-/**
- * تحديث الملخص النصي لجناح معين
- * @param {string} prefix - 'new' أو 'edit'.
- * @param {string} suiteKey - 'guest', 'vip', أو 'royal'.
- */
 function updateSuiteSummary(prefix, suiteKey) {
     const countInput = document.getElementById(`${suiteKey}SuiteCount_${prefix}`);
     const count = parseInt(countInput.value) || 0;
     const summaryElement = document.getElementById(`${suiteKey}_summary_${prefix}`);
 
-    // التأكد من إزالة أي قيم غير رقمية أو سالبة
     if (isNaN(parseInt(countInput.value)) || parseInt(countInput.value) < 0) {
         countInput.value = '';
     }
@@ -89,12 +65,6 @@ function updateSuiteSummary(prefix, suiteKey) {
         summaryElement.textContent = '';
     }
 }
-
-/**
- * حساب عدد الأيام بين الوصول والمغادرة
- * @param {string} prefix - 'new' أو 'edit'.
- * @param {string} suiteKey - 'guest', 'vip', أو 'royal'.
- */
 function calculateDaysPerSuite(prefix, suiteKey) {
     const arrivalInput = document.getElementById(`${suiteKey}Arrival_${prefix}`);
     const departureInput = document.getElementById(`${suiteKey}Departure_${prefix}`);
@@ -107,7 +77,6 @@ function calculateDaysPerSuite(prefix, suiteKey) {
 
     if (arrivalTimestamp && departureTimestamp && departureTimestamp >= arrivalTimestamp) {
         const timeDifference = departureTimestamp - arrivalTimestamp;
-        // حساب فرق الأيام
         const daysDifference = Math.round(timeDifference / (1000 * 3600 * 24));
         daysInput.value = daysDifference;
     } else {
@@ -115,11 +84,7 @@ function calculateDaysPerSuite(prefix, suiteKey) {
     }
 }
 
-
-// ===============================================
-// 4. وظيفة حفظ حجز جديد (POST) - منطق سليم
-// ===============================================
-
+// ... (دالة saveNewReservation لم تتغير)
 async function saveNewReservation() {
     const statusDivId = 'newReservation';
 
@@ -168,7 +133,6 @@ async function saveNewReservation() {
         [FIELD_IDS.ROYAL_DEPARTURE]: getSuiteValue('royal', 'Departure'),
     };
 
-    // تنظيف البيانات من القيم الفارغة قبل الإرسال (POST)
     Object.keys(data).forEach(key => {
         const value = data[key];
         if (value === null || value === undefined || (typeof value === 'string' && value.trim() === '')) {
@@ -176,7 +140,6 @@ async function saveNewReservation() {
         }
     });
 
-    // تأكد من تمرير الصفر إذا تم إدخاله كعدد
     const suiteCounts = [FIELD_IDS.GUEST_COUNT, FIELD_IDS.VIP_COUNT, FIELD_IDS.ROYAL_COUNT];
     suiteCounts.forEach(key => {
         if (data.hasOwnProperty(key) && data[key] === 0) {
@@ -185,7 +148,6 @@ async function saveNewReservation() {
     });
 
     const totalReserved = (data[FIELD_IDS.GUEST_COUNT] || 0) + (data[FIELD_IDS.VIP_COUNT] || 0) + (data[FIELD_IDS.ROYAL_COUNT] || 0);
-    // شرط بسيط للتحقق من وجود حجز فعلي
     if (totalReserved === 0 && !Object.keys(data).some(key => key.includes('ARRIVAL'))) {
         showStatus('الرجاء تحديد جناح واحد على الأقل وإدخال عدد غرف وتواريخ.', 'error', statusDivId);
         return;
@@ -229,13 +191,9 @@ async function saveNewReservation() {
 }
 
 // ===============================================
-// 5. وظائف تعديل الحجز (بحث / جلب / تحديث)
+// 4. وظيفة البحث عن الحجز (المراجعة والتأكيد)
 // ===============================================
 
-/**
- * وظيفة البحث عن الحجز
- * تم تعديلها لتحديد البحث بشكل أدق: Record ID أو رقم الجوال
- */
 async function searchReservation() {
     const statusDivId = 'editReservation';
     const searchValue = document.getElementById('searchReservationInput').value.trim();
@@ -249,12 +207,15 @@ async function searchReservation() {
 
     // بناء فلتر Airtable
     let filterFormula;
-    // إذا بدأ بـ 'rec' يُفترض أنه Record ID
+    // 🚨 التحقق مما إذا كانت القيمة المدخلة هي Airtable Record ID (يبدأ بـ rec)
     if (searchValue.toLowerCase().startsWith('rec')) {
         filterFormula = `RECORD_ID() = '${searchValue}'`;
     } else {
-        // فلترة على حقل رقم الجوال
+        // 🚨 البحث برقم الجوال: استخدام مطابقة كاملة لضمان الدقة
         filterFormula = `{${FIELD_IDS.PHONE}} = '${searchValue}'`;
+        
+        // 🚨 ملاحظة: إذا كنت تريد البحث أيضاً برقم الحجز التسلسلي (إذا كان حقل نصي):
+        // filterFormula = `OR(RECORD_ID() = '${searchValue}', {${FIELD_IDS.PHONE}} = '${searchValue}', {${FIELD_IDS.RES_NUMBER}} = '${searchValue}')`;
     }
 
     const encodedFilter = encodeURIComponent(filterFormula);
@@ -262,7 +223,8 @@ async function searchReservation() {
 
     try {
         showStatus('جاري البحث عن الحجز... 🔍', 'info', statusDivId);
-
+        
+        // 🚨 التأكد من أن مفتاح الـ API يملك صلاحية القراءة (Read permission)
         const response = await fetch(url, {
             method: 'GET',
             headers: {
@@ -271,21 +233,24 @@ async function searchReservation() {
         });
 
         if (!response.ok) {
-            throw new Error(`Airtable API Error: ${response.status}`);
+            // إظهار رسالة خطأ واضحة في حال مشكلة في الاتصال أو الصلاحيات
+             const errorData = await response.json();
+             const errorMessage = errorData.error ? (errorData.error.message || errorData.error.type) : 'غير معروف';
+             showStatus(`❌ فشل الاتصال. تحقق من مفتاح API (صلاحية القراءة) أو ${errorMessage}`, 'error', statusDivId);
+             throw new Error(`Airtable API Error: ${response.status} - ${errorMessage}`);
         }
 
         const data = await response.json();
         const records = data.records;
 
         if (records.length === 0) {
-            showStatus(`❌ لم يتم العثور على حجز برقم الجوال/ID: ${searchValue}.`, 'error', statusDivId);
+            showStatus(`❌ لم يتم العثور على حجز يطابق المدخل: ${searchValue}.`, 'error', statusDivId);
             return;
         }
 
         const record = records[0];
         showStatus(`✅ تم العثور على حجز (${record.id}). يرجى تعديل البيانات وحفظها.`, 'success', statusDivId, false);
 
-        // تعبئة النموذج ببيانات الحجز
         populateEditForm(record);
 
     } catch (error) {
@@ -294,65 +259,45 @@ async function searchReservation() {
     }
 }
 
-/**
- * وظيفة تعبئة نموذج التعديل
- * @param {object} record - سجل Airtable
- */
+// ... (باقي الدوال populateEditForm, updateReservation, loadFutureReservations لم تتغير)
 function populateEditForm(record) {
     const fields = record.fields;
     const recordId = record.id;
     const prefix = 'edit';
 
-    // 1. حفظ ID السجل لإجراء التحديث
     document.getElementById('recordId_edit').value = recordId;
-
-    // 2. إظهار نموذج التعديل
     document.getElementById('editReservationForm').classList.remove('hidden');
 
-    // 3. تعبئة الحقول الأساسية
     document.getElementById(`type_${prefix}`).value = fields[FIELD_IDS.RES_TYPE] || '';
     document.getElementById(`counter_${prefix}`).value = fields[FIELD_IDS.COUNTER] || '';
     document.getElementById(`guestName_${prefix}`).value = fields[FIELD_IDS.GUEST_NAME] || '';
     document.getElementById(`phone_${prefix}`).value = fields[FIELD_IDS.PHONE] || '';
     document.getElementById(`source_${prefix}`).value = fields[FIELD_IDS.SOURCE] || '';
-
-    // المبلغ
     document.getElementById(`amount_${prefix}`).value = fields[FIELD_IDS.AMOUNT] !== undefined ? fields[FIELD_IDS.AMOUNT].toString() : '';
 
-    // 4. تعبئة تفاصيل الأجنحة
     const suites = ['guest', 'vip', 'royal'];
     suites.forEach(suiteKey => {
         const arrival = fields[FIELD_IDS[`${suiteKey.toUpperCase()}_ARRIVAL`]];
         const departure = fields[FIELD_IDS[`${suiteKey.toUpperCase()}_DEPARTURE`]];
         const count = fields[FIELD_IDS[`${suiteKey.toUpperCase()}_COUNT`]];
 
-        // تعبئة التواريخ
         document.getElementById(`${suiteKey}Arrival_${prefix}`).value = arrival || '';
         document.getElementById(`${suiteKey}Departure_${prefix}`).value = departure || '';
 
-        // تعبئة عدد الغرف
         document.getElementById(`${suiteKey}SuiteCount_${prefix}`).value = count !== undefined ? count.toString() : '';
 
-        // إعادة حساب عدد الأيام وتحديث الملخص بعد التعبئة
         calculateDaysPerSuite(prefix, suiteKey);
     });
 
-    // 5. تعبئة الملاحظات والتحويل
     document.getElementById('transfererName_edit').value = fields[FIELD_IDS.TRANSFERER_NAME] || '';
     document.getElementById('currentDate_edit').value = fields[FIELD_IDS.TRANSFER_DATE] || '';
     document.getElementById('notes_edit').value = fields[FIELD_IDS.NOTES] || '';
 
-    // 6. تفعيل وظائف الأقسام المطوية بعد التعبئة لضمان رؤيتها
-    // يمكنك إلغاء هذه الأسطر إذا لم ترغب في فتح جميع الأقسام تلقائياً
     document.querySelectorAll('#editReservation .collapsible-content').forEach(content => {
         content.classList.add('active');
         content.previousElementSibling.classList.add('active');
     });
 }
-
-/**
- * وظيفة تحديث/إلغاء الحجز (PATCH)
- */
 async function updateReservation() {
     const statusDivId = 'editReservation';
     const recordId = document.getElementById('recordId_edit').value;
@@ -400,11 +345,9 @@ async function updateReservation() {
     };
 
     Object.keys(data).forEach(key => {
-        // نضبط القيم الفارغة إلى undefined لتطلب من Airtable مسح القيمة الحالية
         if (data[key] === null || data[key] === '') {
             data[key] = undefined;
         }
-        // استثناء لـ RES_NUMBER و DAYS لأنها للقراءة أو يتم حسابها
         if (key === FIELD_IDS.RES_NUMBER || key.includes('DAYS')) {
             delete data[key];
         }
@@ -446,11 +389,6 @@ async function updateReservation() {
         showStatus(`❌ فشل ${actionText} الحجز. (خطأ: ${error.message || 'غير معروف'}).`, 'error', statusDivId);
     }
 }
-
-// ===============================================
-// 6. وظيفة جلب الحجوزات القادمة (GET) ومنطق العرض
-// ===============================================
-
 async function loadFutureReservations() {
     const statusDivId = 'query';
 
@@ -490,8 +428,6 @@ async function loadFutureReservations() {
         showStatus(`❌ فشل جلب الحجوزات. (خطأ: ${error.message || 'غير معروف'}).`, 'error', statusDivId);
     }
 }
-
-
 function renderReservationsTable(reservations) {
     const container = document.getElementById('reservationsTableContainer');
     container.innerHTML = '';
@@ -522,7 +458,6 @@ function renderReservationsTable(reservations) {
 
         const guestName = fields[FIELD_IDS.GUEST_NAME] || 'غير محدد';
         const recordId = record.id;
-        // استخدام حقل الملخص المخصص لعرض تفاصيل الحجز
         const summaryText = fields[FIELD_IDS.SUMMARY_COLUMN] || '- لا توجد تفاصيل -';
 
         const tr = document.createElement('tr');
@@ -537,32 +472,24 @@ function renderReservationsTable(reservations) {
 
     container.appendChild(table);
 }
-
-// ===============================================
-// 7. تهيئة الأحداث (Listeners)
-// ===============================================
-
 document.addEventListener('DOMContentLoaded', () => {
 
-    // حدث حفظ حجز جديد
     document.getElementById('newReservationForm').addEventListener('submit', function(event) {
         event.preventDefault();
         saveNewReservation();
     });
 
-    // حدث البحث عن حجز (يجب أن يكون زر البحث له ID: searchButton)
+    // 🚨 تأكد من أن زر البحث له ID: searchButton في ملف HTML
     const searchButton = document.getElementById('searchButton');
     if(searchButton) {
         searchButton.addEventListener('click', searchReservation);
     }
     
-    // حدث تحديث الحجز الموجود
     document.getElementById('editReservationForm').addEventListener('submit', function(event) {
         event.preventDefault();
         updateReservation();
     });
 
-    // أحداث تحديث الملخص وحساب الأيام
     ['new', 'edit'].forEach(prefix => {
         ['guest', 'vip', 'royal'].forEach(suiteKey => {
             const arrivalInput = document.getElementById(`${suiteKey}Arrival_${prefix}`);
@@ -575,7 +502,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // منطق التبويبات
     document.querySelectorAll('.tab-button').forEach(button => {
         button.addEventListener('click', () => {
             const tabName = button.getAttribute('data-tab');
@@ -595,14 +521,12 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById(tabName).classList.add('active');
             button.classList.add('active');
 
-            // إذا كان التبويب هو 'query'، قم بجلب البيانات
             if (tabName === 'query') {
                 loadFutureReservations();
             }
         });
     });
 
-    // منطق الأقسام المطوية (Collapsible)
     document.querySelectorAll('.collapsible-header').forEach(header => {
         header.addEventListener('click', () => {
             const content = header.nextElementSibling;
@@ -611,6 +535,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // تفعيل التبويب الأول (إذا كان موجوداً)
     document.querySelector('.tab-button')?.click();
 });
