@@ -40,7 +40,7 @@ const FIELD_IDS = {
 };
 
 // ===============================================
-// وظائف الواجهة (تم تحديثها لاستخدام الفئات بدلاً من style.display)
+// وظائف الواجهة
 // ===============================================
 function showStatus(message, type = 'info', tabId) {
     const statusDiv = document.getElementById(`statusMessage_${tabId}`);
@@ -62,51 +62,6 @@ function showStatus(message, type = 'info', tabId) {
     }, 5000);
 }
 
-function openTab(tabName, element) {
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-    document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
-    document.getElementById(tabName).classList.add('active');
-    element.classList.add('active');
-    
-    // إخفاء جميع رسائل الحالة عند التبديل
-    document.querySelectorAll('.status-message').forEach(msg => msg.classList.add('hidden'));
-    
-    if (tabName === 'query') {
-        loadFutureReservations(); 
-    }
-}
-
-function toggleTransferer(prefix, buttonElement) {
-    const field = document.getElementById(`transfererField_${prefix}`);
-    const isVisible = field.classList.contains('active');
-
-    if (isVisible) {
-        field.classList.remove('active'); // نستخدم هنا active/optional-field لتشغيل display: flex/none
-        field.style.display = 'none';
-        buttonElement.textContent = '➕';
-    } else {
-        field.classList.add('active');
-        field.style.display = 'flex';
-        buttonElement.textContent = '➖';
-    }
-}
-
-function toggleSuiteDetails(prefix, suiteKey, buttonElement) {
-    const detailsArea = document.getElementById(`suiteDetails_${prefix}_${suiteKey}`);
-    
-    if (detailsArea.style.display === 'block') {
-        detailsArea.style.display = 'none';
-        buttonElement.textContent = '➕';
-    } else {
-        detailsArea.style.display = 'block';
-        buttonElement.textContent = '➖';
-        const arrivalInput = document.getElementById(`${suiteKey}Arrival_${prefix}`);
-        if (!arrivalInput.value) {
-            arrivalInput.value = new Date().toISOString().split('T')[0];
-        }
-        arrivalInput.focus();
-    }
-}
 
 function updateSuiteSummary(prefix, suiteKey) {
     const countInput = document.getElementById(`${suiteKey}SuiteCount_${prefix}`);
@@ -248,8 +203,6 @@ async function saveNewReservation() {
         showStatus(`✅ تم حفظ الحجز بنجاح! رقم السجل في Airtable هو: ${newResId}.`, 'success', statusDivId);
         document.getElementById('newReservationForm').reset();
         
-        document.querySelectorAll('.suite-details-area').forEach(area => area.style.display = 'none');
-        document.querySelectorAll('.toggle-button[data-suite]').forEach(btn => btn.textContent = '➕');
         document.querySelectorAll('span[id$="_summary_new').forEach(span => span.textContent = '');
     } catch (error) {
         console.error('Error saving reservation:', error);
@@ -348,3 +301,44 @@ function renderReservationsTable(reservations) {
 
     container.appendChild(table);
 }
+
+// ===============================================
+// منطق التبويبات والأقسام المطوية (المنطق الجديد)
+// ===============================================
+
+// للتبويبات
+document.querySelectorAll('.tab-button').forEach(button => {
+    button.addEventListener('click', () => {
+        const tabName = button.getAttribute('data-tab');
+        
+        // إخفاء جميع المحتويات
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+            // إخفاء جميع رسائل الحالة عند التبديل
+            document.querySelectorAll('.status-message').forEach(msg => msg.classList.add('hidden'));
+        });
+        
+        // إلغاء تنشيط جميع الأزرار
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // إظهار المحتوى المحدد
+        document.getElementById(tabName).classList.add('active');
+        button.classList.add('active');
+
+        // إذا كان التبويب هو 'query'، قم بجلب البيانات
+        if (tabName === 'query') {
+            loadFutureReservations(); 
+        }
+    });
+});
+
+// للأقسام المطوية (Collapsible)
+document.querySelectorAll('.collapsible-header').forEach(header => {
+    header.addEventListener('click', () => {
+        const content = header.nextElementSibling;
+        header.classList.toggle('active');
+        content.classList.toggle('active');
+    });
+});
