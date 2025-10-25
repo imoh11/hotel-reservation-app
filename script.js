@@ -5,7 +5,7 @@
 // 🚨🚨🚨 عند النشر على Netlify، يجب تعريف AIRTABLE_API_KEY كـ Environment Variable 🚨🚨🚨
 const AIRTABLE_API_KEY = "AIRTABLE_API_KEY_PLACEHOLDER"; 
 const BASE_ID = 'appZm1T1ecVIlWOwy';
-const TABLE_NAME = 'سجل الحجوزات';
+const TABLE_NAME = 'tbloqjxnWuD2aH66H';
 const AIRTABLE_API_URL = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`;
 
 // =================================================================
@@ -338,4 +338,5 @@ function renderReservationsTable(reservations) {
     });
 
     container.appendChild(table);
+
 }
