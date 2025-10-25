@@ -27,7 +27,8 @@ body {
     background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
     padding: 15px;
     min-height: 100vh;
-    font-size: 0.9rem;
+    /* التعديل 1: تصغير حجم الخط الأساسي */
+    font-size: 0.8rem; 
 }
 
 .container {
@@ -109,7 +110,7 @@ body {
 }
 
 .collapsible-header {
-    /* التعديل: لجعل الرأس أزرق دائمًا */
+    /* لجعل الرأس أزرق دائمًا */
     background-color: var(--primary);
     color: white;
     padding: 12px 15px;
@@ -171,7 +172,7 @@ body {
     display: block;
     margin-bottom: 6px;
     font-weight: 500;
-    /* التعديل: لجعل عنوان الحقل أزرق (هذه العناوين متبقية فقط لـ Selects) */
+    /* لجعل عنوان الحقل أزرق (هذه العناوين متبقية فقط لـ Selects) */
     color: var(--primary-dark); 
     font-size: 0.9rem;
 }
@@ -224,6 +225,7 @@ body {
     border-bottom: 1px solid var(--gray-light);
 }
 
+/* التعديل 2: إزالة الحد السفلي من آخر عنصر (جناح ملكي) لمنع ظهور القوس */
 .suite-item-header:last-of-type {
      border-bottom: none;
 }
@@ -244,8 +246,7 @@ body {
     margin-bottom: 15px;
 }
 
-
-/* الأزرار ورسائل الحالة */
+/* ... بقية التنسيقات ... */
 .button-group {
     display: flex;
     gap: 8px;
