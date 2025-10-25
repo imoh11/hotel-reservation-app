@@ -27,7 +27,7 @@ body {
     background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
     padding: 15px;
     min-height: 100vh;
-    /* الخط الأساسي للصفحة تم تصغيره مسبقاً إلى 0.8rem */
+    /* الخط الأساسي للصفحة تم تصغيره مسبقاً */
     font-size: 0.8rem; 
 }
 
@@ -37,7 +37,6 @@ body {
     background: white;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
-    /* إزالة Overflow-x: hidden لتجنب مشاكل العرض على الجوال */
     overflow: hidden; 
 }
 
@@ -56,8 +55,8 @@ body {
 
 .tab-button {
     flex: 1;
-    padding: 10px 12px; /* تصغير الخط على الجوال */
-    font-size: 0.8rem; /* تصغير الخط على الجوال */
+    padding: 10px 12px;
+    font-size: 0.8rem;
     text-align: center;
     background: none;
     border: none;
@@ -86,7 +85,7 @@ body {
 }
 
 .tab-content {
-    padding: 20px; /* تصغير المسافة البادئة */
+    padding: 20px;
     display: none;
     animation: fadeIn 0.4s ease;
 }
@@ -104,7 +103,7 @@ body {
 /* تنسيقات الأقسام المطوية (Collapsible) */
 /* ------------------------------------------- */
 .collapsible-section {
-    margin-bottom: 15px; /* تقليل الهامش */
+    margin-bottom: 15px;
     border: 1px solid var(--gray-light);
     border-radius: var(--border-radius);
     overflow: hidden;
@@ -113,10 +112,10 @@ body {
 .collapsible-header {
     background-color: var(--primary);
     color: white;
-    padding: 10px 12px; /* تصغير الخط على الجوال */
+    padding: 10px 12px;
     cursor: pointer;
     font-weight: 600;
-    font-size: 0.9rem; /* تصغير الخط على الجوال */
+    font-size: 0.9rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -148,37 +147,37 @@ body {
 
 .collapsible-content {
     max-height: 0;
-    padding: 0 12px; /* تصغير المسافة البادئة */
+    padding: 0 12px;
     overflow: hidden;
     transition: max-height 0.3s ease-out, padding 0.3s ease-out;
 }
 
 .collapsible-content.active {
     max-height: 1000px; 
-    padding: 12px; /* تصغير المسافة البادئة */
+    padding: 12px;
 }
 
 
 /* تنسيقات حقول النموذج */
 .form-group {
-    margin-bottom: 10px; /* تقليل الهامش */
+    margin-bottom: 10px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 4px; /* تقليل الهامش */
+    margin-bottom: 4px;
     font-weight: 500;
     color: var(--primary-dark); 
-    font-size: 0.8rem; /* تصغير الخط على الجوال */
+    font-size: 0.8rem;
 }
 
 .form-control {
     width: 100%;
-    padding: 8px 10px; /* تصغير حجم الحقل */
+    padding: 8px 10px;
     border: 1px solid var(--gray-light);
     border-radius: var(--border-radius);
     font-family: 'Tajawal', sans-serif;
-    font-size: 0.85rem; /* تصغير الخط على الجوال */
+    font-size: 0.85rem;
     transition: var(--transition);
     background-color: white;
 }
@@ -196,29 +195,29 @@ body {
 
 .form-row {
     display: flex;
-    gap: 10px; /* تقليل الفجوة */
+    gap: 10px;
     flex-wrap: wrap;
 }
 
 .form-row .form-group {
     flex: 1;
-    min-width: 150px; /* تصغير الحد الأدنى للعرض */
+    min-width: 150px;
 }
 
 /* تنسيقات الأجنحة المحجوزة */
 .suite-selection-container {
     border: 1px solid var(--gray-light);
     border-radius: var(--border-radius);
-    padding: 8px; /* تقليل المسافة البادئة */
+    padding: 8px;
     background-color: #fafafa;
 }
 
 .suite-item-header {
     font-weight: 600;
     color: var(--primary-dark);
-    padding: 6px 0; /* تصغير المسافة البادئة */
+    padding: 6px 0;
     border-bottom: 1px solid var(--gray-light);
-    font-size: 0.9rem; /* تصغير الخط على الجوال */
+    font-size: 0.9rem;
 }
 
 /* إزالة الحد السفلي من آخر عنصر (جناح ملكي) */
@@ -227,36 +226,36 @@ body {
 }
 
 .suite-summary {
-    font-size: 0.75rem; /* تصغير الخط على الجوال */
+    font-size: 0.75rem;
     font-weight: 400;
     color: var(--secondary-dark); 
 }
 
 .suite-details-area {
-    margin-top: 6px; /* تقليل الهامش */
-    padding: 10px; /* تقليل المسافة البادئة */
+    margin-top: 6px;
+    padding: 10px;
     border-top: 1px dashed var(--gray-light);
     background-color: #ffffff;
     border-radius: var(--border-radius);
     box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    margin-bottom: 10px; /* تقليل الهامش */
+    margin-bottom: 10px;
 }
 
 /* الأزرار ورسائل الحالة */
 .button-group {
     display: flex;
     gap: 8px;
-    margin-top: 15px; /* تقليل الهامش */
+    margin-top: 15px;
     flex-wrap: wrap;
 }
 
 .btn {
     display: inline-block;
-    padding: 8px 16px; /* تصغير حجم الزر */
+    padding: 8px 16px;
     border: none;
     border-radius: var(--border-radius);
     font-family: 'Tajawal', sans-serif;
-    font-size: 0.85rem; /* تصغير الخط على الجوال */
+    font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
     transition: var(--transition);
@@ -276,14 +275,14 @@ body {
 }
  
 .status-message-container {
-    margin-top: 10px; /* تقليل الهامش */
+    margin-top: 10px;
 }
 
 .status-message {
-    padding: 10px; /* تصغير المسافة البادئة */
+    padding: 10px;
     border-radius: var(--border-radius);
     font-weight: 500;
-    font-size: 0.8rem; /* تصغير الخط على الجوال */
+    font-size: 0.8rem;
 }
 
 .hidden {
@@ -310,29 +309,28 @@ body {
 
 .info-message-block {
     display: block !important;
-    margin-bottom: 10px; /* تقليل الهامش */
+    margin-bottom: 10px;
 }
  
 /* تصميم جدول الحجوزات القادمة */
 .table-container {
-    margin-top: 15px; /* تقليل الهامش */
-    /* تم إزالة overflow-x: auto هنا لأنها كانت تسبب تمرير أفقي غير ضروري */
+    margin-top: 15px;
     overflow-x: auto; 
 }
  
 .reservations-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px; /* تقليل الهامش */
+    margin-top: 10px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 .reservations-table th, .reservations-table td {
-    padding: 8px; /* تصغير المسافة البادئة */
+    padding: 8px;
     border: 1px solid #ddd;
     text-align: right;
     vertical-align: top; 
-    font-size: 0.75rem; /* تصغير الخط على الجوال */
+    font-size: 0.75rem;
 }
 
 .reservations-table thead tr {
@@ -354,7 +352,7 @@ body {
 }
 
 /* تنسيقات حقل الجوال لفرض الاتجاه من اليمين لليسار */
-#phone_new {
-    direction: rtl; /* إجبار الاتجاه من اليمين لليسار */
-    text-align: right; /* محاذاة النص لليمين */
+#phone_new, #phone_edit {
+    direction: rtl; 
+    text-align: right; 
 }
