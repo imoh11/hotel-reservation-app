@@ -27,7 +27,7 @@ body {
     background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
     padding: 15px;
     min-height: 100vh;
-    /* تصغير حجم الخط الأساسي */
+    /* الخط الأساسي للصفحة تم تصغيره مسبقاً إلى 0.8rem */
     font-size: 0.8rem; 
 }
 
@@ -37,7 +37,8 @@ body {
     background: white;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
-    overflow: hidden;
+    /* إزالة Overflow-x: hidden لتجنب مشاكل العرض على الجوال */
+    overflow: hidden; 
 }
 
 .header {
@@ -55,14 +56,14 @@ body {
 
 .tab-button {
     flex: 1;
-    padding: 12px 15px;
+    padding: 10px 12px; /* تصغير الخط على الجوال */
+    font-size: 0.8rem; /* تصغير الخط على الجوال */
     text-align: center;
     background: none;
     border: none;
     cursor: pointer;
     font-family: 'Tajawal', sans-serif;
     font-weight: 500;
-    font-size: 0.9rem;
     color: var(--gray);
     transition: var(--transition);
     position: relative;
@@ -85,7 +86,7 @@ body {
 }
 
 .tab-content {
-    padding: 25px;
+    padding: 20px; /* تصغير المسافة البادئة */
     display: none;
     animation: fadeIn 0.4s ease;
 }
@@ -103,20 +104,19 @@ body {
 /* تنسيقات الأقسام المطوية (Collapsible) */
 /* ------------------------------------------- */
 .collapsible-section {
-    margin-bottom: 20px;
+    margin-bottom: 15px; /* تقليل الهامش */
     border: 1px solid var(--gray-light);
     border-radius: var(--border-radius);
     overflow: hidden;
 }
 
 .collapsible-header {
-    /* لجعل الرأس أزرق دائمًا */
     background-color: var(--primary);
     color: white;
-    padding: 12px 15px;
+    padding: 10px 12px; /* تصغير الخط على الجوال */
     cursor: pointer;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.9rem; /* تصغير الخط على الجوال */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -128,7 +128,6 @@ body {
 }
 
 .collapsible-header.active {
-    /* تغيير بسيط في الدرجة عند التنشيط */
     background-color: var(--primary-dark);
 }
 
@@ -136,7 +135,6 @@ body {
     display: inline-block;
     width: 0;
     height: 0;
-    /* تعيين اللون الأبيض دائمًا للسهولة */
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
     border-top: 5px solid white; 
@@ -149,41 +147,38 @@ body {
 }
 
 .collapsible-content {
-    /* للحالة المغلقة (افتراضيًا) */
     max-height: 0;
-    padding: 0 15px;
+    padding: 0 12px; /* تصغير المسافة البادئة */
     overflow: hidden;
     transition: max-height 0.3s ease-out, padding 0.3s ease-out;
 }
 
 .collapsible-content.active {
-    /* للحالة المفتوحة */
     max-height: 1000px; 
-    padding: 15px;
+    padding: 12px; /* تصغير المسافة البادئة */
 }
 
 
 /* تنسيقات حقول النموذج */
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 10px; /* تقليل الهامش */
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 4px; /* تقليل الهامش */
     font-weight: 500;
-    /* لجعل عنوان الحقل أزرق (هذه العناوين متبقية فقط لـ Selects) */
     color: var(--primary-dark); 
-    font-size: 0.9rem;
+    font-size: 0.8rem; /* تصغير الخط على الجوال */
 }
 
 .form-control {
     width: 100%;
-    padding: 10px 12px;
+    padding: 8px 10px; /* تصغير حجم الحقل */
     border: 1px solid var(--gray-light);
     border-radius: var(--border-radius);
     font-family: 'Tajawal', sans-serif;
-    font-size: 0.9rem;
+    font-size: 0.85rem; /* تصغير الخط على الجوال */
     transition: var(--transition);
     background-color: white;
 }
@@ -201,28 +196,29 @@ body {
 
 .form-row {
     display: flex;
-    gap: 12px;
+    gap: 10px; /* تقليل الفجوة */
     flex-wrap: wrap;
 }
 
 .form-row .form-group {
     flex: 1;
-    min-width: 180px;
+    min-width: 150px; /* تصغير الحد الأدنى للعرض */
 }
 
 /* تنسيقات الأجنحة المحجوزة */
 .suite-selection-container {
     border: 1px solid var(--gray-light);
     border-radius: var(--border-radius);
-    padding: 10px;
+    padding: 8px; /* تقليل المسافة البادئة */
     background-color: #fafafa;
 }
 
 .suite-item-header {
     font-weight: 600;
     color: var(--primary-dark);
-    padding: 8px 0;
+    padding: 6px 0; /* تصغير المسافة البادئة */
     border-bottom: 1px solid var(--gray-light);
+    font-size: 0.9rem; /* تصغير الخط على الجوال */
 }
 
 /* إزالة الحد السفلي من آخر عنصر (جناح ملكي) */
@@ -231,36 +227,36 @@ body {
 }
 
 .suite-summary {
-    font-size: 0.8rem;
+    font-size: 0.75rem; /* تصغير الخط على الجوال */
     font-weight: 400;
     color: var(--secondary-dark); 
 }
 
 .suite-details-area {
-    margin-top: 8px;
-    padding: 15px;
+    margin-top: 6px; /* تقليل الهامش */
+    padding: 10px; /* تقليل المسافة البادئة */
     border-top: 1px dashed var(--gray-light);
     background-color: #ffffff;
     border-radius: var(--border-radius);
     box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    margin-bottom: 15px;
+    margin-bottom: 10px; /* تقليل الهامش */
 }
 
-/* ... بقية التنسيقات ... */
+/* الأزرار ورسائل الحالة */
 .button-group {
     display: flex;
     gap: 8px;
-    margin-top: 20px;
+    margin-top: 15px; /* تقليل الهامش */
     flex-wrap: wrap;
 }
 
 .btn {
     display: inline-block;
-    padding: 10px 20px;
+    padding: 8px 16px; /* تصغير حجم الزر */
     border: none;
     border-radius: var(--border-radius);
     font-family: 'Tajawal', sans-serif;
-    font-size: 0.9rem;
+    font-size: 0.85rem; /* تصغير الخط على الجوال */
     font-weight: 500;
     cursor: pointer;
     transition: var(--transition);
@@ -280,14 +276,14 @@ body {
 }
  
 .status-message-container {
-    margin-top: 15px;
+    margin-top: 10px; /* تقليل الهامش */
 }
 
 .status-message {
-    padding: 12px;
+    padding: 10px; /* تصغير المسافة البادئة */
     border-radius: var(--border-radius);
     font-weight: 500;
-    font-size: 0.85rem;
+    font-size: 0.8rem; /* تصغير الخط على الجوال */
 }
 
 .hidden {
@@ -314,27 +310,29 @@ body {
 
 .info-message-block {
     display: block !important;
-    margin-bottom: 15px; 
+    margin-bottom: 10px; /* تقليل الهامش */
 }
  
 /* تصميم جدول الحجوزات القادمة */
 .table-container {
-    margin-top: 20px; 
-    overflow-x: auto;
+    margin-top: 15px; /* تقليل الهامش */
+    /* تم إزالة overflow-x: auto هنا لأنها كانت تسبب تمرير أفقي غير ضروري */
+    overflow-x: auto; 
 }
-
+ 
 .reservations-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 15px;
+    margin-top: 10px; /* تقليل الهامش */
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 .reservations-table th, .reservations-table td {
-    padding: 10px;
+    padding: 8px; /* تصغير المسافة البادئة */
     border: 1px solid #ddd;
     text-align: right;
     vertical-align: top; 
+    font-size: 0.75rem; /* تصغير الخط على الجوال */
 }
 
 .reservations-table thead tr {
