@@ -109,7 +109,7 @@ document.getElementById('newReservationForm').addEventListener('submit', functio
 
 async function saveNewReservation() {
     const statusDivId = 'newReservation';
-    // استخدام قيمة الحقول مباشرة، مع العلم أن Labels قد أزيلت وتم استبدالها بـ Placeholders
+    
     const guestName = document.getElementById('guestName_new').value; 
     const phone = document.getElementById('phone_new').value;
     const counter = document.getElementById('counter_new').value;
@@ -304,7 +304,7 @@ function renderReservationsTable(reservations) {
 }
 
 // ===============================================
-// منطق التبويبات والأقسام المطوية (المنطق الجديد)
+// منطق التبويبات والأقسام المطوية
 // ===============================================
 
 // للتبويبات
@@ -335,7 +335,7 @@ document.querySelectorAll('.tab-button').forEach(button => {
     });
 });
 
-// للأقسام المطوية (Collapsible)
+// للأقسام المطوية (Collapsible) - للتأكد من أنها تفتح وتغلق بشكل صحيح
 document.querySelectorAll('.collapsible-header').forEach(header => {
     header.addEventListener('click', () => {
         const content = header.nextElementSibling;
