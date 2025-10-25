@@ -16,8 +16,7 @@
 
         <div class="tabs">
             <button class="tab-button active" data-tab="newReservation">حجز جديد</button>
-            <button class="tab-button" data-tab="editReservation">تعديل حجز</button>
-            <button class="tab-button" data-tab="cancelReservationTab">إلغاء حجز</button>
+            <button class="tab-button" data-tab="editReservation">تعديل / إلغاء حجز</button> 
             <button class="tab-button" data-tab="query">الحجوزات القادمة</button>
         </div>
 
@@ -35,7 +34,7 @@
                                 <select id="type_new" class="form-control" required>
                                     <option value="" disabled selected>اختر نوع الحجز</option>
                                     <option value="مؤكد">مؤكد</option>
-                                    <option value="قيد الانتظار">انتظار </option>
+                                    <option value="قيد الانتظار">انتظار</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -172,17 +171,162 @@
         </div>
 
         <div id="editReservation" class="tab-content">
-            <h3 class="hidden-header">تعديل حجز</h3>
-            <div id="editReservationContent">
-                <p class="info status-message active info-message-block">**قسم التعديل قيد الإنشاء حالياً**.</p>
+            <div class="form-group form-row">
+                <div class="form-group" style="flex-grow: 3;">
+                    <input type="text" id="searchReservationInput" class="form-control" placeholder="أدخل رقم الجوال أو رقم الحجز (ID)">
+                </div>
+                <div class="form-group" style="flex-grow: 1;">
+                    <button type="button" class="btn btn-primary" onclick="searchReservation()">
+                        بحث عن حجز
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <div id="cancelReservationTab" class="tab-content">
-            <h3 class="hidden-header">إلغاء حجز</h3>
-            <div id="cancelReservationContent">
-                   <p class="info status-message active info-message-block">**قسم الإلغاء قيد الإنشاء حالياً**.</p>
+            <div class="status-message-container">
+                <div id="statusMessage_editReservation" class="status-message hidden"></div>
             </div>
+            
+            <form id="editReservationForm" class="hidden">
+                <input type="hidden" id="recordId_edit"> <div class="collapsible-section">
+                    <div class="collapsible-header active"> الحجز
+                        <span class="collapsible-icon"></span>
+                    </div>
+                    <div class="collapsible-content active"> 
+                        <div class="form-row">
+                            <div class="form-group">
+                                <select id="type_edit" class="form-control" required>
+                                    <option value="" disabled selected>اختر نوع الحجز</option>
+                                    <option value="مؤكد">مؤكد</option>
+                                    <option value="قيد الانتظار">انتظار</option>
+                                    <option value="ملغي">ملغي</option> 
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select id="counter_edit" class="form-control" required>
+                                    <option value="" disabled selected>اختر الكونتر</option>
+                                    <option value="A1">A1</option>
+                                    <option value="A2">A2</option>
+                                    <option value="A3">A3</option>
+                                    <option value="A4">A4</option>
+                                    <option value="A5">A5</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="text" id="guestName_edit" class="form-control" placeholder="اسم النزيل الكامل" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <input type="tel" id="phone_edit" class="form-control" placeholder="رقم الجوال (05XXXXXXXX)" required inputmode="numeric">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <select id="source_edit" class="form-control">
+                                    <option value="" disabled selected>جهة الحجز</option>
+                                    <option value="WhatsApp">WhatsApp</option>
+                                    <option value="Booking">Booking</option>
+                                    <option value="Counter">Counter</option>
+                                    <option value="Management">Management</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" id="amount_edit" class="form-control" placeholder="المبلغ" inputmode="numeric">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <div class="collapsible-header active"> الأجنحة
+                        <span class="collapsible-icon"></span>
+                    </div>
+                    <div class="collapsible-content active">
+                         <div id="suitesContainer_edit" class="suite-selection-container">
+                        
+                            <div class="suite-item-header">جناح ضيافة <span id="guest_summary_edit" class="suite-summary"></span></div>
+                            <div id="suiteDetails_edit_guest" class="suite-details-area">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="guestArrival_edit" class="form-control suite-date-input" placeholder="تاريخ الوصول" onchange="calculateDaysPerSuite('edit', 'guest')">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="guestDeparture_edit" class="form-control suite-date-input" placeholder="تاريخ المغادرة" onchange="calculateDaysPerSuite('edit', 'guest')">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="number" id="guestDays_edit" class="form-control" placeholder="عدد الأيام" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" id="guestSuiteCount_edit" class="form-control" value="" min="0" placeholder="عدد الغرف" oninput="updateSuiteSummary('edit', 'guest')" inputmode="numeric">
+                                </div>
+                            </div>
+
+                            <div class="suite-item-header">جناح VIP <span id="vip_summary_edit" class="suite-summary"></span></div>
+                            <div id="suiteDetails_edit_vip" class="suite-details-area">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="vipArrival_edit" class="form-control suite-date-input" placeholder="تاريخ الوصول" onchange="calculateDaysPerSuite('edit', 'vip')">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="vipDeparture_edit" class="form-control suite-date-input" placeholder="تاريخ المغادرة" onchange="calculateDaysPerSuite('edit', 'vip')">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="number" id="vipDays_edit" class="form-control" placeholder="عدد الأيام" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" id="vipSuiteCount_edit" class="form-control" value="" min="0" placeholder="عدد الغرف" oninput="updateSuiteSummary('edit', 'vip')" inputmode="numeric">
+                                </div>
+                            </div>
+
+                            <div class="suite-item-header">جناح ملكي <span id="royal_summary_edit" class="suite-summary"></span></div>
+                            <div id="suiteDetails_edit_royal" class="suite-details-area">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="royalArrival_edit" class="form-control suite-date-input" placeholder="تاريخ الوصول" onchange="calculateDaysPerSuite('edit', 'royal')">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="royalDeparture_edit" class="form-control suite-date-input" placeholder="تاريخ المغادرة" onchange="calculateDaysPerSuite('edit', 'royal')">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="number" id="royalDays_edit" class="form-control" placeholder="عدد الأيام" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" id="royalSuiteCount_edit" class="form-control" value="" min="0" placeholder="عدد الغرف" oninput="updateSuiteSummary('edit', 'royal')" inputmode="numeric">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <div class="collapsible-header active"> ملاحظات
+                        <span class="collapsible-icon"></span>
+                    </div>
+                    <div class="collapsible-content active">
+                        <div id="transfererField_edit" class="form-row">
+                            <div class="form-group">
+                                <input type="text" id="transfererName_edit" class="form-control" placeholder="اسم المحول (اختياري)">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="currentDate_edit" class="form-control" placeholder="تاريخ التحويل (اختياري)">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <textarea id="notes_edit" rows="3" class="form-control" placeholder="ملاحظات إضافية"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">حفظ التعديلات / إلغاء الحجز</button>
+                    <button type="button" class="btn btn-outline" onclick="document.getElementById('editReservationForm').classList.add('hidden')">إلغاء التعديل</button>
+                </div>
+            </form>
         </div>
 
         <div id="query" class="tab-content">
@@ -205,4 +349,3 @@
     <script src="script.js"></script> 
 </body>
 </html>
-
