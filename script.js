@@ -1,9 +1,9 @@
 // =================================================================
 // 1. إعدادات Airtable الأساسية - يجب تعديلها
 // =================================================================
-const AIRTABLE_API_KEY = "AIRTABLE_API_KEY_PLACEHOLDER";
+const AIRTABLE_API_KEY = "AIRTABLE_API_KEY_PLACEHOLDER"; // 🚨 تأكد من استبدال هذا المفتاح
 const BASE_ID = 'appZm1T1ecVIlWOwy';
-const TABLE_NAME = 'tbloqjxnWuD2aH66H'; // Table ID الخاص بك
+const TABLE_NAME = 'tbloqjxnWuD2aH66H'; 
 const AIRTABLE_API_URL = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`;
 
 // =================================================================
@@ -213,7 +213,7 @@ async function searchReservation() {
     const searchInput = document.getElementById('searchReservationInput');
     const searchValue = searchInput.value.trim();
 
-    // إخفاء النموذج بالـ class hidden قبل البحث
+    // 🚨 الحل القسري للإخفاء قبل البحث 🚨
     document.getElementById('editReservationForm').classList.add('hidden');
     document.getElementById('editReservationForm').style.display = 'none';
 
@@ -275,7 +275,7 @@ async function searchReservation() {
 }
 
 // ===============================================
-// 6. وظيفة تعبئة نموذج التعديل (مع معالجة الإظهار)
+// 6. وظيفة تعبئة نموذج التعديل (الحل القسري للإظهار)
 // ===============================================
 
 function populateEditForm(record) {
@@ -288,38 +288,14 @@ function populateEditForm(record) {
     // 1. حفظ ID السجل
     document.getElementById('recordId_edit').value = recordId;
     
-    // الحل القوي: إظهار النموذج عن طريق تجاوز مشكلة الـ CSS (!important)
+    // 🚨 الحل القسري للإظهار لتجاوز مشاكل CSS 🚨
+    formElement.classList.remove('hidden'); 
     formElement.style.display = 'block'; 
-    formElement.classList.remove('hidden');
-
-    // ---------------------------------------------------
-    // نقاط الفحص (DEBUG)
-    // ---------------------------------------------------
+    console.log(`[FINAL CHECK] Form Visibility Status: ${formElement.style.display}`); 
     
-    // تعبئة حقل اسم النزيل
-    const guestNameFromAirtable = fields[FIELD_IDS.GUEST_NAME] || '';
-    console.log(`[DEBUG] Guest Name from Airtable: ${guestNameFromAirtable}`);
-    
-    const guestNameInput = document.getElementById(`guestName_${prefix}`);
-    if (guestNameInput) {
-        guestNameInput.value = guestNameFromAirtable;
-        console.log(`[DEBUG] HTML Input ID: guestName_${prefix} | Value Set To: ${guestNameInput.value}`);
-    } else {
-        console.error(`[DEBUG] CRITICAL: HTML Element guestName_${prefix} NOT FOUND!`);
-    }
-
-    // تعبئة حقل رقم الجوال
-    const phoneFromAirtable = fields[FIELD_IDS.PHONE] || '';
-    const phoneInput = document.getElementById(`phone_${prefix}`);
-    if (phoneInput) {
-        phoneInput.value = phoneFromAirtable;
-        console.log(`[DEBUG] HTML Input ID: phone_${prefix} | Value Set To: ${phoneInput.value}`);
-    } else {
-         console.error(`[DEBUG] CRITICAL: HTML Element phone_${prefix} NOT FOUND!`);
-    }
-    // ---------------------------------------------------
-
-    // تعبئة باقي الحقول الأساسية
+    // تعبئة الحقول الأساسية
+    document.getElementById(`guestName_${prefix}`).value = fields[FIELD_IDS.GUEST_NAME] || '';
+    document.getElementById(`phone_${prefix}`).value = fields[FIELD_IDS.PHONE] || '';
     document.getElementById(`type_${prefix}`).value = fields[FIELD_IDS.RES_TYPE] || '';
     document.getElementById(`counter_${prefix}`).value = fields[FIELD_IDS.COUNTER] || '';
     document.getElementById(`source_${prefix}`).value = fields[FIELD_IDS.SOURCE] || '';
@@ -346,13 +322,13 @@ function populateEditForm(record) {
     document.getElementById('currentDate_edit').value = fields[FIELD_IDS.TRANSFER_DATE] || '';
     document.getElementById('notes_edit').value = fields[FIELD_IDS.NOTES] || '';
 
-    // تفعيل الأقسام المطوية (لإظهار بيانات الأجنحة التي كانت مخفية)
-    document.querySelectorAll('#editReservation .collapsible-content').forEach(content => {
+    // تفعيل الأقسام المطوية (لإظهار البيانات التي كانت مخفية)
+    document.querySelectorAll('#editReservationForm .collapsible-content').forEach(content => {
         content.classList.add('active');
         
         const header = content.previousElementSibling;
         if(header) {
-             header.classList.add('active'); // تفعيل الهيدر أيضاً
+             header.classList.add('active'); 
         }
     });
 }
@@ -417,12 +393,13 @@ async function updateReservation() {
     });
 
     const totalReserved = (data[FIELD_IDS.GUEST_COUNT] || 0) + (data[FIELD_IDS.VIP_COUNT] || 0) + (data[FIELD_IDS.ROYAL_COUNT] || 0);
-    if (totalReserved === 0 && data[FIELD_IDS.RES_TYPE] !== 'ملغي' && !Object.keys(data).some(key => key.includes('ARRIVAL'))) {
+    const isCancellation = data[FIELD_IDS.RES_TYPE] === 'ملغي';
+    
+    if (totalReserved === 0 && !isCancellation && !Object.keys(data).some(key => key.includes('ARRIVAL'))) {
         showStatus('الرجاء تحديد جناح واحد على الأقل وتواريخ، أو تعيين حالة الحجز إلى "ملغي".', 'error', statusDivId);
         return;
     }
 
-    const isCancellation = data[FIELD_IDS.RES_TYPE] === 'ملغي';
     const actionText = isCancellation ? 'إلغاء' : 'تعديل';
 
     try {
@@ -447,7 +424,7 @@ async function updateReservation() {
 
         showStatus(`✅ تم ${actionText} الحجز بنجاح! رقم السجل: ${recordId}.`, 'success', statusDivId, false);
         
-        // إخفاء النموذج بالـ class hidden بعد التعديل
+        // إخفاء النموذج بالـ class hidden و style.display بعد التعديل
         document.getElementById('editReservationForm').classList.add('hidden');
         document.getElementById('editReservationForm').style.display = 'none';
 
@@ -557,7 +534,7 @@ document.addEventListener('DOMContentLoaded', () => {
         saveNewReservation();
     });
 
-    // 🚨 تم تعديل هذا الجزء: الاعتماد على id="searchButton" فقط
+    // 🚨 ربط زر البحث باستخدام الـ ID 🚨
     const searchButton = document.getElementById('searchButton');
     if(searchButton) {
         searchButton.addEventListener('click', searchReservation);
@@ -604,6 +581,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (tabName === 'query') {
                 loadFutureReservations();
             }
+            
+            // عند الانتقال إلى تبويبة التعديل، تأكد من إخفاء النموذج في البداية
+            if (tabName === 'editReservation') {
+                const editForm = document.getElementById('editReservationForm');
+                if (editForm) {
+                    editForm.classList.add('hidden');
+                    editForm.style.display = 'none';
+                }
+            }
         });
     });
 
@@ -616,5 +602,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // تفعيل أول تبويبة عند التحميل
     document.querySelector('.tab-button')?.click();
 });
