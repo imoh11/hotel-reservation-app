@@ -49,7 +49,7 @@ function showStatus(message, type = 'info', tabId, autoHide = true) {
     
     statusDiv.classList.remove('info', 'success', 'error', 'hidden'); 
     statusDiv.classList.add(type);
-    // استخدام innerHTML للسماح بتنسيق رقم الحجز (<strong>)
+    // استخدام innerHTML للسماح بتنسيق (<strong>)
     statusDiv.innerHTML = message; 
     statusDiv.classList.remove('hidden'); 
     
@@ -203,13 +203,9 @@ async function saveNewReservation() {
         const savedRecord = await response.json();
         const newResId = savedRecord.id; // هذا هو الرقم الفريد (Record ID)
         
-        // ***************************************************************
-        // *********** تعديل رسالة النجاح لإظهار رقم الحجز بوضوح ***********
-        // ***************************************************************
-        const successMessage = `✅ تم حفظ الحجز بنجاح! <br> <strong>رقم الحجز (ID) هو: ${newResId}</strong>. <br> <em>الرجاء استخدام هذا الرقم عند التعديل أو الاستعلام.</em>`;
-
-        // نستخدم showStatus مع autoHide=false لتبقى الرسالة مرئية حتى يمسحها المستخدم.
-        showStatus(successMessage, 'success', statusDivId, false); 
+        // عرض رقم الحجز في رسالة حالة مؤقتة
+        const successMessage = `✅ تم حفظ الحجز بنجاح! <br> <strong>رقم الحجز (ID) هو: ${newResId}</strong>. <br> <em>الرجاء استخدامه في قسم التعديل.</em>`;
+        showStatus(successMessage, 'success', statusDivId); // استخدام الإخفاء التلقائي (الافتراضي)
         
         document.getElementById('newReservationForm').reset();
         
