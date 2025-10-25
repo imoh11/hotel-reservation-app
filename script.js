@@ -40,20 +40,15 @@ const FIELD_IDS = {
 };
 
 // ===============================================
-// وظائف الواجهة
+// وظائف الواجهة المساعدة
 // ===============================================
 function showStatus(message, type = 'info', tabId) {
     const statusDiv = document.getElementById(`statusMessage_${tabId}`);
     if (!statusDiv) return;
     
-    // إزالة الفئات القديمة
     statusDiv.classList.remove('info', 'success', 'error', 'hidden'); 
-    
-    // إضافة الفئة الجديدة
     statusDiv.classList.add(type);
     statusDiv.innerText = message;
-    
-    // إظهار الرسالة (إزالة 'hidden')
     statusDiv.classList.remove('hidden'); 
     
     // إخفاء الرسالة بعد 5 ثواني
@@ -65,13 +60,11 @@ function showStatus(message, type = 'info', tabId) {
 
 function updateSuiteSummary(prefix, suiteKey) {
     const countInput = document.getElementById(`${suiteKey}SuiteCount_${prefix}`);
-    // تم تعديل هذا الجزء للتعامل مع الحقل كنص والتحقق من قيمته
     const count = parseInt(countInput.value) || 0; 
     const summaryElement = document.getElementById(`${suiteKey}_summary_${prefix}`);
 
-    // في حال إدخال قيمة سالبة أو غير رقمية
     if (isNaN(parseInt(countInput.value)) || parseInt(countInput.value) < 0) {
-        countInput.value = ''; // تركه فارغاً أفضل
+        countInput.value = ''; 
     }
 
     if (count > 0) {
@@ -127,7 +120,6 @@ async function saveNewReservation() {
         if (!element) return undefined;
         
         if (type.includes('Count') || type.includes('Days')) {
-            // يتم استخدام parseInt هنا لتحويل النص إلى رقم
             const val = parseInt(element.value);
             return isNaN(val) ? undefined : val; 
         }
@@ -167,14 +159,12 @@ async function saveNewReservation() {
 
     const suiteCounts = [FIELD_IDS.GUEST_COUNT, FIELD_IDS.VIP_COUNT, FIELD_IDS.ROYAL_COUNT, FIELD_IDS.AMOUNT];
     suiteCounts.forEach(key => {
-        // إذا كانت القيمة 0، يجب إرسالها كـ 0 (وليس undefined)
-        if (data.hasOwnProperty(key) && data[key] === 0) { 
+        if (data.hasOwnProperty(key) && data[key] === 0) {
             data[key] = 0; 
         }
     });
     
     const totalReserved = (data[FIELD_IDS.GUEST_COUNT] || 0) + (data[FIELD_IDS.VIP_COUNT] || 0) + (data[FIELD_IDS.ROYAL_COUNT] || 0);
-    // تم إضافة شرط للتحقق من أن مجموع الغرف ليس صفراً في حال إدخال تواريخ
     if (totalReserved === 0 && !Object.keys(data).some(key => key.includes('ARRIVAL'))) {
         showStatus('الرجاء تحديد جناح واحد على الأقل وإدخال عدد غرف وتواريخ.', 'error', statusDivId);
         return;
@@ -209,7 +199,6 @@ async function saveNewReservation() {
         showStatus(`✅ تم حفظ الحجز بنجاح! رقم السجل في Airtable هو: ${newResId}.`, 'success', statusDivId);
         document.getElementById('newReservationForm').reset();
         
-        // مسح ملخصات الأجنحة بعد إعادة التعيين
         document.querySelectorAll('span[id$="_summary_new').forEach(span => span.textContent = '');
     } catch (error) {
         console.error('Error saving reservation:', error);
@@ -217,6 +206,217 @@ async function saveNewReservation() {
     }
 }
  
+// ===============================================
+// وظائف تعديل الحجز (بحث / جلب / تحديث)
+// ===============================================
+
+document.getElementById('editReservationForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    updateReservation();
+});
+
+// وظيفة البحث عن الحجز
+async function searchReservation() {
+    const statusDivId = 'editReservation';
+    const searchValue = document.getElementById('searchReservationInput').value.trim();
+    
+    document.getElementById('editReservationForm').classList.add('hidden');
+    
+    if (!searchValue) {
+        showStatus('الرجاء إدخال رقم الجوال أو رقم الحجز (ID) للبحث.', 'error', statusDivId);
+        return;
+    }
+
+    // بناء فلتر Airtable
+    let filterFormula;
+    if (searchValue.startsWith('rec')) { // افتراض أن ID يبدأ بـ 'rec'
+        filterFormula = `{RECORD_ID()} = '${searchValue}'`;
+    } else {
+        // فلترة على حقل رقم الجوال
+        filterFormula = `{${FIELD_IDS.PHONE}} = '${searchValue}'`;
+    }
+
+    const queryString = `filterByFormula=${encodeURIComponent(filterFormula)}`;
+    const url = `${AIRTABLE_API_URL}?${queryString}&maxRecords=1`; // نبحث عن سجل واحد فقط
+
+    try {
+        showStatus('جاري البحث عن الحجز... 🔍', 'info', statusDivId);
+        
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${AIRTABLE_API_KEY}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Airtable API Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const records = data.records;
+        
+        if (records.length === 0) {
+            showStatus(`❌ لم يتم العثور على حجز برقم الجوال/ID: ${searchValue}.`, 'error', statusDivId);
+            return;
+        }
+
+        const record = records[0];
+        showStatus(`✅ تم العثور على حجز (${record.id}). يرجى تعديل البيانات وحفظها.`, 'success', statusDivId);
+        
+        // تعبئة النموذج ببيانات الحجز
+        populateEditForm(record);
+
+    } catch (error) {
+        console.error('Error searching reservation:', error);
+        showStatus(`❌ فشل البحث. (خطأ: ${error.message || 'غير معروف'}).`, 'error', statusDivId);
+    }
+}
+
+// وظيفة تعبئة نموذج التعديل
+function populateEditForm(record) {
+    const fields = record.fields;
+    const recordId = record.id;
+    const prefix = 'edit';
+    
+    // حفظ ID السجل لإجراء التحديث
+    document.getElementById('recordId_edit').value = recordId;
+    
+    // إظهار نموذج التعديل
+    document.getElementById('editReservationForm').classList.remove('hidden');
+
+    // تعبئة الحقول الأساسية
+    document.getElementById(`type_${prefix}`).value = fields[FIELD_IDS.RES_TYPE] || '';
+    document.getElementById(`counter_${prefix}`).value = fields[FIELD_IDS.COUNTER] || '';
+    document.getElementById(`guestName_${prefix}`).value = fields[FIELD_IDS.GUEST_NAME] || '';
+    // حقل الجوال
+    document.getElementById(`phone_${prefix}`).value = fields[FIELD_IDS.PHONE] || '';
+    
+    document.getElementById(`source_${prefix}`).value = fields[FIELD_IDS.SOURCE] || '';
+    // المبلغ (يتم تحويله إلى نص في حال وجوده)
+    document.getElementById(`amount_${prefix}`).value = fields[FIELD_IDS.AMOUNT] !== undefined ? fields[FIELD_IDS.AMOUNT].toString() : '';
+
+    // تعبئة تفاصيل الأجنحة
+    const suites = ['guest', 'vip', 'royal'];
+    suites.forEach(suiteKey => {
+        const arrival = fields[FIELD_IDS[`${suiteKey.toUpperCase()}_ARRIVAL`]];
+        const departure = fields[FIELD_IDS[`${suiteKey.toUpperCase()}_DEPARTURE`]];
+        const count = fields[FIELD_IDS[`${suiteKey.toUpperCase()}_COUNT`]];
+        
+        document.getElementById(`${suiteKey}Arrival_${prefix}`).value = arrival || '';
+        document.getElementById(`${suiteKey}Departure_${prefix}`).value = departure || '';
+        document.getElementById(`${suiteKey}SuiteCount_${prefix}`).value = count !== undefined ? count.toString() : '';
+        
+        // إعادة حساب عدد الأيام وتحديث الملخص
+        calculateDaysPerSuite(prefix, suiteKey); 
+    });
+    
+    // تعبئة الملاحظات والتحويل
+    document.getElementById('transfererName_edit').value = fields[FIELD_IDS.TRANSFERER_NAME] || '';
+    document.getElementById('currentDate_edit').value = fields[FIELD_IDS.TRANSFER_DATE] || '';
+    document.getElementById('notes_edit').value = fields[FIELD_IDS.NOTES] || '';
+
+    // تفعيل وظائف الأقسام المطوية بعد التعبئة
+    document.querySelectorAll('#editReservation .collapsible-content').forEach(content => {
+        content.classList.add('active');
+        content.previousElementSibling.classList.add('active');
+    });
+}
+
+// وظيفة تحديث/إلغاء الحجز (PATCH)
+async function updateReservation() {
+    const statusDivId = 'editReservation';
+    const recordId = document.getElementById('recordId_edit').value;
+    
+    if (!recordId) {
+        showStatus('❌ لا يوجد سجل حجز محدد للتعديل.', 'error', statusDivId);
+        return;
+    }
+
+    const prefix = 'edit';
+
+    const getSuiteValue = (key, type) => {
+        const element = document.getElementById(`${key}${type}_${prefix}`);
+        if (!element) return undefined;
+        
+        if (type.includes('Count') || type.includes('Days')) {
+            const val = parseInt(element.value);
+            return isNaN(val) ? undefined : val; 
+        }
+        return element.value.trim() === '' ? undefined : element.value;
+    };
+
+    let amountValue = document.getElementById('amount_edit').value.replace(/[^0-9.]/g, ''); 
+    const amount = (amountValue.trim() !== '' && !isNaN(parseFloat(amountValue))) ? parseFloat(amountValue) : undefined;
+    
+    const data = {
+        [FIELD_IDS.RES_TYPE]: document.getElementById(`type_${prefix}`).value,
+        [FIELD_IDS.COUNTER]: document.getElementById(`counter_${prefix}`).value,
+        [FIELD_IDS.GUEST_NAME]: document.getElementById(`guestName_${prefix}`).value,
+        [FIELD_IDS.PHONE]: document.getElementById(`phone_${prefix}`).value,
+        [FIELD_IDS.SOURCE]: document.getElementById(`source_${prefix}`).value,
+        [FIELD_IDS.AMOUNT]: amount, 
+        [FIELD_IDS.TRANSFERER_NAME]: document.getElementById('transfererName_edit').value || undefined, 
+        [FIELD_IDS.TRANSFER_DATE]: getSuiteValue('currentDate', ''), 
+        [FIELD_IDS.NOTES]: document.getElementById('notes_edit').value || undefined,
+        [FIELD_IDS.GUEST_COUNT]: getSuiteValue('guest', 'SuiteCount'),
+        [FIELD_IDS.GUEST_ARRIVAL]: getSuiteValue('guest', 'Arrival'),
+        [FIELD_IDS.GUEST_DEPARTURE]: getSuiteValue('guest', 'Departure'),
+        [FIELD_IDS.VIP_COUNT]: getSuiteValue('vip', 'SuiteCount'),
+        [FIELD_IDS.VIP_ARRIVAL]: getSuiteValue('vip', 'Arrival'),
+        [FIELD_IDS.VIP_DEPARTURE]: getSuiteValue('vip', 'Departure'),
+        [FIELD_IDS.ROYAL_COUNT]: getSuiteValue('royal', 'SuiteCount'),
+        [FIELD_IDS.ROYAL_ARRIVAL]: getSuiteValue('royal', 'Arrival'),
+        [FIELD_IDS.ROYAL_DEPARTURE]: getSuiteValue('royal', 'Departure'),
+    };
+    
+    // تصفية البيانات، هنا لا نحذف الحقول التي قيمتها undefined لأننا نستخدم PATCH
+    // Airtable ستقوم بتحديث الحقول الموجودة فقط.
+    Object.keys(data).forEach(key => {
+        if (data[key] === null) {
+            delete data[key]; 
+        }
+    });
+
+    const totalReserved = (data[FIELD_IDS.GUEST_COUNT] || 0) + (data[FIELD_IDS.VIP_COUNT] || 0) + (data[FIELD_IDS.ROYAL_COUNT] || 0);
+    if (totalReserved === 0 && data[FIELD_IDS.RES_TYPE] !== 'ملغي' && !Object.keys(data).some(key => key.includes('ARRIVAL'))) {
+        showStatus('الرجاء تحديد جناح واحد على الأقل وتواريخ، أو تعيين حالة الحجز إلى "ملغي".', 'error', statusDivId);
+        return;
+    }
+
+    const isCancellation = data[FIELD_IDS.RES_TYPE] === 'ملغي';
+    const actionText = isCancellation ? 'إلغاء' : 'تعديل';
+    
+    try {
+        showStatus(`جاري ${actionText} الحجز... ⏳`, 'info', statusDivId);
+
+        const response = await fetch(`${AIRTABLE_API_URL}/${recordId}`, {
+            method: 'PATCH', // استخدام PATCH للتحديث
+            headers: {
+                'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                fields: data
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            const errorMessage = errorData.error ? (errorData.error.message || errorData.error.type) : 'غير معروف';
+            throw new Error(`Airtable API Error: ${response.status} - ${errorMessage}`);
+        }
+
+        showStatus(`✅ تم ${actionText} الحجز بنجاح! رقم السجل: ${recordId}.`, 'success', statusDivId);
+        // إخفاء النموذج بعد الحفظ
+        document.getElementById('editReservationForm').classList.add('hidden');
+    } catch (error) {
+        console.error('Error updating reservation:', error);
+        showStatus(`❌ فشل ${actionText} الحجز. (خطأ: ${error.message || 'غير معروف'}).`, 'error', statusDivId);
+    }
+}
+
+
 // ===============================================
 // وظيفة جلب الحجوزات القادمة (GET)
 // ===============================================
@@ -294,13 +494,14 @@ function renderReservationsTable(reservations) {
         const fields = record.fields;
         
         const guestName = fields[FIELD_IDS.GUEST_NAME] || 'غير محدد';
+        const recordId = record.id; // عرض ID الحجز
         const summaryText = fields[FIELD_IDS.SUMMARY_COLUMN] || '- لا توجد تفاصيل -';
 
         const tr = document.createElement('tr');
         
 
         tr.innerHTML = `
-            <td>${guestName}</td>
+            <td>${guestName} <small style="display:block; color:var(--gray);">${recordId}</small></td>
             <td class="summary-cell">${summaryText}</td>
         `;
         tbody.appendChild(tr);
