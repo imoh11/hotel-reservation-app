@@ -109,13 +109,14 @@ document.getElementById('newReservationForm').addEventListener('submit', functio
 
 async function saveNewReservation() {
     const statusDivId = 'newReservation';
-    const guestName = document.getElementById('guestName_new').value;
+    // استخدام قيمة الحقول مباشرة، مع العلم أن Labels قد أزيلت وتم استبدالها بـ Placeholders
+    const guestName = document.getElementById('guestName_new').value; 
     const phone = document.getElementById('phone_new').value;
     const counter = document.getElementById('counter_new').value;
     const resType = document.getElementById('type_new').value;
 
     if (!guestName || !phone || !counter || !resType) {
-        showStatus('الرجاء إدخال جميع الحقول الأساسية.', 'error', statusDivId);
+        showStatus('الرجاء إدخال اسم النزيل، رقم الجوال، الكونتر، ونوع الحجز.', 'error', statusDivId);
         return;
     }
     
