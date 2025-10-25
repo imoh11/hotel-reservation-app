@@ -8,10 +8,12 @@ const TABLE_NAME = 'tbloqjxnWuD2aH66H'; // يجب أن يكون Table ID
 const AIRTABLE_API_URL = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`;
 
 // =================================================================
-// FIELD IDS  (معرّفات الحقول الثابتة)
+// FIELD IDS (معرّفات الحقول الثابتة)
+// تم تحديثه ليشمل الحقل Res_Number لضمان التوافق التام مع القائمة
 // =================================================================
 const FIELD_IDS = {
     // الحقول الأساسية
+    RES_NUMBER: 'fldMTOwOZ7jM8axbf', // ✨ تمت الإضافة: رقم الحجز التسلسلي
     RES_TYPE: 'fldMUvsWgpp2LuTf2',
     COUNTER: 'flduEC9m8ruQ6tzi8',
     SOURCE: 'fldHrwuzi8LxIeKVX',
@@ -26,12 +28,15 @@ const FIELD_IDS = {
     GUEST_ARRIVAL: 'fldMUosyFGqomDcy0', 	
     GUEST_DEPARTURE: 'fldqigNkyfC2ZRfxJ', 
     GUEST_COUNT: 'fldm5R1GFdeJaNCwp', 	
+    // GUEST_DAYS: 'fldBEbnMPThiwLT3y', // حقل محسوب، لا يُستخدم في الإدخال
     VIP_ARRIVAL: 'fldCnuObF607viGRo', 	
     VIP_DEPARTURE: 'fldvW7j98Xb2JR0Zk', 	
     VIP_COUNT: 'flde1QyYM73ezs565', 	
+    // VIP_DAYS: 'fldflyVPCpG1LnEav', // حقل محسوب، لا يُستخدم في الإدخال
     ROYAL_ARRIVAL: 'fldbjG9dQHT0inlXx', 	
     ROYAL_DEPARTURE: 'fldkC8A1Bh7iIrBwk', 
     ROYAL_COUNT: 'fldQeliMpdLeT3Zdb', 	
+    // ROYAL_DAYS: 'fldO1HX4fsnLsVRjCA', // حقل محسوب، لا يُستخدم في الإدخال
 
     // حقول التحويل والملاحظات
     TRANSFERER_NAME: 'fldWIoRdNmBtAX3zt',
@@ -528,40 +533,40 @@ function renderReservationsTable(reservations) {
 
 // للتبويبات
 document.querySelectorAll('.tab-button').forEach(button => {
-    button.addEventListener('click', () => {
-        const tabName = button.getAttribute('data-tab');
-        
-        // إخفاء جميع المحتويات
-        document.querySelectorAll('.tab-content').forEach(content => {
-            content.classList.remove('active');
+    button.addEventListener('click', () => {
+        const tabName = button.getAttribute('data-tab');
+        
+        // إخفاء جميع المحتويات
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
             // إخفاء جميع رسائل الحالة عند التبديل
             document.querySelectorAll('.status-message').forEach(msg => {
                 msg.classList.add('hidden');
                 msg.innerHTML = '';
             });
-        });
-        
-        // إلغاء تنشيط جميع الأزرار
-        document.querySelectorAll('.tab-button').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        
-        // إظهار المحتوى المحدد
-        document.getElementById(tabName).classList.add('active');
-        button.classList.add('active');
+        });
+        
+        // إلغاء تنشيط جميع الأزرار
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // إظهار المحتوى المحدد
+        document.getElementById(tabName).classList.add('active');
+        button.classList.add('active');
 
         // إذا كان التبويب هو 'query'، قم بجلب البيانات
         if (tabName === 'query') {
             loadFutureReservations(); 
         }
-    });
+    });
 });
 
 // للأقسام المطوية (Collapsible)
 document.querySelectorAll('.collapsible-header').forEach(header => {
-    header.addEventListener('click', () => {
-        const content = header.nextElementSibling;
-        header.classList.toggle('active');
-        content.classList.toggle('active');
-    });
+    header.addEventListener('click', () => {
+        const content = header.nextElementSibling;
+        header.classList.toggle('active');
+        content.classList.toggle('active');
+    });
 });
