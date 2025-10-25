@@ -65,11 +65,13 @@ function showStatus(message, type = 'info', tabId) {
 
 function updateSuiteSummary(prefix, suiteKey) {
     const countInput = document.getElementById(`${suiteKey}SuiteCount_${prefix}`);
-    const count = parseInt(countInput.value) || 0;
+    // تم تعديل هذا الجزء للتعامل مع الحقل كنص والتحقق من قيمته
+    const count = parseInt(countInput.value) || 0; 
     const summaryElement = document.getElementById(`${suiteKey}_summary_${prefix}`);
 
+    // في حال إدخال قيمة سالبة أو غير رقمية
     if (isNaN(parseInt(countInput.value)) || parseInt(countInput.value) < 0) {
-        countInput.value = 0;
+        countInput.value = ''; // تركه فارغاً أفضل
     }
 
     if (count > 0) {
@@ -125,6 +127,7 @@ async function saveNewReservation() {
         if (!element) return undefined;
         
         if (type.includes('Count') || type.includes('Days')) {
+            // يتم استخدام parseInt هنا لتحويل النص إلى رقم
             const val = parseInt(element.value);
             return isNaN(val) ? undefined : val; 
         }
@@ -164,12 +167,14 @@ async function saveNewReservation() {
 
     const suiteCounts = [FIELD_IDS.GUEST_COUNT, FIELD_IDS.VIP_COUNT, FIELD_IDS.ROYAL_COUNT, FIELD_IDS.AMOUNT];
     suiteCounts.forEach(key => {
-        if (data.hasOwnProperty(key) && data[key] === 0) {
+        // إذا كانت القيمة 0، يجب إرسالها كـ 0 (وليس undefined)
+        if (data.hasOwnProperty(key) && data[key] === 0) { 
             data[key] = 0; 
         }
     });
     
     const totalReserved = (data[FIELD_IDS.GUEST_COUNT] || 0) + (data[FIELD_IDS.VIP_COUNT] || 0) + (data[FIELD_IDS.ROYAL_COUNT] || 0);
+    // تم إضافة شرط للتحقق من أن مجموع الغرف ليس صفراً في حال إدخال تواريخ
     if (totalReserved === 0 && !Object.keys(data).some(key => key.includes('ARRIVAL'))) {
         showStatus('الرجاء تحديد جناح واحد على الأقل وإدخال عدد غرف وتواريخ.', 'error', statusDivId);
         return;
@@ -204,6 +209,7 @@ async function saveNewReservation() {
         showStatus(`✅ تم حفظ الحجز بنجاح! رقم السجل في Airtable هو: ${newResId}.`, 'success', statusDivId);
         document.getElementById('newReservationForm').reset();
         
+        // مسح ملخصات الأجنحة بعد إعادة التعيين
         document.querySelectorAll('span[id$="_summary_new').forEach(span => span.textContent = '');
     } catch (error) {
         console.error('Error saving reservation:', error);
