@@ -563,3 +563,5 @@ document.querySelectorAll('.collapsible-header').forEach(header => {
         const content = header.nextElementSibling;
         header.classList.toggle('active');
         content.classList.toggle('active');
+    });
+});
