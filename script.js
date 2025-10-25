@@ -205,13 +205,15 @@ async function saveNewReservation() {
 }
 
 // ===============================================
-// 5. وظيفة البحث عن الحجز
+// 5. وظيفة البحث عن الحجز (تم تعديل منطق الإظهار)
 // ===============================================
 
 async function searchReservation() {
     const statusDivId = 'editReservation';
-    const searchValue = document.getElementById('searchReservationInput').value.trim();
+    const searchInput = document.getElementById('searchReservationInput');
+    const searchValue = searchInput.value.trim();
 
+    // 🚨 إخفاء النموذج بالـ class hidden قبل البحث
     document.getElementById('editReservationForm').classList.add('hidden');
 
     if (!searchValue) {
@@ -226,7 +228,6 @@ async function searchReservation() {
         filterFormula = `RECORD_ID() = '${searchValue}'`;
     } else {
         // البحث برقم الجوال باستخدام OR و SEARCH لزيادة مرونة المطابقة
-        // الصيغة تفترض أن حقل الهاتف في Airtable هو من نوع "نص"
         filterFormula = `OR({${FIELD_IDS.PHONE}} = '${searchValue}', SEARCH('${searchValue}', {${FIELD_IDS.PHONE}}))`;
     }
 
@@ -262,6 +263,9 @@ async function searchReservation() {
         showStatus(`✅ تم العثور على حجز (${record.id}). يرجى تعديل البيانات وحفظها.`, 'success', statusDivId, false);
 
         populateEditForm(record);
+        
+        // 🚨 تنظيف حقل البحث بعد الجلب الناجح
+        searchInput.value = '';
 
     } catch (error) {
         console.error('Error searching reservation:', error);
@@ -270,7 +274,7 @@ async function searchReservation() {
 }
 
 // ===============================================
-// 6. وظيفة تعبئة نموذج التعديل (مع التحقق)
+// 6. وظيفة تعبئة نموذج التعديل (مع معالجة الإظهار)
 // ===============================================
 
 function populateEditForm(record) {
@@ -278,9 +282,14 @@ function populateEditForm(record) {
     const recordId = record.id;
     const prefix = 'edit';
     
-    // 1. حفظ ID السجل وإظهار النموذج
+    const formElement = document.getElementById('editReservationForm');
+
+    // 1. حفظ ID السجل
     document.getElementById('recordId_edit').value = recordId;
-    document.getElementById('editReservationForm').classList.remove('hidden');
+    
+    // 🚨 الحل القوي: إظهار النموذج عن طريق تجاوز مشكلة الـ CSS (!important)
+    formElement.style.display = 'block'; 
+    formElement.classList.remove('hidden'); // ترك هذا السطر احتياطياً
 
     // ---------------------------------------------------
     // 🚨 نقاط الفحص: استخدام console.log للتأكد من التعبئة
@@ -338,10 +347,14 @@ function populateEditForm(record) {
     document.getElementById('currentDate_edit').value = fields[FIELD_IDS.TRANSFER_DATE] || '';
     document.getElementById('notes_edit').value = fields[FIELD_IDS.NOTES] || '';
 
-    // تفعيل الأقسام المطوية
+    // 🚨 تفعيل الأقسام المطوية (لإظهار بيانات الأجنحة التي كانت مخفية)
     document.querySelectorAll('#editReservation .collapsible-content').forEach(content => {
         content.classList.add('active');
-        content.previousElementSibling.classList.add('active');
+        
+        const header = content.previousElementSibling;
+        if(header) {
+             header.classList.add('active'); // تفعيل الهيدر أيضاً
+        }
     });
 }
 
@@ -434,7 +447,11 @@ async function updateReservation() {
         }
 
         showStatus(`✅ تم ${actionText} الحجز بنجاح! رقم السجل: ${recordId}.`, 'success', statusDivId, false);
+        
+        // 🚨 إخفاء النموذج بالـ class hidden بعد التعديل
         document.getElementById('editReservationForm').classList.add('hidden');
+        document.getElementById('editReservationForm').style.display = 'none';
+
     } catch (error) {
         console.error('Error updating reservation:', error);
         showStatus(`❌ فشل ${actionText} الحجز. (خطأ: ${error.message || 'غير معروف'}).`, 'error', statusDivId);
@@ -541,9 +558,9 @@ document.addEventListener('DOMContentLoaded', () => {
         saveNewReservation();
     });
 
+    // 🚨 تم التأكيد على وجود ID: searchButton في HTML
     const searchButton = document.getElementById('searchButton');
     if(searchButton) {
-        // 🚨 تأكد من أن حقل البحث له ID: searchReservationInput
         searchButton.addEventListener('click', searchReservation);
     }
     
