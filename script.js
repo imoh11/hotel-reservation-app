@@ -203,7 +203,7 @@ async function saveNewReservation() {
         const savedRecord = await response.json();
         const newResId = savedRecord.id; // هذا هو الرقم الفريد (Record ID)
         
-        // عرض رقم الحجز في رسالة حالة مؤقتة
+        // عرض رقم الحجز في رسالة حالة مؤقتة (كما هو مرغوب)
         const successMessage = `✅ تم حفظ الحجز بنجاح! <br> <strong>رقم الحجز (ID) هو: ${newResId}</strong>. <br> <em>الرجاء استخدامه في قسم التعديل.</em>`;
         showStatus(successMessage, 'success', statusDivId); // استخدام الإخفاء التلقائي (الافتراضي)
         
@@ -285,30 +285,29 @@ async function searchReservation() {
     }
 }
 
-// وظيفة تعبئة نموذج التعديل
+// وظيفة تعبئة نموذج التعديل (تم التأكد من صحة تعيين .value هنا)
 function populateEditForm(record) {
     const fields = record.fields;
     const recordId = record.id;
     const prefix = 'edit';
     
-    // حفظ ID السجل لإجراء التحديث
+    // 1. حفظ ID السجل لإجراء التحديث
     document.getElementById('recordId_edit').value = recordId;
     
-    // إظهار نموذج التعديل
+    // 2. إظهار نموذج التعديل
     document.getElementById('editReservationForm').classList.remove('hidden');
 
-    // تعبئة الحقول الأساسية
+    // 3. تعبئة الحقول الأساسية
     document.getElementById(`type_${prefix}`).value = fields[FIELD_IDS.RES_TYPE] || '';
     document.getElementById(`counter_${prefix}`).value = fields[FIELD_IDS.COUNTER] || '';
     document.getElementById(`guestName_${prefix}`).value = fields[FIELD_IDS.GUEST_NAME] || '';
-    
     document.getElementById(`phone_${prefix}`).value = fields[FIELD_IDS.PHONE] || '';
-    
     document.getElementById(`source_${prefix}`).value = fields[FIELD_IDS.SOURCE] || '';
     
+    // المبلغ
     document.getElementById(`amount_${prefix}`).value = fields[FIELD_IDS.AMOUNT] !== undefined ? fields[FIELD_IDS.AMOUNT].toString() : '';
 
-    // تعبئة تفاصيل الأجنحة
+    // 4. تعبئة تفاصيل الأجنحة
     const suites = ['guest', 'vip', 'royal'];
     suites.forEach(suiteKey => {
         const arrival = fields[FIELD_IDS[`${suiteKey.toUpperCase()}_ARRIVAL`]];
@@ -326,12 +325,12 @@ function populateEditForm(record) {
         calculateDaysPerSuite(prefix, suiteKey); 
     });
     
-    // تعبئة الملاحظات والتحويل
+    // 5. تعبئة الملاحظات والتحويل
     document.getElementById('transfererName_edit').value = fields[FIELD_IDS.TRANSFERER_NAME] || '';
     document.getElementById('currentDate_edit').value = fields[FIELD_IDS.TRANSFER_DATE] || '';
     document.getElementById('notes_edit').value = fields[FIELD_IDS.NOTES] || '';
 
-    // تفعيل وظائف الأقسام المطوية بعد التعبئة
+    // 6. تفعيل وظائف الأقسام المطوية بعد التعبئة لضمان رؤيتها
     document.querySelectorAll('#editReservation .collapsible-content').forEach(content => {
         content.classList.add('active');
         content.previousElementSibling.classList.add('active');
@@ -564,5 +563,3 @@ document.querySelectorAll('.collapsible-header').forEach(header => {
         const content = header.nextElementSibling;
         header.classList.toggle('active');
         content.classList.toggle('active');
-    });
-});
