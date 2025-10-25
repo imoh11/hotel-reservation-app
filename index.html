@@ -22,7 +22,7 @@
 
         <div id="newReservation" class="tab-content active">
             <form id="newReservationForm">
-                
+                 
                 <div class="collapsible-section">
                     <div class="collapsible-header">
                         الحجز
@@ -52,7 +52,7 @@
                         <div class="form-group">
                             <input type="text" id="guestName_new" class="form-control" placeholder="اسم النزيل الكامل" required>
                         </div>
-                        
+                         
                         <div class="form-group">
                             <input type="tel" id="phone_new" class="form-control" placeholder="رقم الجوال (05XXXXXXXX)" required inputmode="numeric">
                         </div>
@@ -80,8 +80,8 @@
                         <span class="collapsible-icon"></span>
                     </div>
                     <div class="collapsible-content">
-                         <div id="suitesContainer_new" class="suite-selection-container">
-                        
+                        <div id="suitesContainer_new" class="suite-selection-container">
+                         
                             <div class="suite-item-header">جناح ضيافة <span id="guest_summary_new" class="suite-summary"></span></div>
                             <div id="suiteDetails_new_guest" class="suite-details-area">
                                 <div class="form-row">
@@ -171,28 +171,29 @@
         </div>
 
         <div id="editReservation" class="tab-content">
+            
             <div class="form-group form-row">
                 <div class="form-group" style="flex-grow: 3;">
                     <input type="text" id="searchReservationInput" class="form-control" placeholder="أدخل رقم الجوال أو رقم الحجز (ID)">
                 </div>
                 <div class="form-group" style="flex-grow: 1;">
-                    <button type="button" class="btn btn-primary" onclick="searchReservation()">
+                    <button type="button" id="searchButton" class="btn btn-primary">
                         بحث عن حجز
                     </button>
                 </div>
             </div>
-
             <div class="status-message-container">
                 <div id="statusMessage_editReservation" class="status-message hidden"></div>
             </div>
-            
+             
             <form id="editReservationForm" class="hidden">
-                <input type="hidden" id="recordId_edit"> <div class="collapsible-section">
-                    <div class="collapsible-header active">
+                <input type="hidden" id="recordId_edit"> 
+                <div class="collapsible-section">
+                    <div class="collapsible-header">
                         الحجز
                         <span class="collapsible-icon"></span>
                     </div>
-                    <div class="collapsible-content active"> 
+                    <div class="collapsible-content"> 
                         <div class="form-row">
                             <div class="form-group">
                                 <select id="type_edit" class="form-control" required>
@@ -217,7 +218,7 @@
                         <div class="form-group">
                             <input type="text" id="guestName_edit" class="form-control" placeholder="اسم النزيل الكامل" required>
                         </div>
-                        
+                         
                         <div class="form-group">
                             <input type="tel" id="phone_edit" class="form-control" placeholder="رقم الجوال (05XXXXXXXX)" required inputmode="numeric">
                         </div>
@@ -240,13 +241,13 @@
                 </div>
 
                 <div class="collapsible-section">
-                    <div class="collapsible-header active">
+                    <div class="collapsible-header">
                         الأجنحة
                         <span class="collapsible-icon"></span>
                     </div>
-                    <div class="collapsible-content active">
-                         <div id="suitesContainer_edit" class="suite-selection-container">
-                        
+                    <div class="collapsible-content">
+                        <div id="suitesContainer_edit" class="suite-selection-container">
+                         
                             <div class="suite-item-header">جناح ضيافة <span id="guest_summary_edit" class="suite-summary"></span></div>
                             <div id="suiteDetails_edit_guest" class="suite-details-area">
                                 <div class="form-row">
@@ -305,11 +306,11 @@
                 </div>
 
                 <div class="collapsible-section">
-                    <div class="collapsible-header active">
+                    <div class="collapsible-header">
                         ملاحظات
                         <span class="collapsible-icon"></span>
                     </div>
-                    <div class="collapsible-content active">
+                    <div class="collapsible-content">
                         <div id="transfererField_edit" class="form-row">
                             <div class="form-group">
                                 <input type="text" id="transfererName_edit" class="form-control" placeholder="اسم المحول (اختياري)">
@@ -327,7 +328,7 @@
 
                 <div class="button-group">
                     <button type="submit" class="btn btn-primary">حفظ التعديلات / إلغاء الحجز</button>
-                    <button type="button" class="btn btn-outline" onclick="document.getElementById('editReservationForm').classList.add('hidden'); showStatus('تم إلغاء عملية التعديل.', 'info', 'editReservation')">إلغاء التعديل</button>
+                    <button type="button" class="btn btn-outline" onclick="document.getElementById('editReservationForm').classList.add('hidden'); document.getElementById('editReservationForm').style.display = 'none'; showStatus('تم إلغاء عملية التعديل.', 'info', 'editReservation')">إلغاء التعديل</button>
                 </div>
             </form>
         </div>
@@ -335,7 +336,7 @@
         <div id="query" class="tab-content">
             <h3>استعراض الحجوزات القادمة (المؤكدة)</h3>
             <p class="info status-message active info-message-block">يتم جلب الحجوزات المؤكدة التي تبدأ من اليوم أو في المستقبل، بالاعتماد على عرض **'حجوزات قادمة'** في Airtable.</p>
-            
+             
             <div class="form-group query-actions-group">
                 <button type="button" class="btn btn-primary" onclick="loadFutureReservations()">تحديث/جلب الحجوزات يدوياً</button>
             </div>
