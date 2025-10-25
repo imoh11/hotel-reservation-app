@@ -63,6 +63,7 @@ function updateSuiteSummary(prefix, suiteKey) {
     const count = parseInt(countInput.value) || 0; 
     const summaryElement = document.getElementById(`${suiteKey}_summary_${prefix}`);
 
+    // التأكد من إزالة أي قيم غير رقمية أو سالبة
     if (isNaN(parseInt(countInput.value)) || parseInt(countInput.value) < 0) {
         countInput.value = ''; 
     }
@@ -150,6 +151,7 @@ async function saveNewReservation() {
         [FIELD_IDS.ROYAL_DEPARTURE]: getSuiteValue('royal', 'Departure'),
     };
     
+    // تنظيف البيانات من القيم الفارغة قبل الإرسال (POST)
     Object.keys(data).forEach(key => {
         const value = data[key];
         if (value === null || value === undefined || (typeof value === 'string' && value.trim() === '')) {
@@ -220,6 +222,7 @@ async function searchReservation() {
     const statusDivId = 'editReservation';
     const searchValue = document.getElementById('searchReservationInput').value.trim();
     
+    // إخفاء النموذج قبل أي عملية بحث جديدة
     document.getElementById('editReservationForm').classList.add('hidden');
     
     if (!searchValue) {
@@ -229,15 +232,16 @@ async function searchReservation() {
 
     // بناء فلتر Airtable
     let filterFormula;
-    if (searchValue.startsWith('rec')) { // افتراض أن ID يبدأ بـ 'rec'
-        filterFormula = `{RECORD_ID()} = '${searchValue}'`;
+    // التحقق مما إذا كانت القيمة المدخلة هي Airtable Record ID (يبدأ بـ rec)
+    if (searchValue.toLowerCase().startsWith('rec')) { 
+        filterFormula = `RECORD_ID() = '${searchValue}'`; 
     } else {
         // فلترة على حقل رقم الجوال
         filterFormula = `{${FIELD_IDS.PHONE}} = '${searchValue}'`;
     }
 
-    const queryString = `filterByFormula=${encodeURIComponent(filterFormula)}`;
-    const url = `${AIRTABLE_API_URL}?${queryString}&maxRecords=1`; // نبحث عن سجل واحد فقط
+    const encodedFilter = encodeURIComponent(filterFormula);
+    const url = `${AIRTABLE_API_URL}?filterByFormula=${encodedFilter}&maxRecords=1`; 
 
     try {
         showStatus('جاري البحث عن الحجز... 🔍', 'info', statusDivId);
@@ -289,11 +293,11 @@ function populateEditForm(record) {
     document.getElementById(`type_${prefix}`).value = fields[FIELD_IDS.RES_TYPE] || '';
     document.getElementById(`counter_${prefix}`).value = fields[FIELD_IDS.COUNTER] || '';
     document.getElementById(`guestName_${prefix}`).value = fields[FIELD_IDS.GUEST_NAME] || '';
-    // حقل الجوال
+    
     document.getElementById(`phone_${prefix}`).value = fields[FIELD_IDS.PHONE] || '';
     
     document.getElementById(`source_${prefix}`).value = fields[FIELD_IDS.SOURCE] || '';
-    // المبلغ (يتم تحويله إلى نص في حال وجوده)
+    
     document.getElementById(`amount_${prefix}`).value = fields[FIELD_IDS.AMOUNT] !== undefined ? fields[FIELD_IDS.AMOUNT].toString() : '';
 
     // تعبئة تفاصيل الأجنحة
@@ -303,11 +307,14 @@ function populateEditForm(record) {
         const departure = fields[FIELD_IDS[`${suiteKey.toUpperCase()}_DEPARTURE`]];
         const count = fields[FIELD_IDS[`${suiteKey.toUpperCase()}_COUNT`]];
         
+        // تعبئة التواريخ
         document.getElementById(`${suiteKey}Arrival_${prefix}`).value = arrival || '';
         document.getElementById(`${suiteKey}Departure_${prefix}`).value = departure || '';
+        
+        // تعبئة عدد الغرف 
         document.getElementById(`${suiteKey}SuiteCount_${prefix}`).value = count !== undefined ? count.toString() : '';
         
-        // إعادة حساب عدد الأيام وتحديث الملخص
+        // إعادة حساب عدد الأيام وتحديث الملخص بعد التعبئة
         calculateDaysPerSuite(prefix, suiteKey); 
     });
     
@@ -370,11 +377,12 @@ async function updateReservation() {
         [FIELD_IDS.ROYAL_DEPARTURE]: getSuiteValue('royal', 'Departure'),
     };
     
-    // تصفية البيانات، هنا لا نحذف الحقول التي قيمتها undefined لأننا نستخدم PATCH
-    // Airtable ستقوم بتحديث الحقول الموجودة فقط.
     Object.keys(data).forEach(key => {
-        if (data[key] === null) {
-            delete data[key]; 
+        // إذا كانت القيمة فارغة (null/undefined/سلسلة فارغة)، لا نحذفها من كائن البيانات
+        // لأننا نستخدم PATCH ونريد السماح بحذف القيم الموجودة في Airtable 
+        // عبر إرسالها كـ undefined أو null في بعض الحالات، لكن Airtable API تتوقع undefined لحذف قيمة.
+        if (data[key] === null || data[key] === '') {
+            data[key] = undefined; 
         }
     });
 
@@ -391,7 +399,7 @@ async function updateReservation() {
         showStatus(`جاري ${actionText} الحجز... ⏳`, 'info', statusDivId);
 
         const response = await fetch(`${AIRTABLE_API_URL}/${recordId}`, {
-            method: 'PATCH', // استخدام PATCH للتحديث
+            method: 'PATCH', 
             headers: {
                 'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
                 'Content-Type': 'application/json'
@@ -408,7 +416,6 @@ async function updateReservation() {
         }
 
         showStatus(`✅ تم ${actionText} الحجز بنجاح! رقم السجل: ${recordId}.`, 'success', statusDivId);
-        // إخفاء النموذج بعد الحفظ
         document.getElementById('editReservationForm').classList.add('hidden');
     } catch (error) {
         console.error('Error updating reservation:', error);
@@ -480,7 +487,7 @@ function renderReservationsTable(reservations) {
     table.innerHTML = `
         <thead>
             <tr>
-                <th>النزيل (معرف الحجز)</th> 
+                <th>النزيل (<small>معرف الحجز</small>)</th> 
                 <th>تفاصيل الحجز</th> 
             </tr>
         </thead>
@@ -494,7 +501,7 @@ function renderReservationsTable(reservations) {
         const fields = record.fields;
         
         const guestName = fields[FIELD_IDS.GUEST_NAME] || 'غير محدد';
-        const recordId = record.id; // عرض ID الحجز
+        const recordId = record.id; 
         const summaryText = fields[FIELD_IDS.SUMMARY_COLUMN] || '- لا توجد تفاصيل -';
 
         const tr = document.createElement('tr');
@@ -542,7 +549,7 @@ document.querySelectorAll('.tab-button').forEach(button => {
     });
 });
 
-// للأقسام المطوية (Collapsible) - للتأكد من أنها تفتح وتغلق بشكل صحيح
+// للأقسام المطوية (Collapsible)
 document.querySelectorAll('.collapsible-header').forEach(header => {
     header.addEventListener('click', () => {
         const content = header.nextElementSibling;
