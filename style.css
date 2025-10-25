@@ -93,13 +93,9 @@ body {
     display: block;
 }
 
-h3 {
-    color: var(--primary);
-    margin-bottom: 15px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--gray-light);
-    font-weight: 600;
-    font-size: 1.2rem;
+/* إخفاء العنوان الرئيسي لـ "إضافة حجز جديد" */
+#newReservation h3 {
+    display: none; 
 }
 
 /* ------------------------------------------- */
@@ -113,8 +109,9 @@ h3 {
 }
 
 .collapsible-header {
-    background-color: #f7f7f7;
-    color: var(--dark);
+    /* التعديل: لجعل الرأس أزرق دائمًا */
+    background-color: var(--primary);
+    color: white;
     padding: 12px 15px;
     cursor: pointer;
     font-weight: 600;
@@ -126,21 +123,22 @@ h3 {
 }
 
 .collapsible-header:hover {
-    background-color: #eee;
+    background-color: var(--primary-dark);
 }
 
 .collapsible-header.active {
-    background-color: var(--primary);
-    color: white;
+    /* تغيير بسيط في الدرجة عند التنشيط */
+    background-color: var(--primary-dark);
 }
 
 .collapsible-icon {
     display: inline-block;
     width: 0;
     height: 0;
+    /* تعيين اللون الأبيض دائمًا للسهولة */
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
-    border-top: 5px solid var(--dark);
+    border-top: 5px solid white; 
     transition: transform 0.3s ease;
 }
 
@@ -150,6 +148,7 @@ h3 {
 }
 
 .collapsible-content {
+    /* للحالة المغلقة (افتراضيًا) */
     max-height: 0;
     padding: 0 15px;
     overflow: hidden;
@@ -157,6 +156,7 @@ h3 {
 }
 
 .collapsible-content.active {
+    /* للحالة المفتوحة */
     max-height: 1000px; 
     padding: 15px;
 }
@@ -171,7 +171,7 @@ h3 {
     display: block;
     margin-bottom: 6px;
     font-weight: 500;
-    /* التعديل: جعل عنوان الحقل باللون الأزرق */
+    /* التعديل: لجعل عنوان الحقل أزرق (هذه العناوين متبقية فقط لـ Selects) */
     color: var(--primary-dark); 
     font-size: 0.9rem;
 }
