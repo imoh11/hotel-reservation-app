@@ -27,7 +27,7 @@ body {
     background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
     padding: 15px;
     min-height: 100vh;
-    /* التعديل 1: تصغير حجم الخط الأساسي */
+    /* تصغير حجم الخط الأساسي */
     font-size: 0.8rem; 
 }
 
@@ -225,7 +225,7 @@ body {
     border-bottom: 1px solid var(--gray-light);
 }
 
-/* التعديل 2: إزالة الحد السفلي من آخر عنصر (جناح ملكي) لمنع ظهور القوس */
+/* إزالة الحد السفلي من آخر عنصر (جناح ملكي) */
 .suite-item-header:last-of-type {
      border-bottom: none;
 }
@@ -353,4 +353,10 @@ body {
 .summary-cell {
     white-space: pre-wrap; 
     text-align: right;
+}
+
+/* تنسيقات حقل الجوال لفرض الاتجاه من اليمين لليسار */
+#phone_new {
+    direction: rtl; /* إجبار الاتجاه من اليمين لليسار */
+    text-align: right; /* محاذاة النص لليمين */
 }
