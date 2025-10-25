@@ -15,10 +15,10 @@
         </div>
 
         <div class="tabs">
-            <button class="tab-button active" onclick="openTab('newReservation', this)">حجز جديد</button>
-            <button class="tab-button" onclick="openTab('editReservation', this)">تعديل حجز</button>
-            <button class="tab-button" onclick="openTab('cancelReservationTab', this)">إلغاء حجز</button>
-            <button class="tab-button" onclick="openTab('query', this)">الحجوزات القادمة</button>
+            <button class="tab-button active" data-tab="newReservation">حجز جديد</button>
+            <button class="tab-button" data-tab="editReservation">تعديل حجز</button>
+            <button class="tab-button" data-tab="cancelReservationTab">إلغاء حجز</button>
+            <button class="tab-button" data-tab="query">الحجوزات القادمة</button>
         </div>
 
 
@@ -75,107 +75,105 @@
                     </div>
                 </div>
 
-                <div class="form-group suite-details-group"> 
-                    <h3 class="suite-details-title">تفاصيل الأجنحة المحجوزة</h3>
-                    <div id="suitesContainer_new" class="suite-selection-container">
+                <div class="collapsible-section">
+                    <div class="collapsible-header">
+                        تفاصيل الأجنحة المحجوزة
+                        <span class="collapsible-icon"></span>
+                    </div>
+                    <div class="collapsible-content active">
+                         <div id="suitesContainer_new" class="suite-selection-container">
                         
-                        <div class="suite-toggle-item">
-                            <span>جناح ضيافة <span id="guest_summary_new" class="suite-summary"></span></span>
-                            <button type="button" class="toggle-button" data-suite="guest" onclick="toggleSuiteDetails('new', 'guest', this)">➕</button>
-                        </div>
-                        <div id="suiteDetails_new_guest" class="suite-details-area">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="guestArrival_new">وصول</label>
-                                    <input type="date" id="guestArrival_new" class="form-control suite-date-input" onchange="calculateDaysPerSuite('new', 'guest')">
+                            <div class="suite-item-header">جناح ضيافة <span id="guest_summary_new" class="suite-summary"></span></div>
+                            <div id="suiteDetails_new_guest" class="suite-details-area">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="guestArrival_new">وصول</label>
+                                        <input type="date" id="guestArrival_new" class="form-control suite-date-input" onchange="calculateDaysPerSuite('new', 'guest')">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="guestDeparture_new">مغادرة</label>
+                                        <input type="date" id="guestDeparture_new" class="form-control suite-date-input" onchange="calculateDaysPerSuite('new', 'guest')">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="guestDays_new">عدد الأيام</label>
+                                        <input type="number" id="guestDays_new" class="form-control" readonly>
+                                    </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="guestDeparture_new">مغادرة</label>
-                                    <input type="date" id="guestDeparture_new" class="form-control suite-date-input" onchange="calculateDaysPerSuite('new', 'guest')">
-                                </div>
-                                <div class="form-group">
-                                    <label for="guestDays_new">عدد الأيام</label>
-                                    <input type="number" id="guestDays_new" class="form-control" readonly>
+                                    <label for="guestSuiteCount_new">عدد الغرف</label>
+                                    <input type="number" id="guestSuiteCount_new" class="form-control" value="" min="0" placeholder="0" oninput="updateSuiteSummary('new', 'guest')">
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="guestSuiteCount_new">عدد الغرف</label>
-                                <input type="number" id="guestSuiteCount_new" class="form-control" value="" min="0" placeholder="0" oninput="updateSuiteSummary('new', 'guest')">
-                            </div>
-                        </div>
 
-                        <div class="suite-toggle-item">
-                            <span>جناح VIP <span id="vip_summary_new" class="suite-summary"></span></span>
-                            <button type="button" class="toggle-button" data-suite="vip" onclick="toggleSuiteDetails('new', 'vip', this)">➕</button>
-                        </div>
-                        <div id="suiteDetails_new_vip" class="suite-details-area">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="vipArrival_new">وصول</label>
-                                    <input type="date" id="vipArrival_new" class="form-control suite-date-input" onchange="calculateDaysPerSuite('new', 'vip')">
+                            <div class="suite-item-header">جناح VIP <span id="vip_summary_new" class="suite-summary"></span></div>
+                            <div id="suiteDetails_new_vip" class="suite-details-area">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="vipArrival_new">وصول</label>
+                                        <input type="date" id="vipArrival_new" class="form-control suite-date-input" onchange="calculateDaysPerSuite('new', 'vip')">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="vipDeparture_new">مغادرة</label>
+                                        <input type="date" id="vipDeparture_new" class="form-control suite-date-input" onchange="calculateDaysPerSuite('new', 'vip')">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="vipDays_new">عدد الأيام</label>
+                                        <input type="number" id="vipDays_new" class="form-control" readonly>
+                                    </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="vipDeparture_new">مغادرة</label>
-                                    <input type="date" id="vipDeparture_new" class="form-control suite-date-input" onchange="calculateDaysPerSuite('new', 'vip')">
-                                </div>
-                                <div class="form-group">
-                                    <label for="vipDays_new">عدد الأيام</label>
-                                    <input type="number" id="vipDays_new" class="form-control" readonly>
+                                    <label for="vipSuiteCount_new">عدد الغرف</label>
+                                    <input type="number" id="vipSuiteCount_new" class="form-control" value="" min="0" placeholder="0" oninput="updateSuiteSummary('new', 'vip')">
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="vipSuiteCount_new">عدد الغرف</label>
-                                <input type="number" id="vipSuiteCount_new" class="form-control" value="" min="0" placeholder="0" oninput="updateSuiteSummary('new', 'vip')">
-                            </div>
-                        </div>
 
-                        <div class="suite-toggle-item last-suite-item">
-                            <span>جناح ملكي <span id="royal_summary_new" class="suite-summary"></span></span>
-                            <button type="button" class="toggle-button" data-suite="royal" onclick="toggleSuiteDetails('new', 'royal', this)">➕</button>
-                        </div>
-                        <div id="suiteDetails_new_royal" class="suite-details-area">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="royalArrival_new">وصول</label>
-                                    <input type="date" id="royalArrival_new" class="form-control suite-date-input" onchange="calculateDaysPerSuite('new', 'royal')">
+                            <div class="suite-item-header">جناح ملكي <span id="royal_summary_new" class="suite-summary"></span></div>
+                            <div id="suiteDetails_new_royal" class="suite-details-area">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="royalArrival_new">وصول</label>
+                                        <input type="date" id="royalArrival_new" class="form-control suite-date-input" onchange="calculateDaysPerSuite('new', 'royal')">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="royalDeparture_new">مغادرة</label>
+                                        <input type="date" id="royalDeparture_new" class="form-control suite-date-input" onchange="calculateDaysPerSuite('new', 'royal')">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="royalDays_new">عدد الأيام</label>
+                                        <input type="number" id="royalDays_new" class="form-control" readonly>
+                                    </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="royalDeparture_new">مغادرة</label>
-                                    <input type="date" id="royalDeparture_new" class="form-control suite-date-input" onchange="calculateDaysPerSuite('new', 'royal')">
+                                    <label for="royalSuiteCount_new">عدد الغرف</label>
+                                    <input type="number" id="royalSuiteCount_new" class="form-control" value="" min="0" placeholder="0" oninput="updateSuiteSummary('new', 'royal')">
                                 </div>
-                                <div class="form-group">
-                                    <label for="royalDays_new">عدد الأيام</label>
-                                    <input type="number" id="royalDays_new" class="form-control" readonly>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="royalSuiteCount_new">عدد الغرف</label>
-                                <input type="number" id="royalSuiteCount_new" class="form-control" value="" min="0" placeholder="0" oninput="updateSuiteSummary('new', 'royal')">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="transferer-label">
-                        اسم المحول وتاريخ التحويل
-                        <button type="button" class="toggle-button" id="transfererToggleButton_new" onclick="toggleTransferer('new', this)">➕</button>
-                    </label>
-                    <div id="transfererField_new" class="optional-field form-row">
-                        <div class="form-group">
-                            <label for="transfererName_new">اسم المحول</label>
-                            <input type="text" id="transfererName_new" class="form-control" placeholder="اسم الشخص الذي قام بالتحويل">
+                <div class="collapsible-section">
+                    <div class="collapsible-header">
+                        الحقول الاختيارية الأخرى (المحول والملاحظات)
+                        <span class="collapsible-icon"></span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div id="transfererField_new" class="form-row">
+                            <div class="form-group">
+                                <label for="transfererName_new">اسم المحول</label>
+                                <input type="text" id="transfererName_new" class="form-control" placeholder="اسم الشخص الذي قام بالتحويل">
+                            </div>
+                            <div class="form-group">
+                                <label for="currentDate_new">تاريخ التحويل</label>
+                                <input type="date" id="currentDate_new" class="form-control">
+                            </div>
                         </div>
+
                         <div class="form-group">
-                            <label for="currentDate_new">تاريخ التحويل</label>
-                            <input type="date" id="currentDate_new" class="form-control">
+                            <label for="notes_new">ملاحظات</label>
+                            <textarea id="notes_new" rows="3" class="form-control" placeholder="أي ملاحظات إضافية..."></textarea>
                         </div>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="notes_new">ملاحظات</label>
-                    <textarea id="notes_new" rows="3" class="form-control" placeholder="أي ملاحظات إضافية..."></textarea>
                 </div>
 
                 <div class="button-group">
