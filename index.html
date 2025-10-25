@@ -188,7 +188,8 @@
             
             <form id="editReservationForm" class="hidden">
                 <input type="hidden" id="recordId_edit"> <div class="collapsible-section">
-                    <div class="collapsible-header active"> الحجز
+                    <div class="collapsible-header active">
+                        الحجز
                         <span class="collapsible-icon"></span>
                     </div>
                     <div class="collapsible-content active"> 
@@ -239,7 +240,8 @@
                 </div>
 
                 <div class="collapsible-section">
-                    <div class="collapsible-header active"> الأجنحة
+                    <div class="collapsible-header active">
+                        الأجنحة
                         <span class="collapsible-icon"></span>
                     </div>
                     <div class="collapsible-content active">
@@ -303,7 +305,8 @@
                 </div>
 
                 <div class="collapsible-section">
-                    <div class="collapsible-header active"> ملاحظات
+                    <div class="collapsible-header active">
+                        ملاحظات
                         <span class="collapsible-icon"></span>
                     </div>
                     <div class="collapsible-content active">
@@ -324,7 +327,7 @@
 
                 <div class="button-group">
                     <button type="submit" class="btn btn-primary">حفظ التعديلات / إلغاء الحجز</button>
-                    <button type="button" class="btn btn-outline" onclick="document.getElementById('editReservationForm').classList.add('hidden')">إلغاء التعديل</button>
+                    <button type="button" class="btn btn-outline" onclick="document.getElementById('editReservationForm').classList.add('hidden'); showStatus('تم إلغاء عملية التعديل.', 'info', 'editReservation')">إلغاء التعديل</button>
                 </div>
             </form>
         </div>
