@@ -1,24 +1,25 @@
 :root {
-    --primary: #6366f1;
-    --primary-dark: #4f46e5;
-    --primary-light: #818cf8;
+    --primary: #2dd4bf;
+    --primary-dark: #14b8a6;
+    --primary-light: #5eead4;
     --secondary: #06b6d4;
     --secondary-dark: #0891b2;
-    --accent: #a855f7;
-    --accent-light: #c084fc;
-    --success: #10b981;
-    --success-dark: #059669;
-    --danger: #f43f5e;
-    --danger-dark: #e11d48;
+    --accent: #f472b6;
+    --accent-light: #f9a8d4;
+    --success: #22c55e;
+    --success-dark: #16a34a;
+    --danger: #ef4444;
+    --danger-dark: #dc2626;
+    --warning: #f59e0b;
     --dark: #1e293b;
     --gray: #64748b;
-    --gray-light: #f1f5f9;
+    --gray-light: #f8fafc;
     --gray-border: #e2e8f0;
     --light: #ffffff;
-    --border-radius: 16px;
-    --border-radius-sm: 12px;
-    --box-shadow: 0 10px 25px rgba(99, 102, 241, 0.1);
-    --box-shadow-lg: 0 20px 40px rgba(99, 102, 241, 0.15);
+    --border-radius: 12px;
+    --border-radius-sm: 8px;
+    --box-shadow: 0 4px 16px rgba(45, 212, 191, 0.08);
+    --box-shadow-lg: 0 8px 24px rgba(45, 212, 191, 0.12);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -32,7 +33,7 @@ body {
     font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     line-height: 1.6;
     color: var(--dark);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
     background-attachment: fixed;
     padding: 20px;
     min-height: 100vh;
@@ -42,16 +43,14 @@ body {
 .container {
     max-width: 900px;
     margin: 0 auto;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
+    background: var(--light);
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow-lg);
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     color: white;
     padding: 32px 24px;
     text-align: center;
@@ -66,8 +65,8 @@ body {
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-    animation: pulse 4s ease-in-out infinite;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    animation: pulse 6s ease-in-out infinite;
 }
 
 .header h1 {
@@ -75,25 +74,25 @@ body {
     z-index: 1;
     font-size: 1.8rem;
     font-weight: 700;
-    text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    text-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 @keyframes pulse {
     0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(10px, 10px) scale(1.1); }
+    50% { transform: translate(15px, 15px) scale(1.05); }
 }
 
 .tabs {
     display: flex;
-    background: linear-gradient(to bottom, #f8fafc, #ffffff);
-    border-bottom: 2px solid var(--gray-border);
+    background: var(--gray-light);
+    border-bottom: 1px solid var(--gray-border);
     padding: 8px;
     gap: 6px;
 }
 
 .tab-button {
     flex: 1;
-    padding: 14px 20px;
+    padding: 12px 18px;
     text-align: center;
     background: transparent;
     border: none;
@@ -109,16 +108,14 @@ body {
 }
 
 .tab-button:hover {
-    color: var(--primary);
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(168, 85, 247, 0.08));
-    transform: translateY(-2px);
+    color: var(--primary-dark);
+    background: rgba(45, 212, 191, 0.08);
 }
 
 .tab-button.active {
     color: white;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-    transform: translateY(-2px);
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    box-shadow: 0 2px 8px rgba(45, 212, 191, 0.25);
 }
 
 .tab-content {
@@ -132,13 +129,12 @@ body {
 }
 
 .section-title {
-    color: var(--primary);
+    color: var(--primary-dark);
     margin: 28px 0 18px 0;
-    padding-bottom: 12px;
-    border-bottom: 3px solid;
-    border-image: linear-gradient(to left, var(--primary), var(--accent)) 1;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary);
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -149,9 +145,11 @@ body {
 }
 
 .section-title::before {
-    content: '◆';
-    color: var(--accent);
-    font-size: 0.9rem;
+    content: '';
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(to bottom, var(--primary), var(--secondary));
+    border-radius: 2px;
 }
 
 .form-group {
@@ -164,20 +162,19 @@ body {
 
 .form-control {
     width: 100%;
-    padding: 14px 16px;
+    padding: 13px 16px;
     border: 2px solid var(--gray-border);
     border-radius: var(--border-radius-sm);
     font-family: 'Tajawal', sans-serif;
     font-size: 0.9rem;
     transition: var(--transition);
-    background: var(--gray-light);
+    background: white;
     text-align: right;
     direction: rtl;
-    position: relative;
 }
 
 .form-control::placeholder {
-    color: var(--gray);
+    color: #94a3b8;
     text-align: right;
     direction: rtl;
     font-size: 0.85rem;
@@ -187,15 +184,14 @@ body {
     outline: none;
     border-color: var(--primary);
     background: white;
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1), 0 4px 12px rgba(99, 102, 241, 0.15);
-    transform: translateY(-2px);
+    box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.12);
 }
 
 .form-control[readonly] {
-    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    background: var(--gray-light);
     cursor: not-allowed;
     color: var(--gray);
-    border-color: transparent;
+    border-color: var(--gray-border);
 }
 
 .form-control[type="number"],
@@ -209,77 +205,65 @@ body {
     inputmode: text;
 }
 
-/* تصميم القسم المطوي (الأجنحة) - موحد ومتناسق */
+/* تصميم القسم المطوي - موحد تمامًا */
 .collapsible-section {
-    margin: 20px 0;
-    border: 2px solid transparent;
-    background: linear-gradient(white, white) padding-box,
-                linear-gradient(135deg, var(--primary-light), var(--accent-light)) border-box;
-    border-radius: var(--border-radius);
+    margin: 18px 0;
+    border: 1px solid var(--gray-border);
+    border-radius: var(--border-radius-sm);
     overflow: hidden;
+    background: white;
     transition: var(--transition);
 }
 
 .collapsible-section:hover {
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.15);
-    transform: translateY(-2px);
+    border-color: var(--primary);
+    box-shadow: 0 2px 12px rgba(45, 212, 191, 0.1);
 }
 
 .collapsible-header {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(168, 85, 247, 0.05));
-    padding: 16px 20px;
+    background: var(--gray-light);
+    padding: 14px 18px;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-weight: 700;
+    font-weight: 600;
     color: var(--dark);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-}
-
-.collapsible-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 4px;
-    height: 100%;
-    background: linear-gradient(to bottom, var(--primary), var(--accent));
-    transition: var(--transition);
+    user-select: none;
 }
 
 .collapsible-header:hover {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
-    padding-right: 24px;
+    background: #f1f5f9;
 }
 
-.collapsible-header:hover::before {
-    width: 6px;
-}
-
-.collapsible-header::after {
-    content: '+';
-    font-size: 1.5rem;
-    font-weight: 300;
-    width: 28px;
-    height: 28px;
+.collapsible-header .toggle-icon {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: var(--primary);
     color: white;
+    font-size: 1.2rem;
+    font-weight: 400;
+    line-height: 1;
     transition: var(--transition);
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 2px 6px rgba(45, 212, 191, 0.25);
 }
 
-.collapsible-header.active::after {
-    content: '−';
-    transform: rotate(180deg);
-    background: linear-gradient(135deg, var(--success), var(--secondary));
+.collapsible-header:hover .toggle-icon {
+    background: var(--primary-dark);
+    transform: scale(1.1);
+}
+
+.collapsible-header.active .toggle-icon {
+    background: var(--success);
+    transform: rotate(45deg);
 }
 
 .collapsible-content {
@@ -288,12 +272,12 @@ body {
     overflow: hidden;
     transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
                 padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    background: rgba(248, 250, 252, 0.5);
+    background: white;
 }
 
 .collapsible-content.active {
-    padding: 20px;
-    max-height: 600px;
+    padding: 18px;
+    max-height: 1000px;
 }
 
 .collapsible-content .form-group {
@@ -302,8 +286,8 @@ body {
 
 .btn {
     display: inline-block;
-    padding: 14px 28px;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    padding: 13px 26px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
     color: white;
     border: none;
     border-radius: var(--border-radius-sm);
@@ -313,74 +297,43 @@ body {
     font-size: 0.9rem;
     transition: var(--transition);
     text-align: center;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-.btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-}
-
-.btn:hover::before {
-    width: 300px;
-    height: 300px;
+    box-shadow: 0 2px 8px rgba(45, 212, 191, 0.25);
 }
 
 .btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(45, 212, 191, 0.35);
 }
 
 .btn:active {
-    transform: translateY(-1px);
+    transform: translateY(0);
 }
 
 .btn-success {
-    background: linear-gradient(135deg, var(--success), var(--secondary));
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    background: linear-gradient(135deg, var(--success), #10b981);
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.25);
 }
 
 .btn-success:hover {
-    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.35);
 }
 
 .btn-danger {
     background: linear-gradient(135deg, var(--danger), var(--danger-dark));
-    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
 }
 
 .btn-danger:hover {
-    box-shadow: 0 8px 20px rgba(244, 63, 94, 0.4);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
 }
 
 .status-message {
-    padding: 16px 20px;
+    padding: 14px 18px;
     border-radius: var(--border-radius-sm);
     font-weight: 600;
     font-size: 0.85rem;
-    margin-top: 20px;
-    border: 2px solid;
-    position: relative;
-    overflow: hidden;
-}
-
-.status-message::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 4px;
-    height: 100%;
+    margin-top: 18px;
+    border-right: 4px solid;
 }
 
 .hidden {
@@ -388,41 +341,28 @@ body {
 }
 
 .success {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
+    background: rgba(34, 197, 94, 0.08);
     color: var(--success-dark);
     border-color: var(--success);
 }
 
-.success::before {
-    background: linear-gradient(to bottom, var(--success), var(--secondary));
-}
-
 .error {
-    background: linear-gradient(135deg, rgba(244, 63, 94, 0.1), rgba(225, 29, 72, 0.1));
+    background: rgba(239, 68, 68, 0.08);
     color: var(--danger-dark);
     border-color: var(--danger);
 }
 
-.error::before {
-    background: linear-gradient(to bottom, var(--danger), var(--danger-dark));
-}
-
 .info {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+    background: rgba(45, 212, 191, 0.08);
     color: var(--primary-dark);
     border-color: var(--primary);
-}
-
-.info::before {
-    background: linear-gradient(to bottom, var(--primary), var(--accent));
 }
 
 .table-container {
     margin-top: 24px;
     overflow-x: auto;
-    border-radius: var(--border-radius);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    border: 2px solid var(--gray-border);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--gray-border);
 }
 
 .reservations-table {
@@ -432,21 +372,20 @@ body {
 }
 
 .reservations-table th, .reservations-table td {
-    padding: 14px 16px;
+    padding: 12px 16px;
     border: 1px solid var(--gray-border);
     text-align: right;
     vertical-align: top;
 }
 
 .reservations-table thead tr {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
     color: white;
 }
 
 .reservations-table th {
     font-weight: 700;
-    padding: 16px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    padding: 14px 16px;
 }
 
 .reservations-table tbody tr {
@@ -454,13 +393,11 @@ body {
 }
 
 .reservations-table tbody tr:nth-child(even) {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.02), rgba(168, 85, 247, 0.02));
+    background: var(--gray-light);
 }
 
 .reservations-table tbody tr:hover {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(168, 85, 247, 0.08));
-    transform: scale(1.01);
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+    background: rgba(45, 212, 191, 0.06);
 }
 
 .summary-cell {
@@ -502,19 +439,34 @@ body {
     }
     
     .form-control {
-        padding: 12px 14px;
+        padding: 11px 14px;
         font-size: 0.85rem;
     }
     
     .reservations-table th, .reservations-table td {
         padding: 10px 12px;
+        font-size: 0.8rem;
     }
     
     .section-title {
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
     
     .btn {
-        padding: 12px 24px;
+        padding: 11px 22px;
+        font-size: 0.85rem;
+    }
+    
+    .collapsible-header {
+        padding: 12px 16px;
+        font-size: 0.85rem;
+    }
+    
+    .collapsible-header .toggle-icon {
+        width: 22px;
+        height: 22px;
+        min-width: 22px;
+        min-height: 22px;
+        font-size: 1.1rem;
     }
 }
