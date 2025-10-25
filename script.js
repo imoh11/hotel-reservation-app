@@ -42,19 +42,24 @@ const FIELD_IDS = {
 // ===============================================
 // وظائف الواجهة المساعدة
 // ===============================================
-function showStatus(message, type = 'info', tabId) {
+// تم تعديل الدالة لتقبل محتوى HTML ولإضافة خيار إخفاء الرسالة تلقائياً
+function showStatus(message, type = 'info', tabId, autoHide = true) {
     const statusDiv = document.getElementById(`statusMessage_${tabId}`);
     if (!statusDiv) return;
     
     statusDiv.classList.remove('info', 'success', 'error', 'hidden'); 
     statusDiv.classList.add(type);
-    statusDiv.innerText = message;
+    // استخدام innerHTML للسماح بتنسيق رقم الحجز (<strong>)
+    statusDiv.innerHTML = message; 
     statusDiv.classList.remove('hidden'); 
     
-    // إخفاء الرسالة بعد 5 ثواني
-    setTimeout(() => { 
-        statusDiv.classList.add('hidden'); 
-    }, 5000);
+    // إخفاء الرسالة بعد 5 ثواني فقط إذا كانت autoHide = true
+    if (autoHide) {
+        setTimeout(() => { 
+            statusDiv.classList.add('hidden'); 
+            statusDiv.innerHTML = ''; // مسح المحتوى
+        }, 5000);
+    }
 }
 
 
@@ -173,7 +178,7 @@ async function saveNewReservation() {
     }
 
     try {
-        showStatus('جاري إرسال الحجز... ⏳', 'info', statusDivId);
+        showStatus('جاري إرسال الحجز... ⏳', 'info', statusDivId, false); // عدم الإخفاء التلقائي أثناء الانتظار
         
         const response = await fetch(AIRTABLE_API_URL, {
             method: 'POST',
@@ -196,9 +201,16 @@ async function saveNewReservation() {
         }
 
         const savedRecord = await response.json();
-        const newResId = savedRecord.id; 
+        const newResId = savedRecord.id; // هذا هو الرقم الفريد (Record ID)
         
-        showStatus(`✅ تم حفظ الحجز بنجاح! رقم السجل في Airtable هو: ${newResId}.`, 'success', statusDivId);
+        // ***************************************************************
+        // *********** تعديل رسالة النجاح لإظهار رقم الحجز بوضوح ***********
+        // ***************************************************************
+        const successMessage = `✅ تم حفظ الحجز بنجاح! <br> <strong>رقم الحجز (ID) هو: ${newResId}</strong>. <br> <em>الرجاء استخدام هذا الرقم عند التعديل أو الاستعلام.</em>`;
+
+        // نستخدم showStatus مع autoHide=false لتبقى الرسالة مرئية حتى يمسحها المستخدم.
+        showStatus(successMessage, 'success', statusDivId, false); 
+        
         document.getElementById('newReservationForm').reset();
         
         document.querySelectorAll('span[id$="_summary_new').forEach(span => span.textContent = '');
@@ -266,7 +278,7 @@ async function searchReservation() {
         }
 
         const record = records[0];
-        showStatus(`✅ تم العثور على حجز (${record.id}). يرجى تعديل البيانات وحفظها.`, 'success', statusDivId);
+        showStatus(`✅ تم العثور على حجز (${record.id}). يرجى تعديل البيانات وحفظها.`, 'success', statusDivId, false); // لا تخفِ رسالة النجاح للتأكيد
         
         // تعبئة النموذج ببيانات الحجز
         populateEditForm(record);
@@ -378,9 +390,7 @@ async function updateReservation() {
     };
     
     Object.keys(data).forEach(key => {
-        // إذا كانت القيمة فارغة (null/undefined/سلسلة فارغة)، لا نحذفها من كائن البيانات
-        // لأننا نستخدم PATCH ونريد السماح بحذف القيم الموجودة في Airtable 
-        // عبر إرسالها كـ undefined أو null في بعض الحالات، لكن Airtable API تتوقع undefined لحذف قيمة.
+        // نضبط القيم الفارغة إلى undefined لتطلب من Airtable مسح القيمة الحالية
         if (data[key] === null || data[key] === '') {
             data[key] = undefined; 
         }
@@ -415,7 +425,7 @@ async function updateReservation() {
             throw new Error(`Airtable API Error: ${response.status} - ${errorMessage}`);
         }
 
-        showStatus(`✅ تم ${actionText} الحجز بنجاح! رقم السجل: ${recordId}.`, 'success', statusDivId);
+        showStatus(`✅ تم ${actionText} الحجز بنجاح! رقم السجل: ${recordId}.`, 'success', statusDivId, false); // لا تخفِ الرسالة
         document.getElementById('editReservationForm').classList.add('hidden');
     } catch (error) {
         console.error('Error updating reservation:', error);
@@ -530,7 +540,10 @@ document.querySelectorAll('.tab-button').forEach(button => {
         document.querySelectorAll('.tab-content').forEach(content => {
             content.classList.remove('active');
             // إخفاء جميع رسائل الحالة عند التبديل
-            document.querySelectorAll('.status-message').forEach(msg => msg.classList.add('hidden'));
+            document.querySelectorAll('.status-message').forEach(msg => {
+                msg.classList.add('hidden');
+                msg.innerHTML = '';
+            });
         });
         
         // إلغاء تنشيط جميع الأزرار
