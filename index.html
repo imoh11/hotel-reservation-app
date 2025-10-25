@@ -172,15 +172,12 @@
 
         <div id="editReservation" class="tab-content">
             
-            <div class="form-group form-row">
-                <div class="form-group" style="flex-grow: 3;">
-                    <input type="text" id="searchReservationInput" class="form-control" placeholder="أدخل رقم الجوال أو رقم الحجز (ID)">
-                </div>
-                <div class="form-group" style="flex-grow: 1;">
-                    <button type="button" id="searchButton" class="btn btn-primary">
-                        بحث عن حجز
-                    </button>
-                </div>
+            <div class="search-container" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <input type="text" id="searchReservationInput" class="form-control" placeholder="أدخل رقم الجوال أو رقم الحجز (ID)" style="flex-grow: 3;">
+                
+                <button type="button" id="searchButton" class="btn btn-primary" style="flex-grow: 1;">
+                    بحث عن حجز
+                </button>
             </div>
             <div class="status-message-container">
                 <div id="statusMessage_editReservation" class="status-message hidden"></div>
