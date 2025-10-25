@@ -46,14 +46,9 @@ body {
     text-align: center;
 }
 
-.header h2 {
-    font-weight: 700;
-    font-size: 1.6rem;
-}
-
 .tabs {
     display: flex;
-    background-color: var(--light);
+    background-color: var(--gray-light); 
     border-bottom: 1px solid var(--gray-light);
 }
 
@@ -159,6 +154,10 @@ h3 {
     vertical-align: middle;
 }
 
+/* تنسيقات الأجنحة المحجوزة */
+.suite-details-title {
+    margin-top: 25px; 
+}
 .suite-selection-container {
     border: 1px solid var(--gray-light);
     border-radius: var(--border-radius);
@@ -176,8 +175,15 @@ h3 {
     color: var(--primary-dark);
 }
 
-.suite-toggle-item:last-child {
-    border-bottom: none;
+.suite-toggle-item:last-child,
+.last-suite-item {
+    border-bottom: none; /* تم النقل */
+}
+
+.suite-summary {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--secondary-dark); /* تم النقل */
 }
 
 .suite-details-area {
@@ -189,6 +195,11 @@ h3 {
     border-radius: var(--border-radius);
     box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
+
+.transferer-label {
+    font-weight: 600; /* تم النقل */
+}
+
 
 .form-row {
     display: flex;
@@ -233,6 +244,7 @@ h3 {
     color: var(--gray);
 }
  
+/* رسائل الحالة */
 .status-message-container {
     margin-top: 15px;
 }
@@ -241,8 +253,11 @@ h3 {
     padding: 12px;
     border-radius: var(--border-radius);
     font-weight: 500;
-    display: none;
     font-size: 0.85rem;
+}
+
+.hidden {
+    display: none !important;
 }
 
 .success {
@@ -262,8 +277,18 @@ h3 {
     color: var(--primary-dark);
     border: 1px solid rgba(52, 152, 219, 0.3);
 }
+
+.info-message-block {
+    display: block !important;
+    margin-bottom: 15px; /* تم النقل */
+}
  
 /* تصميم جدول الحجوزات القادمة */
+.table-container {
+    margin-top: 20px; /* تم النقل */
+    overflow-x: auto;
+}
+
 .reservations-table {
     width: 100%;
     border-collapse: collapse;
@@ -275,7 +300,7 @@ h3 {
     padding: 10px;
     border: 1px solid #ddd;
     text-align: right;
-    vertical-align: top; /* محاذاة النص للأعلى */
+    vertical-align: top; 
 }
 
 .reservations-table thead tr {
@@ -291,7 +316,6 @@ h3 {
     background-color: #f0f0f0;
 }
  
-/* التعديل المطلوب: للحفاظ على تنسيق حقل الملخص المتعدد الأسطر */
 .summary-cell {
     white-space: pre-wrap; 
     text-align: right;
