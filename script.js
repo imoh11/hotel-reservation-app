@@ -3,7 +3,7 @@
 // =================================================================
 // 🚨🚨🚨 هام: لحذف المفتاح للأمان، سنستخدم قيمة مؤقتة هنا.
 // 🚨🚨🚨 عند النشر على Netlify، يجب تعريف AIRTABLE_API_KEY كـ Environment Variable 🚨🚨🚨
-const AIRTABLE_API_KEY = "AIRTABLE_API_KEY_PLACEHOLDER"; 
+const AIRTABLE_API_KEY = "patJFAlur5hTxQCdd.b8dcbbb986d7cb6126ce9d72f351458db55188ec9f8692e9b01f70065ac45832"; 
 const BASE_ID = 'appZm1T1ecVIlWOwy';
 const TABLE_NAME = 'tbloqjxnWuD2aH66H';
 const AIRTABLE_API_URL = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`;
@@ -340,3 +340,4 @@ function renderReservationsTable(reservations) {
     container.appendChild(table);
 
 }
+
