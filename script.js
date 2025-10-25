@@ -213,8 +213,9 @@ async function searchReservation() {
     const searchInput = document.getElementById('searchReservationInput');
     const searchValue = searchInput.value.trim();
 
-    // 🚨 إخفاء النموذج بالـ class hidden قبل البحث
+    // إخفاء النموذج بالـ class hidden قبل البحث
     document.getElementById('editReservationForm').classList.add('hidden');
+    document.getElementById('editReservationForm').style.display = 'none';
 
     if (!searchValue) {
         showStatus('الرجاء إدخال رقم الجوال أو رقم الحجز (ID) للبحث.', 'error', statusDivId);
@@ -264,7 +265,7 @@ async function searchReservation() {
 
         populateEditForm(record);
         
-        // 🚨 تنظيف حقل البحث بعد الجلب الناجح
+        // تنظيف حقل البحث بعد الجلب الناجح
         searchInput.value = '';
 
     } catch (error) {
@@ -287,12 +288,12 @@ function populateEditForm(record) {
     // 1. حفظ ID السجل
     document.getElementById('recordId_edit').value = recordId;
     
-    // 🚨 الحل القوي: إظهار النموذج عن طريق تجاوز مشكلة الـ CSS (!important)
+    // الحل القوي: إظهار النموذج عن طريق تجاوز مشكلة الـ CSS (!important)
     formElement.style.display = 'block'; 
-    formElement.classList.remove('hidden'); // ترك هذا السطر احتياطياً
+    formElement.classList.remove('hidden');
 
     // ---------------------------------------------------
-    // 🚨 نقاط الفحص: استخدام console.log للتأكد من التعبئة
+    // نقاط الفحص (DEBUG)
     // ---------------------------------------------------
     
     // تعبئة حقل اسم النزيل
@@ -316,8 +317,6 @@ function populateEditForm(record) {
     } else {
          console.error(`[DEBUG] CRITICAL: HTML Element phone_${prefix} NOT FOUND!`);
     }
-    // ---------------------------------------------------
-    // نهاية نقاط الفحص
     // ---------------------------------------------------
 
     // تعبئة باقي الحقول الأساسية
@@ -347,7 +346,7 @@ function populateEditForm(record) {
     document.getElementById('currentDate_edit').value = fields[FIELD_IDS.TRANSFER_DATE] || '';
     document.getElementById('notes_edit').value = fields[FIELD_IDS.NOTES] || '';
 
-    // 🚨 تفعيل الأقسام المطوية (لإظهار بيانات الأجنحة التي كانت مخفية)
+    // تفعيل الأقسام المطوية (لإظهار بيانات الأجنحة التي كانت مخفية)
     document.querySelectorAll('#editReservation .collapsible-content').forEach(content => {
         content.classList.add('active');
         
@@ -448,7 +447,7 @@ async function updateReservation() {
 
         showStatus(`✅ تم ${actionText} الحجز بنجاح! رقم السجل: ${recordId}.`, 'success', statusDivId, false);
         
-        // 🚨 إخفاء النموذج بالـ class hidden بعد التعديل
+        // إخفاء النموذج بالـ class hidden بعد التعديل
         document.getElementById('editReservationForm').classList.add('hidden');
         document.getElementById('editReservationForm').style.display = 'none';
 
@@ -558,7 +557,7 @@ document.addEventListener('DOMContentLoaded', () => {
         saveNewReservation();
     });
 
-    // 🚨 تم التأكيد على وجود ID: searchButton في HTML
+    // 🚨 تم تعديل هذا الجزء: الاعتماد على id="searchButton" فقط
     const searchButton = document.getElementById('searchButton');
     if(searchButton) {
         searchButton.addEventListener('click', searchReservation);
