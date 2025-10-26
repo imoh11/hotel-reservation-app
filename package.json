@@ -1,1 +1,10 @@
-npm init -y
+{
+  "name": "netlify-airtable-site",
+  "version": "1.0.0",
+  "description": "A site with Netlify Function proxy for Airtable",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}
