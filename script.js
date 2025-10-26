@@ -7,7 +7,7 @@ const TABLE_NAME = 'tbloqjxnWuD2aH66H';
 const AIRTABLE_API_URL = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`;
 
 // =================================================================
-// 2. FIELD IDS & CONFIGS (معرّفات الحقول الثابتة والصحيحة)
+// 2. FIELD IDS (معرّفات الحقول الثابتة والصحيحة)
 // =================================================================
 const FIELD_IDS = {
     // الحقول الأساسية
@@ -138,11 +138,13 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
     const config = SUITE_CONFIG[suiteKey];
     const maxCapacity = SUITE_CAPACITIES[suiteKey];
     
-    // الصيغة الدقيقة للتداخل الزمني: (نهاية الحجز القائم > بداية الحجز الجديد) و (بداية الحجز القائم < نهاية الحجز الجديد)
+    // 🌟 الإصلاح النهائي: استخدام دوال IS_BEFORE و IS_AFTER لضمان قراءة Airtable الصحيحة للتداخل الزمني
     const detailedFilter = `AND(` +
-        `{${config.arrival}} < '${departureDate}',` +
-        `{${config.departure}} > '${arrivalDate}'` +
+        `IS_BEFORE({${config.arrival}}, '${departureDate}'),` +
+        `IS_AFTER({${config.departure}}, '${arrivalDate}')` +
     `)`;
+    
+    // يمكنك اختبار هذه الصيغة مباشرة في تبويبة Network للتأكد من أنها ترسل بشكل صحيح.
 
     try {
         const response = await fetch(`${AIRTABLE_API_URL}?filterByFormula=${encodeURIComponent(detailedFilter)}&fields[]=${config.count}`, {
@@ -160,7 +162,7 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
         
         let totalReserved = 0;
         
-        // 💥 الإصلاح الحاسم: ضمان قراءة الأرقام بشكل صحيح
+        // ضمان قراءة الأرقام بشكل صحيح
         data.records.forEach(record => {
             // استخدام parseFloat لضمان قراءة أي قيمة رقمية (حتى لو كانت سلسلة نصية) واستخدام 0 كقيمة احتياطية
             const reservedCount = parseFloat(record.fields[config.count]) || 0;
