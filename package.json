@@ -1,10 +1,12 @@
 {
-  "name": "netlify-airtable-site",
+  "name": "your-project-name",
   "version": "1.0.0",
-  "description": "A site with Netlify Function proxy for Airtable",
+  "description": "Airtable Interface",
   "main": "index.js",
-  "license": "MIT",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^2.6.1" 
   }
 }
