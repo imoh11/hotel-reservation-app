@@ -27,7 +27,6 @@ body {
     background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
     padding: 15px;
     min-height: 100vh;
-    /* الخط الأساسي للصفحة تم تصغيره مسبقاً */
     font-size: 0.8rem;
 }
 
@@ -94,11 +93,6 @@ body {
     display: block;
 }
 
-/* إخفاء العنوان الرئيسي لـ "إضافة حجز جديد" */
-#newReservation h3 {
-    display: none; 
-}
-
 /* ------------------------------------------- */
 /* تنسيقات الأقسام المطوية (Collapsible) */
 /* ------------------------------------------- */
@@ -149,7 +143,6 @@ body {
     max-height: 0;
     padding: 0 12px;
     overflow: hidden;
-    /* زيادة الوقت قليلاً للحركة السلسة عند الفتح/الإغلاق */
     transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out; 
 }
 
@@ -289,7 +282,7 @@ body {
     border-radius: var(--border-radius);
     font-weight: 500;
     font-size: 0.8rem;
-    margin-top: 5px; /* مسافة أعلى رسالة التحقق */
+    margin-top: 5px; 
 }
 
 .hidden {
@@ -319,7 +312,6 @@ body {
     margin-bottom: 10px;
 }
  
-/* تنسيقات حقل الجوال لفرض الاتجاه من اليمين لليسار */
 #phone_new {
     direction: rtl; 
     text-align: right; 
