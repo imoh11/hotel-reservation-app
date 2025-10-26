@@ -1,3 +1,10 @@
+/**
+ * script.js - النسخة النهائية المدمجة والآمنة
+ *
+ * تم دمج منطق التبويبات (حجز/تعديل/استعلام) مع بنية الأمان والتحسين (Proxy API).
+ * ملاحظة: يجب أن يعمل الخادم الوسيط (Netlify Function) بشكل صحيح لتنفيذ هذا الكود.
+ */
+
 /* =========================
    إعدادات Airtable والموقع
    ========================= */
@@ -567,6 +574,7 @@ function bindEvents() {
         button.addEventListener('click', (e) => {
             const tabName = e.target.getAttribute('data-tab');
 
+            // 🚨 التأكد من إزالة وإضافة الفئة 'active' بشكل صحيح
             qsa('.tab-content').forEach(content => content.classList.remove('active'));
             DOM.refs.tabButtons.forEach(btn => btn.classList.remove('active'));
             DOM.refs.statusMessages.forEach(c => { // إخفاء جميع رسائل الحالة
@@ -634,3 +642,4 @@ if (document.readyState === 'loading') {
 } else {
     init();
 }
+
