@@ -1,18 +1,17 @@
 :root {
-    --primary: #3498db; /* أزرق */
-    --primary-dark: #2980b9;
-    --secondary: #2ecc71; /* أخضر */
-    --secondary-dark: #27ae60;
-    --danger: #e74c3c; /* أحمر */
-    --danger-dark: #c0392b;
-    --info: #007bff; /* أزرق معلومات */
-    --dark: #343a40;
-    --gray: #6c757d;
-    --gray-light: #e9ecef;
-    --gray-lighter: #f8f9fa;
+    --primary: #3A86FF;            /* أزرق سماوي أنيق */
+    --primary-dark: #265DAB;       /* أزرق غامق */
+    --secondary: #43C59E;          /* أخضر نعناعي مائل للأزرق */
+    --secondary-dark: #2B9A7A;     /* أخضر داكن */
+    --danger: #FF6B6B;             /* وردي أحمر ناعم */
+    --danger-dark: #C44545;        /* أحمر غامق */
+    --info: #5F9DF7;               /* أزرق معلومات مائل للسماء */
+    --dark: #2F3542;               /* رمادي غامق مائل للأزرق */
+    --gray: #7B8A97;               /* رمادي متوسط */
+    --gray-light: #E9EEF3;         /* رمادي فاتح مائل للأزرق */
     --border-radius: 6px;
-    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    --transition: all 0.2s ease;
+    --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    --transition: all 0.25s ease;
 }
 
 * {
@@ -25,10 +24,10 @@ body {
     font-family: 'Tajawal', sans-serif;
     line-height: 1.5;
     color: var(--dark);
-    background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+    background: linear-gradient(135deg, #E3F2FD 0%, #F1F5FB 100%);
     padding: 15px;
     min-height: 100vh;
-    font-size: 0.8rem; 
+    font-size: 0.8rem;
 }
 
 .container {
@@ -37,7 +36,7 @@ body {
     background: white;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
-    overflow: hidden; 
+    overflow: hidden;
 }
 
 .header {
@@ -45,12 +44,13 @@ body {
     color: white;
     padding: 20px 25px;
     text-align: center;
+    letter-spacing: 0.5px;
 }
 
 .tabs {
     display: flex;
-    background: linear-gradient(to right, var(--gray-lighter), var(--gray-light));
-    border-bottom: 1px solid var(--gray-light);
+    background-color: var(--gray-light);
+    border-bottom: 1px solid #dce3eb;
 }
 
 .tab-button {
@@ -58,7 +58,7 @@ body {
     padding: 10px 12px;
     font-size: 0.8rem;
     text-align: center;
-    background: transparent;
+    background: none;
     border: none;
     cursor: pointer;
     font-family: 'Tajawal', sans-serif;
@@ -66,12 +66,11 @@ body {
     color: var(--gray);
     transition: var(--transition);
     position: relative;
-    outline: none;
 }
 
 .tab-button.active {
     color: var(--primary);
-    background-color: white;
+    background-color: #ffffff;
     font-weight: 600;
 }
 
@@ -82,41 +81,31 @@ body {
     right: 0;
     width: 100%;
     height: 2px;
-    background: linear-gradient(to right, var(--primary), var(--secondary));
+    background-color: var(--primary);
 }
 
 .tab-content {
     padding: 20px;
     display: none;
     animation: fadeIn 0.4s ease;
-    background-color: white;
 }
 
 .tab-content.active {
     display: block;
 }
 
-/* إخفاء العنوان الرئيسي لـ "إضافة حجز جديد" */
-#newReservation h3 {
-    display: none; 
-}
-
-/* ------------------------------------------- */
-/* تنسيقات الأقسام المطوية (Collapsible) - محسنة */
-/* ------------------------------------------- */
+/* الأقسام المطوية */
 .collapsible-section {
     margin-bottom: 15px;
-    border: 1px solid var(--gray-light);
+    border: 1px solid #dee5ec;
     border-radius: var(--border-radius);
     overflow: hidden;
-    background: white;
-    box-shadow: var(--box-shadow);
 }
 
 .collapsible-header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    background-color: var(--primary);
     color: white;
-    padding: 12px 15px;
+    padding: 10px 12px;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.9rem;
@@ -126,84 +115,74 @@ body {
     transition: var(--transition);
 }
 
-.collapsible-header:hover {
-    background: linear-gradient(135deg, var(--primary-dark) 0%, #1f6391 100%);
-}
-
+.collapsible-header:hover,
 .collapsible-header.active {
-    background: linear-gradient(135deg, var(--primary-dark) 0%, #1f6391 100%);
+    background-color: var(--primary-dark);
 }
 
 .collapsible-icon {
-    display: inline-block;
     width: 0;
     height: 0;
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
-    border-top: 5px solid white; 
+    border-top: 5px solid white;
     transition: transform 0.3s ease;
 }
 
 .collapsible-header.active .collapsible-icon {
-    border-top: 5px solid white;
     transform: rotate(180deg);
 }
 
 .collapsible-content {
     max-height: 0;
-    padding: 0 15px;
+    padding: 0 12px;
     overflow: hidden;
     transition: max-height 0.3s ease-out, padding 0.3s ease-out;
-    background: var(--gray-lighter);
 }
 
 .collapsible-content.active {
-    max-height: 1000px; 
-    padding: 15px;
-    background: var(--gray-lighter);
+    max-height: 1000px;
+    padding: 12px;
 }
 
-/* تنسيقات حقول النموذج - محسنة */
+/* الحقول */
 .form-group {
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
+    margin-bottom: 4px;
+    font-weight: 500;
     color: var(--primary-dark);
     font-size: 0.8rem;
 }
 
 .form-control {
     width: 100%;
-    padding: 9px 12px;
-    border: 1px solid var(--gray-light);
+    padding: 8px 10px;
+    border: 1px solid #dfe6ee;
     border-radius: var(--border-radius);
     font-family: 'Tajawal', sans-serif;
     font-size: 0.85rem;
     transition: var(--transition);
-    background: white;
-    color: var(--dark);
+    background-color: white;
 }
 
 .form-control:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
-    background: white;
+    box-shadow: 0 0 0 2px rgba(58, 134, 255, 0.2);
 }
 
 .form-control[readonly] {
-    background-color: var(--gray-lighter);
-    color: var(--gray);
+    background-color: var(--gray-light);
     cursor: not-allowed;
 }
 
 .form-row {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
 }
 
@@ -212,25 +191,20 @@ body {
     min-width: 150px;
 }
 
-/* تنسيقات الأجنحة المحجوزة - محسنة */
+/* الأجنحة */
 .suite-selection-container {
-    border: 1px solid var(--gray-light);
+    border: 1px solid #dfe6ee;
     border-radius: var(--border-radius);
-    padding: 12px;
-    background: linear-gradient(to bottom, white, var(--gray-lighter));
-    box-shadow: var(--box-shadow);
+    padding: 8px;
+    background-color: #fafbfc;
 }
 
 .suite-item-header {
-    font-weight: 700;
+    font-weight: 600;
     color: var(--primary-dark);
-    padding: 8px 0;
-    border-bottom: 1px solid var(--gray-light);
+    padding: 6px 0;
+    border-bottom: 1px solid #e3e8ef;
     font-size: 0.9rem;
-    background: white;
-    margin: -12px -12px 8px -12px;
-    padding: 10px 12px;
-    border-radius: var(--border-radius) var(--border-radius) 0 0;
 }
 
 .suite-item-header:last-of-type {
@@ -239,176 +213,125 @@ body {
 
 .suite-summary {
     font-size: 0.75rem;
-    font-weight: 500;
+    font-weight: 400;
     color: var(--secondary-dark);
-    background: rgba(46, 204, 113, 0.1);
-    padding: 4px 8px;
-    border-radius: var(--border-radius);
-    display: inline-block;
 }
 
 .suite-details-area {
-    margin-top: 8px;
-    padding: 12px;
-    border-top: 1px dashed var(--gray-light);
-    background: white;
+    margin-top: 6px;
+    padding: 10px;
+    border-top: 1px dashed #e2e8f0;
+    background-color: #ffffff;
     border-radius: var(--border-radius);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    margin-bottom: 10px;
 }
 
-/* الأزرار ورسائل الحالة - محسنة */
+/* الأزرار */
 .button-group {
     display: flex;
-    gap: 10px;
-    margin-top: 18px;
+    gap: 8px;
+    margin-top: 15px;
     flex-wrap: wrap;
 }
 
 .btn {
     display: inline-block;
-    padding: 9px 18px;
+    padding: 8px 16px;
     border: none;
     border-radius: var(--border-radius);
     font-family: 'Tajawal', sans-serif;
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
     transition: var(--transition);
     text-align: center;
-    outline: none;
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    background-color: var(--primary);
     color: white;
-    box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, var(--primary-dark) 0%, #1f6391 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.4);
+    background-color: var(--primary-dark);
 }
 
 .btn-outline {
-    background: transparent;
-    border: 1px solid var(--gray);
+    background-color: transparent;
+    border: 1px solid var(--gray-light);
     color: var(--gray);
 }
 
-.btn-outline:hover {
-    background: var(--gray-light);
-    color: var(--dark);
-}
- 
 .status-message-container {
-    margin-top: 12px;
+    margin-top: 10px;
 }
 
 .status-message {
-    padding: 12px;
+    padding: 10px;
     border-radius: var(--border-radius);
-    font-weight: 600;
+    font-weight: 500;
     font-size: 0.8rem;
-    border-left: 4px solid;
-}
-
-.hidden {
-    display: none !important;
 }
 
 .success {
-    background: linear-gradient(to right, rgba(46, 204, 113, 0.1), rgba(46, 204, 113, 0.05));
+    background-color: rgba(67, 197, 158, 0.15);
     color: var(--secondary-dark);
-    border-left-color: var(--secondary);
+    border: 1px solid rgba(67, 197, 158, 0.3);
 }
 
 .error {
-    background: linear-gradient(to right, rgba(231, 76, 60, 0.1), rgba(231, 76, 60, 0.05));
+    background-color: rgba(255, 107, 107, 0.15);
     color: var(--danger-dark);
-    border-left-color: var(--danger);
+    border: 1px solid rgba(255, 107, 107, 0.3);
 }
 
 .info {
-    background: linear-gradient(to right, rgba(52, 152, 219, 0.1), rgba(52, 152, 219, 0.05));
+    background-color: rgba(63, 136, 255, 0.15);
     color: var(--primary-dark);
-    border-left-color: var(--primary);
+    border: 1px solid rgba(63, 136, 255, 0.3);
 }
 
-.info-message-block {
-    display: block !important;
-    margin-bottom: 12px;
-}
- 
-/* تصميم جدول الحجوزات القادمة - محسنة */
+/* الجدول */
 .table-container {
-    margin-top: 18px;
+    margin-top: 15px;
     overflow-x: auto;
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    padding: 1px;
 }
- 
+
 .reservations-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 0;
-    background: white;
+    margin-top: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
 }
 
 .reservations-table th, .reservations-table td {
-    padding: 10px;
-    border: 1px solid var(--gray-light);
+    padding: 8px;
+    border: 1px solid #e3e8ef;
     text-align: right;
-    vertical-align: middle;
+    vertical-align: top;
     font-size: 0.75rem;
 }
 
 .reservations-table thead tr {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    background-color: var(--primary-dark);
     color: white;
 }
 
-.reservations-table th {
-    font-weight: 600;
-    padding: 12px 10px;
-}
-
 .reservations-table tbody tr:nth-child(even) {
-    background-color: var(--gray-lighter);
+    background-color: #f7f9fb;
 }
 
 .reservations-table tbody tr:hover {
-    background-color: rgba(52, 152, 219, 0.05);
-    transform: scale(1.01);
-    transition: var(--transition);
+    background-color: #eef3fb;
 }
- 
+
 .summary-cell {
     white-space: pre-wrap;
     text-align: right;
-    background: white;
 }
 
-/* تنسيقات حقل الجوال لفرض الاتجاه من اليمين لليسار */
 #phone_new, #phone_edit {
     direction: rtl;
     text-align: right;
-}
-
-/* تأثيرات إضافية للتحسين البصري */
-.collapsible-section, .suite-selection-container, .table-container {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.collapsible-section:hover, .suite-selection-container:hover, .table-container:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-}
-
-/* تحسين المظهر العام للتبويبات */
-.tab-content {
-    background: linear-gradient(to bottom, white, var(--gray-lighter));
 }
