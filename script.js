@@ -131,21 +131,21 @@ function calculateDaysPerSuite(prefix, suiteKey) {
 
 
 // ===============================================
-// 4. وظائف التحقق من التوفر (المنطق المصحح والمؤكد)
+// 4. وظائف التحقق من التوفر (المنطق المصحح والشامل للتواريخ)
 // ===============================================
 
 async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
     const config = SUITE_CONFIG[suiteKey];
     const maxCapacity = SUITE_CAPACITIES[suiteKey];
     
-    // 🌟 الإصلاح النهائي: استخدام دوال IS_BEFORE و IS_AFTER لضمان قراءة Airtable الصحيحة للتداخل الزمني
+    // 🌟 الإصلاح النهائي: استخدام دوال DATEADD لضمان شمولية التقاط التواريخ الحدية (مثل الانتهاء والبدء في نفس اليوم)
     const detailedFilter = `AND(` +
-        `IS_BEFORE({${config.arrival}}, '${departureDate}'),` +
-        `IS_AFTER({${config.departure}}, '${arrivalDate}')` +
+        // يجب أن تبدأ الإقامة القائمة قبل يوم واحد من انتهاء الإقامة الجديدة (لشمل نفس اليوم)
+        `IS_BEFORE({${config.arrival}}, DATEADD('${departureDate}', 1, 'days')),` +
+        // يجب أن تنتهي الإقامة القائمة بعد يوم واحد من بداية الإقامة الجديدة (لشمل نفس اليوم)
+        `IS_AFTER({${config.departure}}, DATEADD('${arrivalDate}', -1, 'days'))` +
     `)`;
     
-    // يمكنك اختبار هذه الصيغة مباشرة في تبويبة Network للتأكد من أنها ترسل بشكل صحيح.
-
     try {
         const response = await fetch(`${AIRTABLE_API_URL}?filterByFormula=${encodeURIComponent(detailedFilter)}&fields[]=${config.count}`, {
             headers: {
@@ -164,7 +164,6 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
         
         // ضمان قراءة الأرقام بشكل صحيح
         data.records.forEach(record => {
-            // استخدام parseFloat لضمان قراءة أي قيمة رقمية (حتى لو كانت سلسلة نصية) واستخدام 0 كقيمة احتياطية
             const reservedCount = parseFloat(record.fields[config.count]) || 0;
             totalReserved += reservedCount;
         });
