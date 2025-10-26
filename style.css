@@ -1,17 +1,17 @@
 :root {
-    --primary: #3A86FF;            /* أزرق سماوي أنيق */
-    --primary-dark: #265DAB;       /* أزرق غامق */
-    --secondary: #43C59E;          /* أخضر نعناعي مائل للأزرق */
-    --secondary-dark: #2B9A7A;     /* أخضر داكن */
-    --danger: #FF6B6B;             /* وردي أحمر ناعم */
-    --danger-dark: #C44545;        /* أحمر غامق */
-    --info: #5F9DF7;               /* أزرق معلومات مائل للسماء */
-    --dark: #2F3542;               /* رمادي غامق مائل للأزرق */
-    --gray: #7B8A97;               /* رمادي متوسط */
-    --gray-light: #E9EEF3;         /* رمادي فاتح مائل للأزرق */
+    --primary: #3498db; /* أزرق */
+    --primary-dark: #2980b9;
+    --secondary: #2ecc71; /* أخضر */
+    --secondary-dark: #27ae60;
+    --danger: #e74c3c; /* أحمر */
+    --danger-dark: #c0392b;
+    --info: #007bff; /* أزرق معلومات */
+    --dark: #343a40;
+    --gray: #6c757d;
+    --gray-light: #e9ecef;
     --border-radius: 6px;
-    --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-    --transition: all 0.25s ease;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --transition: all 0.2s ease;
 }
 
 * {
@@ -24,9 +24,10 @@ body {
     font-family: 'Tajawal', sans-serif;
     line-height: 1.5;
     color: var(--dark);
-    background: linear-gradient(135deg, #E3F2FD 0%, #F1F5FB 100%);
+    background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
     padding: 15px;
     min-height: 100vh;
+    /* الخط الأساسي للصفحة تم تصغيره مسبقاً */
     font-size: 0.8rem;
 }
 
@@ -36,7 +37,7 @@ body {
     background: white;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
-    overflow: hidden;
+    overflow: hidden; 
 }
 
 .header {
@@ -44,13 +45,12 @@ body {
     color: white;
     padding: 20px 25px;
     text-align: center;
-    letter-spacing: 0.5px;
 }
 
 .tabs {
     display: flex;
-    background-color: var(--gray-light);
-    border-bottom: 1px solid #dce3eb;
+    background-color: var(--gray-light); 
+    border-bottom: 1px solid var(--gray-light);
 }
 
 .tab-button {
@@ -66,12 +66,12 @@ body {
     color: var(--gray);
     transition: var(--transition);
     position: relative;
+    outline: none;
 }
 
 .tab-button.active {
     color: var(--primary);
-    background-color: #ffffff;
-    font-weight: 600;
+    background-color: white;
 }
 
 .tab-button.active::after {
@@ -94,10 +94,17 @@ body {
     display: block;
 }
 
-/* الأقسام المطوية */
+/* إخفاء العنوان الرئيسي لـ "إضافة حجز جديد" */
+#newReservation h3 {
+    display: none; 
+}
+
+/* ------------------------------------------- */
+/* تنسيقات الأقسام المطوية (Collapsible) */
+/* ------------------------------------------- */
 .collapsible-section {
     margin-bottom: 15px;
-    border: 1px solid #dee5ec;
+    border: 1px solid var(--gray-light);
     border-radius: var(--border-radius);
     overflow: hidden;
 }
@@ -115,21 +122,26 @@ body {
     transition: var(--transition);
 }
 
-.collapsible-header:hover,
+.collapsible-header:hover {
+    background-color: var(--primary-dark);
+}
+
 .collapsible-header.active {
     background-color: var(--primary-dark);
 }
 
 .collapsible-icon {
+    display: inline-block;
     width: 0;
     height: 0;
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
-    border-top: 5px solid white;
+    border-top: 5px solid white; 
     transition: transform 0.3s ease;
 }
 
 .collapsible-header.active .collapsible-icon {
+    border-top: 5px solid white;
     transform: rotate(180deg);
 }
 
@@ -137,15 +149,17 @@ body {
     max-height: 0;
     padding: 0 12px;
     overflow: hidden;
-    transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+    /* زيادة الوقت قليلاً للحركة السلسة عند الفتح/الإغلاق */
+    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out; 
 }
 
 .collapsible-content.active {
-    max-height: 1000px;
+    max-height: 1000px; 
     padding: 12px;
 }
 
-/* الحقول */
+
+/* تنسيقات حقول النموذج */
 .form-group {
     margin-bottom: 10px;
 }
@@ -154,14 +168,14 @@ body {
     display: block;
     margin-bottom: 4px;
     font-weight: 500;
-    color: var(--primary-dark);
+    color: var(--primary-dark); 
     font-size: 0.8rem;
 }
 
 .form-control {
     width: 100%;
     padding: 8px 10px;
-    border: 1px solid #dfe6ee;
+    border: 1px solid var(--gray-light);
     border-radius: var(--border-radius);
     font-family: 'Tajawal', sans-serif;
     font-size: 0.85rem;
@@ -172,7 +186,7 @@ body {
 .form-control:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(58, 134, 255, 0.2);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
 .form-control[readonly] {
@@ -191,43 +205,44 @@ body {
     min-width: 150px;
 }
 
-/* الأجنحة */
+/* تنسيقات الأجنحة المحجوزة */
 .suite-selection-container {
-    border: 1px solid #dfe6ee;
+    border: 1px solid var(--gray-light);
     border-radius: var(--border-radius);
     padding: 8px;
-    background-color: #fafbfc;
+    background-color: #fafafa;
 }
 
 .suite-item-header {
     font-weight: 600;
     color: var(--primary-dark);
     padding: 6px 0;
-    border-bottom: 1px solid #e3e8ef;
+    border-bottom: 1px solid var(--gray-light);
     font-size: 0.9rem;
 }
 
+/* إزالة الحد السفلي من آخر عنصر (جناح ملكي) */
 .suite-item-header:last-of-type {
-    border-bottom: none;
+     border-bottom: none;
 }
 
 .suite-summary {
     font-size: 0.75rem;
     font-weight: 400;
-    color: var(--secondary-dark);
+    color: var(--secondary-dark); 
 }
 
 .suite-details-area {
     margin-top: 6px;
     padding: 10px;
-    border-top: 1px dashed #e2e8f0;
+    border-top: 1px dashed var(--gray-light);
     background-color: #ffffff;
     border-radius: var(--border-radius);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     margin-bottom: 10px;
 }
 
-/* الأزرار */
+/* الأزرار ورسائل الحالة */
 .button-group {
     display: flex;
     gap: 8px;
@@ -246,6 +261,12 @@ body {
     cursor: pointer;
     transition: var(--transition);
     text-align: center;
+    outline: none;
+}
+
+.btn[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .btn-primary {
@@ -253,16 +274,12 @@ body {
     color: white;
 }
 
-.btn-primary:hover {
-    background-color: var(--primary-dark);
-}
-
 .btn-outline {
     background-color: transparent;
     border: 1px solid var(--gray-light);
     color: var(--gray);
 }
-
+ 
 .status-message-container {
     margin-top: 10px;
 }
@@ -272,66 +289,38 @@ body {
     border-radius: var(--border-radius);
     font-weight: 500;
     font-size: 0.8rem;
+    margin-top: 5px; /* مسافة أعلى رسالة التحقق */
+}
+
+.hidden {
+    display: none !important;
 }
 
 .success {
-    background-color: rgba(67, 197, 158, 0.15);
+    background-color: rgba(46, 204, 113, 0.15);
     color: var(--secondary-dark);
-    border: 1px solid rgba(67, 197, 158, 0.3);
+    border: 1px solid rgba(46, 204, 113, 0.3);
 }
 
 .error {
-    background-color: rgba(255, 107, 107, 0.15);
+    background-color: rgba(231, 76, 60, 0.15);
     color: var(--danger-dark);
-    border: 1px solid rgba(255, 107, 107, 0.3);
+    border: 1px solid rgba(231, 76, 60, 0.3);
 }
 
 .info {
-    background-color: rgba(63, 136, 255, 0.15);
+    background-color: rgba(52, 152, 219, 0.15);
     color: var(--primary-dark);
-    border: 1px solid rgba(63, 136, 255, 0.3);
+    border: 1px solid rgba(52, 152, 219, 0.3);
 }
 
-/* الجدول */
-.table-container {
-    margin-top: 15px;
-    overflow-x: auto;
+.info-message-block {
+    display: block !important;
+    margin-bottom: 10px;
 }
-
-.reservations-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-}
-
-.reservations-table th, .reservations-table td {
-    padding: 8px;
-    border: 1px solid #e3e8ef;
-    text-align: right;
-    vertical-align: top;
-    font-size: 0.75rem;
-}
-
-.reservations-table thead tr {
-    background-color: var(--primary-dark);
-    color: white;
-}
-
-.reservations-table tbody tr:nth-child(even) {
-    background-color: #f7f9fb;
-}
-
-.reservations-table tbody tr:hover {
-    background-color: #eef3fb;
-}
-
-.summary-cell {
-    white-space: pre-wrap;
-    text-align: right;
-}
-
-#phone_new, #phone_edit {
-    direction: rtl;
-    text-align: right;
+ 
+/* تنسيقات حقل الجوال لفرض الاتجاه من اليمين لليسار */
+#phone_new {
+    direction: rtl; 
+    text-align: right; 
 }
