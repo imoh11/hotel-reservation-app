@@ -193,9 +193,6 @@
                     <div class="collapsible-content"> 
                         <div class="form-row">
                             <div class="form-group">
-                                <input type="text" id="resNumber_edit" class="form-control" placeholder="رقم الحجز" readonly>
-                            </div>
-                            <div class="form-group">
                                 <select id="type_edit" class="form-control" required>
                                     <option value="" disabled selected>اختر نوع الحجز</option>
                                     <option value="مؤكد">مؤكد</option>
@@ -316,7 +313,7 @@
                                 <input type="text" id="transfererName_edit" class="form-control" placeholder="اسم المحول (اختياري)">
                             </div>
                             <div class="form-group">
-                                <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="transferDate_edit" class="form-control" placeholder="تاريخ التحويل (اختياري)">
+                                <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="currentDate_edit" class="form-control" placeholder="تاريخ التحويل (اختياري)">
                             </div>
                         </div>
 
@@ -353,4 +350,3 @@
     <script src="script.js"></script> 
 </body>
 </html>
-
