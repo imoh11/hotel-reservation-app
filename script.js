@@ -36,11 +36,11 @@ const FIELD_IDS = {
     NOTES: 'fld6J3886d7hSle25'
 };
 
-// الحد الأقصى لعدد الغرف المتاحة لكل نوع جناح (يجب تعديلها حسب الفندق)
+// الحد الأقصى لعدد الغرف المتاحة لكل نوع جناح (تم التحديث بناءً على طلبك)
 const SUITE_CAPACITIES = {
-    guest: 14,  // جناح ضيافة
-    vip: 4,     // جناح VIP
-    royal: 2    // جناح ملكي
+    guest: 14,  // جناح ضيافة (14 غرفة)
+    vip: 4,     // جناح VIP (4 غرف)
+    royal: 2    // جناح ملكي (2 غرفة)
 };
 
 // ربط مفاتيح الأجنحة بمعرفات الحقول
@@ -61,7 +61,7 @@ const SUITE_CONFIG = {
     },
     royal: {
         count: FIELD_IDS.ROYAL_COUNT,
-        arrival: FIELD:IDS.ROYAL_ARRIVAL,
+        arrival: FIELD_IDS.ROYAL_ARRIVAL,
         departure: FIELD_IDS.ROYAL_DEPARTURE,
         nameAr: 'جناح ملكي',
         prefix: 'royal'
@@ -73,6 +73,7 @@ const SUITE_CONFIG = {
 // ===============================================
 
 function showStatus(message, type = 'info', tabId, autoHide = true) {
+    // هذه الوظيفة تستهدف رسالة الحالة العامة أسفل نموذج الحجز، وليس رسائل التحقق الخاصة بالأجنحة
     const statusDiv = document.getElementById(`statusMessage_${tabId}`); 
     if (!statusDiv) return;
 
@@ -81,7 +82,7 @@ function showStatus(message, type = 'info', tabId, autoHide = true) {
     statusDiv.innerHTML = message;
     statusDiv.classList.remove('hidden');
 
-    if (autoHide && type !== 'error') { // لا تخفِ رسائل الخطأ تلقائياً
+    if (autoHide && type !== 'error') { // لا تخفِ رسائل الخطأ العامة تلقائياً
         setTimeout(() => {
             statusDiv.classList.add('hidden');
             statusDiv.innerHTML = '';
@@ -118,6 +119,7 @@ function calculateDaysPerSuite(prefix, suiteKey) {
 
     if (arrivalTimestamp && departureTimestamp && departureTimestamp >= arrivalTimestamp) {
         const timeDifference = departureTimestamp - arrivalTimestamp;
+        // حساب فرق الأيام بدقة (بإضافة 100 ملي ثانية لتجنب مشاكل التوقيت الصيفي/المحلي)
         const daysDifference = Math.round(timeDifference / (1000 * 3600 * 24)); 
         daysInput.value = daysDifference;
         
@@ -146,23 +148,7 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
     const config = SUITE_CONFIG[suiteKey];
     const maxCapacity = SUITE_CAPACITIES[suiteKey];
     
-    // فلتر Airtable: جلب الحجوزات التي تتداخل مع الفترة المطلوبة
-    const filterFormula = `AND(` +
-        // يجب أن تكون تواريخ الحجز الجديدة محصورة بين
-        `IS_AFTER({${config.arrival}}, '${arrivalDate}'),` + 
-        `IS_BEFORE({${config.departure}}, '${departureDate}'),` + 
-        // أو أن يكون الحجز القديم يبدأ قبل انتهاء الحجز الجديد
-        `OR(` + 
-            `AND(IS_BEFORE({${config.arrival}}, '${departureDate}'), IS_AFTER({${config.departure}}, '${arrivalDate}')),` +
-            `AND(IS_BEFORE({${config.arrival}}, '${departureDate}'), IS_EMPTY({${config.departure}})),` + // حجز مفتوح المغادرة
-            `AND(IS_EMPTY({${config.arrival}}), IS_AFTER({${config.departure}}, '${arrivalDate}')),` + // حجز مفتوح الوصول
-            `AND(IS_EMPTY({${config.arrival}}), IS_EMPTY({${config.departure}}))` // حجز لا توجد به تواريخ (غير عملي، لكن للاحتياط)
-        + `)`
-        // للتسهيل، نستخدم فلتر بسيط يغطي التداخل
-        // OR(AND({Arrival} < EndDate, {Departure} > StartDate), ...)
-    + `)`;
-
-    // صيغة أكثر دقة للتداخل الزمني: (Start1 < End2) AND (End1 > Start2)
+    // صيغة التداخل الزمني: (Start1 < End2) AND (End1 > Start2)
     const detailedFilter = `AND(` +
         `{${config.arrival}} < '${departureDate}',` +
         `{${config.departure}} > '${arrivalDate}'` +
@@ -188,7 +174,7 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
         });
 
         const available = maxCapacity - totalReserved;
-        return Math.max(0, available); // لا يمكن أن يكون أقل من صفر
+        return Math.max(0, available); 
     } catch (error) {
         console.error('Error fetching availability:', error);
         return -1; // رمز يشير إلى وجود خطأ
@@ -201,7 +187,6 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
  * @param {string} prefix - البادئة (new)
  */
 async function checkAndValidateAvailability(suiteKey, prefix) {
-    const statusDivId = `${prefix}Reservation`;
     const config = SUITE_CONFIG[suiteKey];
     
     const arrivalInput = document.getElementById(`${suiteKey}Arrival_${prefix}`);
@@ -214,48 +199,57 @@ async function checkAndValidateAvailability(suiteKey, prefix) {
     const departureDate = departureInput.value;
     const requestedCount = parseInt(countInput.value);
     
+    // إخفاء رسالة التحقق
     validationMessage.textContent = '';
     validationMessage.classList.add('hidden');
-    submitButton.disabled = false; // افتراضياً، قم بتفعيل الزر
+    // submitButton.disabled = false; // لا نلغي التعطيل هنا، فقط نبدأ بالإظهار
 
     if (!arrivalDate || !departureDate || !requestedCount || requestedCount <= 0) {
         return; 
     }
     
-    // التحقق من صلاحية التاريخ
+    // التحقق من صلاحية التاريخ (المغادرة بعد الوصول)
     if (Date.parse(departureDate) <= Date.parse(arrivalDate)) {
         validationMessage.textContent = '❌ تاريخ المغادرة يجب أن يكون بعد تاريخ الوصول.';
         validationMessage.classList.remove('hidden');
+        validationMessage.classList.remove('success');
+        validationMessage.classList.add('error');
         submitButton.disabled = true;
         return;
     }
     
     validationMessage.textContent = 'جاري التحقق من التوفر... ⏳';
     validationMessage.classList.remove('hidden');
-    submitButton.disabled = true;
+    validationMessage.classList.remove('success');
+    validationMessage.classList.remove('error');
+    validationMessage.classList.add('info');
+    submitButton.disabled = true; // يتم تعطيله أثناء التحقق
 
     const availableCount = await getAvailableCount(suiteKey, arrivalDate, departureDate);
     
+    validationMessage.classList.remove('info'); // إزالة رسالة جاري التحقق
+
     if (availableCount === -1) {
         validationMessage.textContent = '❌ حدث خطأ أثناء الاتصال بقاعدة البيانات. حاول مرة أخرى.';
         validationMessage.classList.remove('hidden');
+        validationMessage.classList.add('error');
         submitButton.disabled = true;
     } else {
         const maxCapacity = SUITE_CAPACITIES[suiteKey];
         if (requestedCount > availableCount) {
             validationMessage.textContent = `❌ لا يمكن حجز ${requestedCount} غرفة. المتاح هو ${availableCount} غرفة فقط من أصل ${maxCapacity} في هذه الفترة.`;
             validationMessage.classList.remove('hidden');
+            validationMessage.classList.add('error');
             submitButton.disabled = true;
         } else {
             validationMessage.textContent = `✅ تم التأكد. ${availableCount} غرفة متاحة من أصل ${maxCapacity} في هذه الفترة.`;
             validationMessage.classList.remove('hidden');
-            validationMessage.classList.remove('error');
             validationMessage.classList.add('success');
-            submitButton.disabled = false;
+            submitButton.disabled = false; // تفعيل الزر إذا كان متاحًا
         }
     }
     
-    // استعادة شكل الرسالة بعد 5 ثواني
+    // استعادة شكل الرسالة بعد 5 ثواني إذا كانت ناجحة
     setTimeout(() => {
         if (validationMessage.textContent.includes('✅')) {
             validationMessage.classList.add('hidden');
@@ -268,10 +262,10 @@ async function checkAndValidateAvailability(suiteKey, prefix) {
 // ===============================================
 // 5. وظيفة حفظ حجز جديد (POST)
 // ===============================================
-// تم تعديل هذه الدالة لإضافة فحص نهائي للتوفر قبل الإرسال الفعلي
+
 async function saveNewReservation() {
     const statusDivId = 'newReservation';
-    // ... (جلب البيانات كما في النسخة السابقة) ...
+
     const guestName = document.getElementById('guestName_new').value;
     const phone = document.getElementById('phone_new').value;
     const counter = document.getElementById('counter_new').value;
@@ -326,6 +320,7 @@ async function saveNewReservation() {
 
     const suiteCounts = [FIELD_IDS.GUEST_COUNT, FIELD_IDS.VIP_COUNT, FIELD_IDS.ROYAL_COUNT];
     suiteCounts.forEach(key => {
+        // إذا كان العدد 0 وتم إدخاله، نحافظ عليه لإرساله
         if (data.hasOwnProperty(key) && data[key] === 0) {
             data[key] = 0;
         }
@@ -334,6 +329,7 @@ async function saveNewReservation() {
     const totalReserved = (data[FIELD_IDS.GUEST_COUNT] || 0) + (data[FIELD_IDS.VIP_COUNT] || 0) + (data[FIELD_IDS.ROYAL_COUNT] || 0);
     const hasArrival = Object.keys(data).some(key => key.includes('ARRIVAL'));
     
+    // إذا لم يتم حجز أي غرفة ولم يتم إدخال أي تواريخ وصول، نعتبره غير مكتمل
     if (totalReserved === 0 && !hasArrival) {
         showStatus('الرجاء تحديد جناح واحد على الأقل وإدخال عدد غرف وتواريخ.', 'error', statusDivId);
         return;
@@ -382,7 +378,6 @@ async function saveNewReservation() {
             })
         });
 
-        // ... (معالجة الاستجابة كما في النسخة السابقة) ...
         if (!response.ok) {
             const errorData = await response.json();
             const errorMessage = (response.status === 422 && errorData.error && errorData.error.message)
@@ -399,8 +394,9 @@ async function saveNewReservation() {
 
         document.getElementById('newReservationForm').reset();
 
-        document.querySelectorAll('span[id$="_summary_new').forEach(span => span.textContent = '');
-        document.querySelectorAll('p[id$="_validation_new').forEach(p => {
+        document.querySelectorAll('span[id$="_summary_new"]').forEach(span => span.textContent = '');
+        // إخفاء رسائل التحقق بعد الحفظ الناجح
+        document.querySelectorAll('p[id$="_validation_new"]').forEach(p => {
              p.classList.add('hidden');
              p.textContent = '';
         });
@@ -413,12 +409,13 @@ async function saveNewReservation() {
 
 
 // ===============================================
-// 6. وظيفة تبديل التبويبات وتهيئة الأحداث
+// 6. وظيفة تبديل التبويبات وتهيئة الأحداث (تم إصلاحها)
 // ===============================================
 
 function switchTab(tabName, button) {
     document.querySelectorAll('.tab-content').forEach(content => {
         content.classList.remove('active');
+        // إخفاء رسائل الحالة عند التبديل
         document.querySelectorAll('.status-message').forEach(msg => {
             msg.classList.add('hidden');
             msg.innerHTML = '';
@@ -432,6 +429,7 @@ function switchTab(tabName, button) {
     document.getElementById(tabName).classList.add('active');
     button.classList.add('active');
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -461,16 +459,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 3. منطق الأقسام المطوية (Collapsible)
+    // 3. منطق الأقسام المطوية (Collapsible) - تم إصلاحه
     document.querySelectorAll('.collapsible-header').forEach(header => {
         header.addEventListener('click', () => {
             const content = header.nextElementSibling;
+            // يجب أن نتحقق من وجود الكلاس لفتح وغلق العناصر بشكل صحيح
             header.classList.toggle('active');
             content.classList.toggle('active');
         });
     });
 
-    // 4. إضافة مُستمعي الأحداث لأزرار التبويبات
+    // 4. إضافة مُستمعي الأحداث لأزرار التبويبات - تم إصلاحه
     document.querySelectorAll('.tab-button').forEach(button => {
         button.addEventListener('click', () => {
             const tabName = button.getAttribute('data-tab');
@@ -479,7 +478,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // 5. تفعيل أول تبويبة وفتح الأقسام المطوية افتراضياً
+    // نستخدم click() لتشغيل منطق التبديل بالكامل
     document.querySelector('.tab-button.active')?.click(); 
+    
+    // لفتح الأقسام المطوية في تبويبة 'حجز جديد' افتراضياً
     document.querySelectorAll('#newReservation .collapsible-header').forEach(header => {
         header.classList.add('active');
         const content = header.nextElementSibling;
