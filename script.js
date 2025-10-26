@@ -15,14 +15,11 @@
    إعدادات — غيّر القيم هنا
    ========================= */
 const CONFIG = {
-  // ضع URL الخادم الوسيط هنا (مفضل). مثال: '/api/airtable' أو '/.netlify/functions/airtable'
- /.netlify/functions/airtable-proxy/reservations
-  // خيار تشغيل مباشر (غير موصى به للإنتاج): لو true ستستخدم AIRTABLE_API_KEY من المتصفح
+  API_BASE: '/.netlify/functions/airtable-proxy',
   USE_DIRECT: false,
-  AIRTABLE_API_KEY: '', // إذا فعلت USE_DIRECT ضع المفتاح هنا (غير مستحسن)
-  AIRTABLE_BASE_ID: 'appXXXXXXXXXXXX', // ضع Base ID إن كنت تستخدم DIRECT
-  AIRTABLE_TABLE_NAME: 'Reservations',   // اسم الجدول في Airtable
-  // تكوين العرض
+  AIRTABLE_API_KEY: '',
+  AIRTABLE_BASE_ID: 'appXXXXXXXXXXXX',
+  AIRTABLE_TABLE_NAME: 'Reservations',
   PAGE_SIZE: 50
 };
 
@@ -329,4 +326,5 @@ window.__APP_DEBUG = {
   CONFIG,
   FIELD_IDS
 };
+
 
