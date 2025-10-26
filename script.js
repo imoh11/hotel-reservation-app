@@ -197,7 +197,8 @@ async function saveNewReservation() {
 
         document.getElementById('newReservationForm').reset();
 
-        document.querySelectorAll('span[id$="_summary_new').forEach(span => span.textContent = '');
+        document.querySelectorAll('span[id$="_summary_new"], span[id$="_summary_edit"]').forEach(span => span.textContent = '');
+
     } catch (error) {
         console.error('Error saving reservation:', error);
         showStatus(`❌ فشل حفظ الحجز. (خطأ: ${error.message || 'غير معروف'}).`, 'error', statusDivId);
@@ -605,3 +606,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // تفعيل أول تبويبة عند التحميل
     document.querySelector('.tab-button')?.click();
 });
+
