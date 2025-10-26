@@ -24,7 +24,7 @@ const FIELD_IDS = {
     GUEST_DEPARTURE: 'fldqigNkyfC2ZRfxJ',
     GUEST_COUNT: 'fldm5R1GFdeJaNCwp',
     VIP_ARRIVAL: 'fldCnuObF607viGRo',
-    VIP_DEPARTURE: 'fldvW7j98B2JR0Zk', // تم التأكد من المعرّف
+    VIP_DEPARTURE: 'fldvW7j98Xb2JR0Zk', // 💥 تم تصحيح هذا المعرّف بناءً على قائمتك
     VIP_COUNT: 'flde1QyYM73ezs565',
     ROYAL_ARRIVAL: 'fldbjG9dQHT0inlXx',
     ROYAL_DEPARTURE: 'fldkC8A1Bh7iIrBwk',
@@ -132,7 +132,7 @@ function calculateDaysPerSuite(prefix, suiteKey) {
 
 
 // ===============================================
-// 4. وظائف التحقق من التوفر (المنطق الجديد)
+// 4. وظائف التحقق من التوفر (المنطق المصحح)
 // ===============================================
 
 /**
@@ -147,7 +147,7 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
     const maxCapacity = SUITE_CAPACITIES[suiteKey];
     
     // الصيغة الدقيقة للتداخل الزمني: (تاريخ وصول الحجز القديم < تاريخ مغادرة الحجز الجديد) AND (تاريخ مغادرة الحجز القديم > تاريخ وصول الحجز الجديد)
-    // هذا الفلتر يجمع كل الغرف المحجوزة في الفترة المطلوبة.
+    // الآن سيتم استخدام المعرّفات الصحيحة لـ VIP
     const detailedFilter = `AND(` +
         `{${config.arrival}} < '${departureDate}',` +
         `{${config.departure}} > '${arrivalDate}'` +
@@ -169,7 +169,8 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
         let totalReserved = 0;
         // جمع كل الغرف المحجوزة التي تتداخل مع الفترة المطلوبة
         data.records.forEach(record => {
-            const reservedCount = record.fields[config.count] || 0;
+            // التحقق من وجود الحقل قبل إضافته
+            const reservedCount = record.fields[config.count] || 0; 
             totalReserved += reservedCount;
         });
 
@@ -199,7 +200,6 @@ async function checkAndValidateAvailability(suiteKey, prefix) {
     const departureDate = departureInput.value;
     const requestedCount = parseInt(countInput.value);
     
-    // إخفاء رسالة التحقق
     validationMessage.textContent = '';
     validationMessage.classList.add('hidden');
 
@@ -229,7 +229,7 @@ async function checkAndValidateAvailability(suiteKey, prefix) {
     validationMessage.classList.remove('info'); // إزالة رسالة جاري التحقق
 
     if (availableCount === -1) {
-        validationMessage.textContent = '❌ حدث خطأ أثناء الاتصال بقاعدة البيانات. حاول مرة أخرى.';
+        validationMessage.textContent = '❌ حدث خطأ أثناء الاتصال بقاعدة البيانات. تأكد من مفتاح الـ API والمعرّفات.';
         validationMessage.classList.remove('hidden');
         validationMessage.classList.add('error');
         submitButton.disabled = true;
@@ -248,7 +248,6 @@ async function checkAndValidateAvailability(suiteKey, prefix) {
         }
     }
     
-    // استعادة شكل الرسالة بعد 5 ثواني إذا كانت ناجحة
     setTimeout(() => {
         if (validationMessage.textContent.includes('✅')) {
             validationMessage.classList.add('hidden');
@@ -333,7 +332,7 @@ async function saveNewReservation() {
     }
     
     // ==============================================
-    // فحص التوفر النهائي قبل الإرسال
+    // فحص التوفر النهائي قبل الإرسال (باستخدام المعرّفات المصححة)
     // ==============================================
     let allAvailable = true;
     for (const suiteKey of Object.keys(SUITE_CONFIG)) {
@@ -454,7 +453,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 3. منطق الأقسام المطوية (Collapsible) - تم إصلاحه
+    // 3. منطق الأقسام المطوية (Collapsible) 
     document.querySelectorAll('.collapsible-header').forEach(header => {
         header.addEventListener('click', () => {
             const content = header.nextElementSibling;
@@ -463,7 +462,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 4. إضافة مُستمعي الأحداث لأزرار التبويبات - تم إصلاحه
+    // 4. إضافة مُستمعي الأحداث لأزرار التبويبات 
     document.querySelectorAll('.tab-button').forEach(button => {
         button.addEventListener('click', () => {
             const tabName = button.getAttribute('data-tab');
