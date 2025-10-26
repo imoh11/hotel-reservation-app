@@ -258,23 +258,22 @@ async function handleSaveNewReservation(evt) {
     }
 
     const suites = ['guest', 'vip', 'royal'];
-    const payload = {};
-    
-    // تعبئة البيانات من حقول النموذج
-    const amountValue = qs('#amount_new').value.replace(/[^0-9.]/g, '');
+    const payloa    // تعبئة البيانات من حقول النموذج
+    const amountValue = qs('#amount_edit').value.replace(/[^0-9.]/g, '');
     const amount = (amountValue.trim() !== '' && !isNaN(parseFloat(amountValue))) ? parseFloat(amountValue) : undefined;
     
+    // 🚨 إضافة حقل رقم الحجز
+    payload[FIELD_IDS.RES_NUMBER] = qs('#resNumber_edit').value || undefined; 
     payload[FIELD_IDS.RES_TYPE] = resType;
     payload[FIELD_IDS.COUNTER] = counter;
     payload[FIELD_IDS.GUEST_NAME] = guestName;
     payload[FIELD_IDS.PHONE] = phone;
-    payload[FIELD_IDS.SOURCE] = qs('#source_new').value || undefined;
+    payload[FIELD_IDS.SOURCE] = qs('#source_edit').value || undefined;
     payload[FIELD_IDS.AMOUNT] = amount;
-    payload[FIELD_IDS.TRANSFERER_NAME] = qs('#transfererName_new').value || undefined;
-    payload[FIELD_IDS.TRANSFER_DATE] = getSuiteValue('new', 'currentDate', '');
-    payload[FIELD_IDS.NOTES] = qs('#notes_new').value || undefined;
-
-    let totalReserved = 0;
+    payload[FIELD_IDS.TRANSFERER_NAME] = qs('#transfererName_edit').value || undefined;
+    // 🚨 تصحيح ID حقل تاريخ التحويل
+    payload[FIELD_IDS.TRANSFER_DATE] = qs('#transferDate_edit').value || undefined; 
+    payload[FIELD_IDS.NOTES] = qs('#notes_edit').value || undefined;;
     suites.forEach(suiteKey => {
         const count = getSuiteValue('new', suiteKey, 'SuiteCount');
         const arrival = getSuiteValue('new', suiteKey, 'Arrival');
@@ -381,6 +380,8 @@ function populateEditForm(record) {
     console.log(`[FINAL CHECK] Form Visibility Status: ${formElement.style.display}`); 
     
     // تعبئة الحقول الأساسية
+    // 🚨 إضافة حقل رقم الحجز
+    qs(`#resNumber_${prefix}`).value = fields[FIELD_IDS.RES_NUMBER] || ''; 
     qs(`#guestName_${prefix}`).value = fields[FIELD_IDS.GUEST_NAME] || '';
     qs(`#phone_${prefix}`).value = fields[FIELD_IDS.PHONE] || '';
     qs(`#type_${prefix}`).value = fields[FIELD_IDS.RES_TYPE] || '';
@@ -406,7 +407,8 @@ function populateEditForm(record) {
 
     // تعبئة الملاحظات والتحويل
     qs('#transfererName_edit').value = fields[FIELD_IDS.TRANSFERER_NAME] || '';
-    qs('#currentDate_edit').value = fields[FIELD_IDS.TRANSFER_DATE] || '';
+    // 🚨 تصحيح ID حقل تاريخ التحويل من currentDate_edit إلى transferDate_edit
+    qs('#transferDate_edit').value = fields[FIELD_IDS.TRANSFER_DATE] || ''; 
     qs('#notes_edit').value = fields[FIELD_IDS.NOTES] || '';
 
     // تفعيل الأقسام المطوية (لإظهار البيانات التي كانت مخفية)
@@ -639,3 +641,4 @@ if (document.readyState === 'loading') {
 } else {
     init();
 }
+
