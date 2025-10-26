@@ -19,12 +19,12 @@ const FIELD_IDS = {
     PHONE: 'fldZxjo1fzU9FQR2Q',
     AMOUNT: 'fldbsNQcjGZni1Z6w',
 
-    // حقول تفاصيل الأجنحة - جميعها صحيحة
+    // حقول تفاصيل الأجنحة - جميعها صحيحة ومؤكدة
     GUEST_ARRIVAL: 'fldMUosyFGqomDcy0',
     GUEST_DEPARTURE: 'fldqigNkyfC2ZRfxJ',
     GUEST_COUNT: 'fldm5R1GFdeJaNCwp',
     VIP_ARRIVAL: 'fldCnuObF607viGRo',
-    VIP_DEPARTURE: 'fldvW7j98Xb2JR0Zk', // 🟢 صحيح
+    VIP_DEPARTURE: 'fldvW7j98Xb2JR0Zk', 
     VIP_COUNT: 'flde1QyYM73ezs565',
     ROYAL_ARRIVAL: 'fldbjG9dQHT0inlXx',
     ROYAL_DEPARTURE: 'fldkC8A1Bh7iIrBwk',
@@ -69,7 +69,7 @@ const SUITE_CONFIG = {
 };
 
 // ===============================================
-// 3. وظائف الواجهة المساعدة (لم تتغير)
+// 3. وظائف الواجهة المساعدة
 // ===============================================
 
 function showStatus(message, type = 'info', tabId, autoHide = true) {
@@ -138,7 +138,7 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
     const config = SUITE_CONFIG[suiteKey];
     const maxCapacity = SUITE_CAPACITIES[suiteKey];
     
-    // الصيغة الدقيقة للتداخل الزمني والمستخدمة في Airtable: (نهاية الحجز القائم > بداية الحجز الجديد) و (بداية الحجز القائم < نهاية الحجز الجديد)
+    // الصيغة الدقيقة للتداخل الزمني: (نهاية الحجز القائم > بداية الحجز الجديد) و (بداية الحجز القائم < نهاية الحجز الجديد)
     const detailedFilter = `AND(` +
         `{${config.arrival}} < '${departureDate}',` +
         `{${config.departure}} > '${arrivalDate}'` +
@@ -152,7 +152,6 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
         });
 
         if (!response.ok) {
-            // إذا كان الخطأ 401 (غير مصرح به)، فهذا يعني أن مفتاح API غير صحيح
             const errorText = await response.text();
             throw new Error(`Airtable fetch failed with status: ${response.status}. Response: ${errorText}`);
         }
@@ -160,9 +159,11 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
         const data = await response.json();
         
         let totalReserved = 0;
-        // يتم جمع عدد الغرف من كل سجل يعيده Airtable (أي كل حجز متداخل)
+        
+        // 💥 الإصلاح الحاسم: ضمان قراءة الأرقام بشكل صحيح
         data.records.forEach(record => {
-            const reservedCount = record.fields[config.count] || 0;
+            // استخدام parseFloat لضمان قراءة أي قيمة رقمية (حتى لو كانت سلسلة نصية) واستخدام 0 كقيمة احتياطية
+            const reservedCount = parseFloat(record.fields[config.count]) || 0;
             totalReserved += reservedCount;
         });
 
@@ -170,7 +171,6 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
         return Math.max(0, available); 
     } catch (error) {
         console.error('Error fetching availability:', error);
-        // رمز خطأ خاص لنعرض رسالة توضيحية للمستخدم
         return -2; 
     }
 }
@@ -217,7 +217,7 @@ async function checkAndValidateAvailability(suiteKey, prefix) {
     validationMessage.classList.remove('info');
 
     if (availableCount === -2) {
-        validationMessage.textContent = '❌ فشل الاتصال بقاعدة البيانات. تأكد من **مفتاح الـ API** و **معرّفات الجدول**، وحاول مرة أخرى.';
+        validationMessage.textContent = '❌ فشل الاتصال بقاعدة البيانات. تحقق من مفتاح الـ API. (انظر Console للمزيد).';
         validationMessage.classList.remove('hidden');
         validationMessage.classList.add('error');
         submitButton.disabled = true;
@@ -232,7 +232,7 @@ async function checkAndValidateAvailability(suiteKey, prefix) {
             validationMessage.textContent = `✅ تم التأكد. ${availableCount} غرفة متاحة من أصل ${maxCapacity} في هذه الفترة.`;
             validationMessage.classList.remove('hidden');
             validationMessage.classList.add('success');
-            submitButton.disabled = false; // تفعيل الزر إذا كان متاحًا
+            submitButton.disabled = false;
         }
     }
     
@@ -246,7 +246,7 @@ async function checkAndValidateAvailability(suiteKey, prefix) {
 
 
 // ===============================================
-// 5. وظيفة حفظ حجز جديد (POST) (لم تتغير)
+// 5. وظيفة حفظ حجز جديد (POST)
 // ===============================================
 
 async function saveNewReservation() {
@@ -389,7 +389,7 @@ async function saveNewReservation() {
 
 
 // ===============================================
-// 6. وظيفة تبديل التبويبات وتهيئة الأحداث (لم تتغير)
+// 6. وظيفة تبديل التبويبات وتهيئة الأحداث
 // ===============================================
 
 function switchTab(tabName, button) {
