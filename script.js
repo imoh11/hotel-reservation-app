@@ -225,12 +225,12 @@ async function checkAndValidateAvailability(suiteKey, prefix) {
     } else {
         const maxCapacity = SUITE_CAPACITIES[suiteKey];
         if (requestedCount > availableCount) {
-            validationMessage.textContent = `❌ لا يمكن حجز في هذه الفترة.`;
+            validationMessage.textContent = `❌ لا يمكن حجز ${requestedCount} غرفة. المتاح هو ${availableCount} غرفة فقط من أصل ${maxCapacity} في هذه الفترة.`;
             validationMessage.classList.remove('hidden');
             validationMessage.classList.add('error');
             submitButton.disabled = true;
         } else {
-            validationMessage.textContent = `✅ الحجز متاح.;
+            validationMessage.textContent = `✅ تم التأكد. ${availableCount} غرفة متاحة من أصل ${maxCapacity} في هذه الفترة.`;
             validationMessage.classList.remove('hidden');
             validationMessage.classList.add('success');
             submitButton.disabled = false;
@@ -460,4 +460,3 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 });
-
