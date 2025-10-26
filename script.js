@@ -16,7 +16,7 @@
    ========================= */
 const CONFIG = {
   // ضع URL الخادم الوسيط هنا (مفضل). مثال: '/api/airtable' أو '/.netlify/functions/airtable'
-  API_BASE: '/api/airtable', // <-- عدّل حسب إعدادك
+ /.netlify/functions/airtable-proxy/reservations
   // خيار تشغيل مباشر (غير موصى به للإنتاج): لو true ستستخدم AIRTABLE_API_KEY من المتصفح
   USE_DIRECT: false,
   AIRTABLE_API_KEY: '', // إذا فعلت USE_DIRECT ضع المفتاح هنا (غير مستحسن)
@@ -329,3 +329,4 @@ window.__APP_DEBUG = {
   CONFIG,
   FIELD_IDS
 };
+
