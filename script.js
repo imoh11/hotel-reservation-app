@@ -19,9 +19,6 @@ const FIELD_IDS = {
     PHONE: 'fldZxjo1fzU9FQR2Q',
     AMOUNT: 'fldbsNQcjGZni1Z6w',
 
-    // حقل الملخص الذي يجب عرضه
-    SUMMARY_COLUMN: 'fldv0jKm0o4PWiQbX',
-
     // حقول تفاصيل الأجنحة
     GUEST_ARRIVAL: 'fldMUosyFGqomDcy0',
     GUEST_DEPARTURE: 'fldqigNkyfC2ZRfxJ',
@@ -443,7 +440,8 @@ async function loadFutureReservations() {
 
     const viewName = 'حجوزات قادمة';
 
-    const queryString = `view=${encodeURIComponent(viewName)}&sort[0][field]=${FIELD_IDS.GUEST_ARRIVAL}&sort[0][direction]=asc`;
+    const fieldsToInclude = Object.values(FIELD_IDS).map(f => `fields[]=${f}`).join('&');
+    const queryString = `view=${encodeURIComponent(viewName)}&sort[0][field]=${FIELD_IDS.GUEST_ARRIVAL}&sort[0][direction]=asc&${fieldsToInclude}`;
     const url = `${AIRTABLE_API_URL}?${queryString}`;
 
 
@@ -508,14 +506,41 @@ function renderReservationsTable(reservations) {
 
         const guestName = fields[FIELD_IDS.GUEST_NAME] || 'غير محدد';
         const recordId = record.id;
-        const summaryText = fields[FIELD_IDS.SUMMARY_COLUMN] || '- لا توجد تفاصيل -';
+        const resType = fields[FIELD_IDS.RES_TYPE] || 'غير محدد';
+        const counter = fields[FIELD_IDS.COUNTER] || 'غير محدد';
+
+        let details = `
+            <p><strong>النوع:</strong> ${resType}</p>
+            <p><strong>الكونتر:</strong> ${counter}</p>
+        `;
+
+        const suites = [
+            { key: 'GUEST', label: 'النزيل' },
+            { key: 'VIP', label: 'VIP' },
+            { key: 'ROYAL', label: 'ملكي' }
+        ];
+
+        suites.forEach(suite => {
+            const arrival = fields[FIELD_IDS[`${suite.key}_ARRIVAL`]];
+            const departure = fields[FIELD_IDS[`${suite.key}_DEPARTURE`]];
+            const count = fields[FIELD_IDS[`${suite.key}_COUNT`]];
+
+            if (count > 0) {
+                details += `
+                    <div style="margin-top: 5px; padding-top: 5px; border-top: 1px solid #eee;">
+                        <strong>${suite.label} (${count} جناح):</strong>
+                        <p style="margin: 0;">الوصول: ${arrival || 'غير محدد'}</p>
+                        <p style="margin: 0;">المغادرة: ${departure || 'غير محدد'}</p>
+                    </div>
+                `;
+            }
+        });
 
         const tr = document.createElement('tr');
 
-
         tr.innerHTML = `
             <td>${guestName} <small style="display:block; color:var(--gray);">${recordId}</small></td>
-            <td class="summary-cell">${summaryText}</td>
+            <td class="summary-cell">${details}</td>
         `;
         tbody.appendChild(tr);
     });
