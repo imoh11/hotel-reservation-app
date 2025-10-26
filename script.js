@@ -1,13 +1,13 @@
 // =================================================================
 // 1. إعدادات Airtable الأساسية - يجب تعديلها
 // =================================================================
-const AIRTABLE_API_KEY = "AIRTABLE_API_KEY_PLACEHOLDER"; // 🚨 تأكد من استبدال هذا المفتاح
+const AIRTABLE_API_KEY = "AIRTABLE_API_KEY_PLACEHOLDER"; // 🚨 يجب استبدال هذا المفتاح بمفتاحك الخاص
 const BASE_ID = 'appZm1T1ecVIlWOwy';
 const TABLE_NAME = 'tbloqjxnWuD2aH66H'; 
 const AIRTABLE_API_URL = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`;
 
 // =================================================================
-// 2. FIELD IDS & CONFIGS (معرّفات الحقول الثابتة والإعدادات)
+// 2. FIELD IDS & CONFIGS (معرّفات الحقول الثابتة والصحيحة)
 // =================================================================
 const FIELD_IDS = {
     // الحقول الأساسية
@@ -19,12 +19,12 @@ const FIELD_IDS = {
     PHONE: 'fldZxjo1fzU9FQR2Q',
     AMOUNT: 'fldbsNQcjGZni1Z6w',
 
-    // حقول تفاصيل الأجنحة
+    // حقول تفاصيل الأجنحة - جميعها صحيحة
     GUEST_ARRIVAL: 'fldMUosyFGqomDcy0',
     GUEST_DEPARTURE: 'fldqigNkyfC2ZRfxJ',
     GUEST_COUNT: 'fldm5R1GFdeJaNCwp',
     VIP_ARRIVAL: 'fldCnuObF607viGRo',
-    VIP_DEPARTURE: 'fldvW7j98Xb2JR0Zk', // 💥 تم تصحيح هذا المعرّف بناءً على قائمتك
+    VIP_DEPARTURE: 'fldvW7j98Xb2JR0Zk', // 🟢 صحيح
     VIP_COUNT: 'flde1QyYM73ezs565',
     ROYAL_ARRIVAL: 'fldbjG9dQHT0inlXx',
     ROYAL_DEPARTURE: 'fldkC8A1Bh7iIrBwk',
@@ -69,7 +69,7 @@ const SUITE_CONFIG = {
 };
 
 // ===============================================
-// 3. وظائف الواجهة المساعدة
+// 3. وظائف الواجهة المساعدة (لم تتغير)
 // ===============================================
 
 function showStatus(message, type = 'info', tabId, autoHide = true) {
@@ -121,7 +121,6 @@ function calculateDaysPerSuite(prefix, suiteKey) {
         const daysDifference = Math.round(timeDifference / (1000 * 3600 * 24)); 
         daysInput.value = daysDifference;
         
-        // التحقق من التوفر عند إدخال التواريخ
         if (parseInt(countInput.value) > 0) {
              checkAndValidateAvailability(suiteKey, prefix);
         }
@@ -132,22 +131,14 @@ function calculateDaysPerSuite(prefix, suiteKey) {
 
 
 // ===============================================
-// 4. وظائف التحقق من التوفر (المنطق المصحح)
+// 4. وظائف التحقق من التوفر (المنطق المصحح والمؤكد)
 // ===============================================
 
-/**
- * دالة جلب الحجوزات القائمة والتحقق من التوفر
- * @param {string} suiteKey - مفتاح الجناح (guest, vip, royal)
- * @param {string} arrivalDate - تاريخ الوصول بتنسيق YYYY-MM-DD
- * @param {string} departureDate - تاريخ المغادرة بتنسيق YYYY-MM-DD
- * @returns {Promise<number>} - العدد المتبقي من الغرف الشاغرة
- */
 async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
     const config = SUITE_CONFIG[suiteKey];
     const maxCapacity = SUITE_CAPACITIES[suiteKey];
     
-    // الصيغة الدقيقة للتداخل الزمني: (تاريخ وصول الحجز القديم < تاريخ مغادرة الحجز الجديد) AND (تاريخ مغادرة الحجز القديم > تاريخ وصول الحجز الجديد)
-    // الآن سيتم استخدام المعرّفات الصحيحة لـ VIP
+    // الصيغة الدقيقة للتداخل الزمني والمستخدمة في Airtable: (نهاية الحجز القائم > بداية الحجز الجديد) و (بداية الحجز القائم < نهاية الحجز الجديد)
     const detailedFilter = `AND(` +
         `{${config.arrival}} < '${departureDate}',` +
         `{${config.departure}} > '${arrivalDate}'` +
@@ -161,16 +152,17 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
         });
 
         if (!response.ok) {
-            throw new Error(`Airtable fetch failed with status: ${response.status}`);
+            // إذا كان الخطأ 401 (غير مصرح به)، فهذا يعني أن مفتاح API غير صحيح
+            const errorText = await response.text();
+            throw new Error(`Airtable fetch failed with status: ${response.status}. Response: ${errorText}`);
         }
 
         const data = await response.json();
         
         let totalReserved = 0;
-        // جمع كل الغرف المحجوزة التي تتداخل مع الفترة المطلوبة
+        // يتم جمع عدد الغرف من كل سجل يعيده Airtable (أي كل حجز متداخل)
         data.records.forEach(record => {
-            // التحقق من وجود الحقل قبل إضافته
-            const reservedCount = record.fields[config.count] || 0; 
+            const reservedCount = record.fields[config.count] || 0;
             totalReserved += reservedCount;
         });
 
@@ -178,18 +170,15 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
         return Math.max(0, available); 
     } catch (error) {
         console.error('Error fetching availability:', error);
-        return -1; 
+        // رمز خطأ خاص لنعرض رسالة توضيحية للمستخدم
+        return -2; 
     }
 }
 
 /**
  * وظيفة التحقق من التوفر والتحقق من صحة الإدخال
- * @param {string} suiteKey - مفتاح الجناح (guest, vip, royal)
- * @param {string} prefix - البادئة (new)
  */
 async function checkAndValidateAvailability(suiteKey, prefix) {
-    const config = SUITE_CONFIG[suiteKey];
-    
     const arrivalInput = document.getElementById(`${suiteKey}Arrival_${prefix}`);
     const departureInput = document.getElementById(`${suiteKey}Departure_${prefix}`);
     const countInput = document.getElementById(`${suiteKey}SuiteCount_${prefix}`);
@@ -207,7 +196,6 @@ async function checkAndValidateAvailability(suiteKey, prefix) {
         return; 
     }
     
-    // التحقق من صلاحية التاريخ (المغادرة بعد الوصول)
     if (Date.parse(departureDate) <= Date.parse(arrivalDate)) {
         validationMessage.textContent = '❌ تاريخ المغادرة يجب أن يكون بعد تاريخ الوصول.';
         validationMessage.classList.remove('hidden');
@@ -226,10 +214,10 @@ async function checkAndValidateAvailability(suiteKey, prefix) {
 
     const availableCount = await getAvailableCount(suiteKey, arrivalDate, departureDate);
     
-    validationMessage.classList.remove('info'); // إزالة رسالة جاري التحقق
+    validationMessage.classList.remove('info');
 
-    if (availableCount === -1) {
-        validationMessage.textContent = '❌ حدث خطأ أثناء الاتصال بقاعدة البيانات. تأكد من مفتاح الـ API والمعرّفات.';
+    if (availableCount === -2) {
+        validationMessage.textContent = '❌ فشل الاتصال بقاعدة البيانات. تأكد من **مفتاح الـ API** و **معرّفات الجدول**، وحاول مرة أخرى.';
         validationMessage.classList.remove('hidden');
         validationMessage.classList.add('error');
         submitButton.disabled = true;
@@ -258,7 +246,7 @@ async function checkAndValidateAvailability(suiteKey, prefix) {
 
 
 // ===============================================
-// 5. وظيفة حفظ حجز جديد (POST)
+// 5. وظيفة حفظ حجز جديد (POST) (لم تتغير)
 // ===============================================
 
 async function saveNewReservation() {
@@ -331,9 +319,7 @@ async function saveNewReservation() {
         return;
     }
     
-    // ==============================================
-    // فحص التوفر النهائي قبل الإرسال (باستخدام المعرّفات المصححة)
-    // ==============================================
+    // فحص التوفر النهائي قبل الإرسال 
     let allAvailable = true;
     for (const suiteKey of Object.keys(SUITE_CONFIG)) {
         const count = data[SUITE_CONFIG[suiteKey].count];
@@ -343,8 +329,8 @@ async function saveNewReservation() {
         if (count && arrival && departure) {
             const availableCount = await getAvailableCount(suiteKey, arrival, departure);
             
-            if (availableCount === -1) {
-                showStatus(`❌ فشل التحقق النهائي من توفر ${SUITE_CONFIG[suiteKey].nameAr}. يرجى المحاولة لاحقاً.`, 'error', statusDivId);
+            if (availableCount === -2) {
+                showStatus(`❌ فشل التحقق النهائي من توفر ${SUITE_CONFIG[suiteKey].nameAr}. يرجى التحقق من المفاتيح.`, 'error', statusDivId);
                 return;
             }
             if (count > availableCount) {
@@ -358,7 +344,6 @@ async function saveNewReservation() {
     if (!allAvailable) {
         return;
     }
-    // ==============================================
     
     try {
         showStatus('جاري إرسال الحجز... ⏳', 'info', statusDivId, false);
@@ -404,7 +389,7 @@ async function saveNewReservation() {
 
 
 // ===============================================
-// 6. وظيفة تبديل التبويبات وتهيئة الأحداث 
+// 6. وظيفة تبديل التبويبات وتهيئة الأحداث (لم تتغير)
 // ===============================================
 
 function switchTab(tabName, button) {
@@ -427,20 +412,17 @@ function switchTab(tabName, button) {
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 1. معالج إرسال نموذج الحجز الجديد
     document.getElementById('newReservationForm').addEventListener('submit', function(event) {
         event.preventDefault();
         saveNewReservation();
     });
 
-    // 2. أحداث تحديث الملخص وحساب الأيام والتحقق من التوفر
     const prefix = 'new'; 
     ['guest', 'vip', 'royal'].forEach(suiteKey => {
         const arrivalInput = document.getElementById(`${suiteKey}Arrival_${prefix}`);
         const departureInput = document.getElementById(`${suiteKey}Departure_${prefix}`);
         const countInput = document.getElementById(`${suiteKey}SuiteCount_${prefix}`);
 
-        // التحقق من التوفر عند تغيير التواريخ أو العدد
         if (arrivalInput) arrivalInput.addEventListener('change', () => {
             calculateDaysPerSuite(prefix, suiteKey);
         });
@@ -449,11 +431,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (countInput) countInput.addEventListener('input', () => {
             updateSuiteSummary(prefix, suiteKey);
-            checkAndValidateAvailability(suiteKey, prefix); // التحقق من التوفر عند تغيير العدد
+            checkAndValidateAvailability(suiteKey, prefix); 
         });
     });
 
-    // 3. منطق الأقسام المطوية (Collapsible) 
     document.querySelectorAll('.collapsible-header').forEach(header => {
         header.addEventListener('click', () => {
             const content = header.nextElementSibling;
@@ -462,7 +443,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 4. إضافة مُستمعي الأحداث لأزرار التبويبات 
     document.querySelectorAll('.tab-button').forEach(button => {
         button.addEventListener('click', () => {
             const tabName = button.getAttribute('data-tab');
@@ -470,7 +450,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-    // 5. تفعيل أول تبويبة وفتح الأقسام المطوية افتراضياً
     document.querySelector('.tab-button.active')?.click(); 
     
     document.querySelectorAll('#newReservation .collapsible-header').forEach(header => {
