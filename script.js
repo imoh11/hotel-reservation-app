@@ -419,7 +419,7 @@ async function updateReservation() {
             throw new Error(`Airtable API Error: ${response.status} - ${errorMessage}`);
         }
 
-        showStatus(`✅ تم ${actionText} الحجز بنجاح! رقم السجل: ${recordId}.`, 'success', statusDivId, false);
+       showStatus(`✅ تم ${actionText} الحجز بنجاح!`, 'success', statusDivId, false);
         
         // إخفاء النموذج بالـ class hidden و style.display بعد التعديل
         document.getElementById('editReservationForm').classList.add('hidden');
@@ -630,3 +630,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // تفعيل أول تبويبة عند التحميل
     document.querySelector('.tab-button')?.click();
 });
+
