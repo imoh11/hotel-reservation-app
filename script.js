@@ -43,12 +43,15 @@ const SUITE_CAPACITIES = {
     royal: 2    // جناح ملكي (2 غرفة)
 };
 
-// ربط مفاتيح الأجنحة بمعرفات الحقول
+// ربط مفاتيح الأجنحة بمعرّفات الحقول
 const SUITE_CONFIG = {
     guest: {
         count: FIELD_IDS.GUEST_COUNT,
         arrival: FIELD_IDS.GUEST_ARRIVAL,
         departure: FIELD_IDS.GUEST_DEPARTURE,
+        countName: 'GUEST_COUNT',          // اسم الحقل الفعلي في Airtable
+        arrivalName: 'GUEST_ARRIVAL',      // اسم حقل الوصول
+        departureName: 'GUEST_DEPARTURE',  // اسم حقل المغادرة
         nameAr: 'جناح ضيافة',
         prefix: 'guest'
     },
@@ -56,6 +59,9 @@ const SUITE_CONFIG = {
         count: FIELD_IDS.VIP_COUNT,
         arrival: FIELD_IDS.VIP_ARRIVAL,
         departure: FIELD_IDS.VIP_DEPARTURE,
+        countName: 'VIP_COUNT',
+        arrivalName: 'VIP_ARRIVAL',
+        departureName: 'VIP_DEPARTURE',
         nameAr: 'جناح VIP',
         prefix: 'vip'
     },
@@ -63,11 +69,13 @@ const SUITE_CONFIG = {
         count: FIELD_IDS.ROYAL_COUNT,
         arrival: FIELD_IDS.ROYAL_ARRIVAL,
         departure: FIELD_IDS.ROYAL_DEPARTURE,
+        countName: 'ROYAL_COUNT',
+        arrivalName: 'ROYAL_ARRIVAL',
+        departureName: 'ROYAL_DEPARTURE',
         nameAr: 'جناح ملكي',
         prefix: 'royal'
     }
 };
-
 // ===============================================
 // 3. وظائف الواجهة المساعدة
 // ===============================================
@@ -174,10 +182,10 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
         
         // ضمان قراءة الأرقام بشكل صحيح
         data.records.forEach((record, index) => {
-            // جرب قراءة الحقل بطرق مختلفة
-            const reservedCount = parseFloat(record.fields[config.count]) || 0;
-            const recordArrival = record.fields[config.arrival] || 'N/A';
-            const recordDeparture = record.fields[config.departure] || 'N/A';
+            // ✅ الحل: استخدام أسماء الحقول بدلاً من Field IDs
+            const reservedCount = parseFloat(record.fields[config.countName]) || 0;
+            const recordArrival = record.fields[config.arrivalName] || 'N/A';
+            const recordDeparture = record.fields[config.departureName] || 'N/A';
             
             console.log(`    [${index + 1}] Record ID: ${record.id}`);
             console.log(`        Arrival: ${recordArrival}, Departure: ${recordDeparture}`);
