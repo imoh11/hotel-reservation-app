@@ -138,14 +138,14 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
     const config = SUITE_CONFIG[suiteKey];
     const maxCapacity = SUITE_CAPACITIES[suiteKey];
     
-    // ✅ المنطق المصحح: التحقق من التداخل بين التواريخ
+    // ✅ المنطق المصحج: التحقق من التداخل بين التواريخ
     // الحجز الجديد يتداخل مع حجز موجود إذا:
     // - تاريخ وصول الحجز الموجود < تاريخ مغادرة الحجز الجديد
     // - تاريخ مغادرة الحجز الموجود > تاريخ وصول الحجز الجديد
+    // ملاحظة: أزلنا شرط {count} > 0 لأنه قد يستثني حجوزات صحيحة
     const detailedFilter = `AND(` +
         `IS_BEFORE({${config.arrival}}, '${departureDate}'),` +
-        `IS_AFTER({${config.departure}}, '${arrivalDate}'),` +
-        `{${config.count}} > 0` + // فقط الحجوزات التي لها غرف محجوزة
+        `IS_AFTER({${config.departure}}, '${arrivalDate}')` +
     `)`;
     
     console.log(`[DEBUG] Checking availability for ${suiteKey}:`);
@@ -174,13 +174,20 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
         
         // ضمان قراءة الأرقام بشكل صحيح
         data.records.forEach((record, index) => {
+            // جرب قراءة الحقل بطرق مختلفة
             const reservedCount = parseFloat(record.fields[config.count]) || 0;
             const recordArrival = record.fields[config.arrival] || 'N/A';
             const recordDeparture = record.fields[config.departure] || 'N/A';
+            
             console.log(`    [${index + 1}] Record ID: ${record.id}`);
             console.log(`        Arrival: ${recordArrival}, Departure: ${recordDeparture}`);
             console.log(`        Reserved Rooms: ${reservedCount}`);
-            totalReserved += reservedCount;
+            console.log(`        Raw fields:`, JSON.stringify(record.fields));
+            
+            // فقط أضف الغرف إذا كان هناك عدد محجوز
+            if (reservedCount > 0) {
+                totalReserved += reservedCount;
+            }
         });
 
         const available = maxCapacity - totalReserved;
