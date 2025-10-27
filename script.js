@@ -138,13 +138,19 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
     const config = SUITE_CONFIG[suiteKey];
     const maxCapacity = SUITE_CAPACITIES[suiteKey];
     
-    // 🌟 الإصلاح النهائي: استخدام دوال DATEADD لضمان شمولية التقاط التواريخ الحدية (مثل الانتهاء والبدء في نفس اليوم)
+    // ✅ المنطق المصحح: التحقق من التداخل بين التواريخ
+    // الحجز الجديد يتداخل مع حجز موجود إذا:
+    // - تاريخ وصول الحجز الموجود < تاريخ مغادرة الحجز الجديد
+    // - تاريخ مغادرة الحجز الموجود > تاريخ وصول الحجز الجديد
     const detailedFilter = `AND(` +
-        // يجب أن تبدأ الإقامة القائمة قبل يوم واحد من انتهاء الإقامة الجديدة (لشمل نفس اليوم)
-        `IS_BEFORE({${config.arrival}}, DATEADD('${departureDate}', 1, 'days')),` +
-        // يجب أن تنتهي الإقامة القائمة بعد يوم واحد من بداية الإقامة الجديدة (لشمل نفس اليوم)
-        `IS_AFTER({${config.departure}}, DATEADD('${arrivalDate}', -1, 'days'))` +
+        `IS_BEFORE({${config.arrival}}, '${departureDate}'),` +
+        `IS_AFTER({${config.departure}}, '${arrivalDate}'),` +
+        `{${config.count}} > 0` + // فقط الحجوزات التي لها غرف محجوزة
     `)`;
+    
+    console.log(`[DEBUG] Checking availability for ${suiteKey}:`);
+    console.log(`  - Arrival: ${arrivalDate}, Departure: ${departureDate}`);
+    console.log(`  - Filter: ${detailedFilter}`);
     
     try {
         const response = await fetch(`${AIRTABLE_API_URL}?filterByFormula=${encodeURIComponent(detailedFilter)}&fields[]=${config.count}`, {
@@ -160,15 +166,19 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
 
         const data = await response.json();
         
+        console.log(`  - Found ${data.records.length} overlapping reservations`);
+        
         let totalReserved = 0;
         
         // ضمان قراءة الأرقام بشكل صحيح
         data.records.forEach(record => {
             const reservedCount = parseFloat(record.fields[config.count]) || 0;
+            console.log(`    - Record: ${record.id}, Reserved: ${reservedCount}`);
             totalReserved += reservedCount;
         });
 
         const available = maxCapacity - totalReserved;
+        console.log(`  - Total Reserved: ${totalReserved}, Max Capacity: ${maxCapacity}, Available: ${available}`);
         return Math.max(0, available); 
     } catch (error) {
         console.error('Error fetching availability:', error);

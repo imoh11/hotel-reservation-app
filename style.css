@@ -275,6 +275,9 @@ body {
  
 .status-message-container {
     margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .status-message {
@@ -282,7 +285,9 @@ body {
     border-radius: var(--border-radius);
     font-weight: 500;
     font-size: 0.8rem;
-    margin-top: 5px; 
+    margin-top: 5px;
+    text-align: center;
+    max-width: 100%;
 }
 
 .hidden {
@@ -315,4 +320,11 @@ body {
 #phone_new {
     direction: rtl; 
     text-align: right; 
+}
+
+/* تنسيق رسائل التحقق من التوفر */
+p[id$="_validation_new"] {
+    text-align: center;
+    margin: 10px auto;
+    max-width: 100%;
 }
