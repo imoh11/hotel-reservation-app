@@ -149,11 +149,13 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
     `)`;
     
     console.log(`[DEBUG] Checking availability for ${suiteKey}:`);
-    console.log(`  - Arrival: ${arrivalDate}, Departure: ${departureDate}`);
+    console.log(`  - Requested: Arrival=${arrivalDate}, Departure=${departureDate}`);
+    console.log(`  - Field IDs: arrival=${config.arrival}, departure=${config.departure}, count=${config.count}`);
+    console.log(`  - Max Capacity: ${maxCapacity}`);
     console.log(`  - Filter: ${detailedFilter}`);
     
     try {
-        const response = await fetch(`${AIRTABLE_API_URL}?filterByFormula=${encodeURIComponent(detailedFilter)}&fields[]=${config.count}`, {
+        const response = await fetch(`${AIRTABLE_API_URL}?filterByFormula=${encodeURIComponent(detailedFilter)}&fields[]=${config.count}&fields[]=${config.arrival}&fields[]=${config.departure}`, {
             headers: {
                 'Authorization': `Bearer ${AIRTABLE_API_KEY}`
             }
@@ -171,9 +173,13 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
         let totalReserved = 0;
         
         // ضمان قراءة الأرقام بشكل صحيح
-        data.records.forEach(record => {
+        data.records.forEach((record, index) => {
             const reservedCount = parseFloat(record.fields[config.count]) || 0;
-            console.log(`    - Record: ${record.id}, Reserved: ${reservedCount}`);
+            const recordArrival = record.fields[config.arrival] || 'N/A';
+            const recordDeparture = record.fields[config.departure] || 'N/A';
+            console.log(`    [${index + 1}] Record ID: ${record.id}`);
+            console.log(`        Arrival: ${recordArrival}, Departure: ${recordDeparture}`);
+            console.log(`        Reserved Rooms: ${reservedCount}`);
             totalReserved += reservedCount;
         });
 
