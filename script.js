@@ -228,6 +228,21 @@ async function checkAndValidateAvailability(suiteKey, prefix) {
         return; 
     }
     
+    // ✅ التحقق من أن تاريخ الوصول ليس قبل اليوم
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // إزالة الوقت للمقارنة بالتاريخ فقط
+    const arrivalDateObj = new Date(arrivalDate);
+    
+    if (arrivalDateObj < today) {
+        validationMessage.textContent = '❌ لا يمكن الحجز في تاريخ قبل اليوم.';
+        validationMessage.classList.remove('hidden');
+        validationMessage.classList.remove('success');
+        validationMessage.classList.add('error');
+        submitButton.disabled = true;
+        return;
+    }
+    
+    // ✅ التحقق من أن تاريخ المغادرة بعد تاريخ الوصول
     if (Date.parse(departureDate) <= Date.parse(arrivalDate)) {
         validationMessage.textContent = '❌ تاريخ المغادرة يجب أن يكون بعد تاريخ الوصول.';
         validationMessage.classList.remove('hidden');
@@ -256,12 +271,18 @@ async function checkAndValidateAvailability(suiteKey, prefix) {
     } else {
         const maxCapacity = SUITE_CAPACITIES[suiteKey];
         if (requestedCount > availableCount) {
-            validationMessage.textContent = `❌ لا يمكن حجز ${requestedCount} غرفة. المتاح هو ${availableCount} غرفة فقط من أصل ${maxCapacity} في هذه الفترة.`;
+            // ✅ رسالة محسّنة عندما لا توجد غرف متاحة
+            if (availableCount === 0) {
+                validationMessage.textContent = '❌ لا يوجد غرف متاحة في هذا التاريخ';
+            } else {
+                validationMessage.textContent = `❌ لا يمكن حجز ${requestedCount} غرفة. المتاح هو ${availableCount} غرفة فقط`;
+            }
             validationMessage.classList.remove('hidden');
             validationMessage.classList.add('error');
             submitButton.disabled = true;
         } else {
-            validationMessage.textContent = `✅ تم التأكد. ${availableCount} غرفة متاحة من أصل ${maxCapacity} في هذه الفترة.`;
+            // ✅ رسالة محسّنة عندما توجد غرف متاحة
+            validationMessage.textContent = `✅ عدد الغرف المتاحة (${availableCount})`;
             validationMessage.classList.remove('hidden');
             validationMessage.classList.add('success');
             submitButton.disabled = false;
@@ -351,6 +372,32 @@ async function saveNewReservation() {
         return;
     }
     
+    // ✅ فحص التواريخ قبل الحفظ
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    for (const suiteKey of Object.keys(SUITE_CONFIG)) {
+        const arrival = data[SUITE_CONFIG[suiteKey].arrival];
+        const departure = data[SUITE_CONFIG[suiteKey].departure];
+        
+        if (arrival && departure) {
+            const arrivalDate = new Date(arrival);
+            const departureDate = new Date(departure);
+            
+            // فحص أن تاريخ الوصول ليس قبل اليوم
+            if (arrivalDate < today) {
+                showStatus(`❌ لا يمكن الحجز في ${SUITE_CONFIG[suiteKey].nameAr} بتاريخ قبل اليوم.`, 'error', statusDivId);
+                return;
+            }
+            
+            // فحص أن تاريخ المغادرة بعد تاريخ الوصول
+            if (departureDate <= arrivalDate) {
+                showStatus(`❌ تاريخ المغادرة يجب أن يكون بعد تاريخ الوصول في ${SUITE_CONFIG[suiteKey].nameAr}.`, 'error', statusDivId);
+                return;
+            }
+        }
+    }
+    
     // فحص التوفر النهائي قبل الإرسال 
     let allAvailable = true;
     for (const suiteKey of Object.keys(SUITE_CONFIG)) {
@@ -402,7 +449,7 @@ async function saveNewReservation() {
         const savedRecord = await response.json();
         const newResId = savedRecord.id;
 
-        const successMessage = `✅ تم حفظ الحجز بنجاح! <br> <strong>رقم الحجز (ID) هو: ${newResId}</strong>. <br> <em>للتعديل، ستحتاج إلى رقم الحجز هذا.</em>`;
+        const successMessage = `✅ تم حفظ الحجز بنجاح`;
         showStatus(successMessage, 'success', statusDivId);
 
         document.getElementById('newReservationForm').reset();
