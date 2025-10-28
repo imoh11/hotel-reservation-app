@@ -622,7 +622,6 @@ p[id$="_validation_new"] {
     background: white;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
-    overflow: hidden;
     padding: 20px;
 }
 
