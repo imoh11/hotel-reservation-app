@@ -82,9 +82,10 @@ const SUITE_CONFIG = {
 
 /**
  * توليد رقم حجز عشوائي من 6 أرقام
+ * يُرجع رقم (number) ليس نص (string)
  */
 function generateResNumber() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+    return Math.floor(100000 + Math.random() * 900000);
 }
 
 function showStatus(message, type = 'info', tabId, autoHide = true) {
