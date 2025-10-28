@@ -1230,7 +1230,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('editReservationBtn')?.addEventListener('click', openEditForm);
     document.getElementById('closeEditFormBtn')?.addEventListener('click', closeEditForm);
     document.getElementById('saveEditBtn')?.addEventListener('click', saveReservationEdits);
-    document.getElementById('saveEditAndSendBtn')?.addEventListener('click', saveEditAndSendWhatsApp);
     
     document.querySelector('.tab-button.active')?.click(); 
     
