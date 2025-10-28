@@ -635,43 +635,16 @@ p[id$="_validation_new"] {
 }
 
 .summary-card {
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     padding: 15px;
     border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(33, 150, 243, 0.1);
-    border: 1px solid #90caf9;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 1px solid #dee2e6;
 }
 
-/* بطاقة الإجمالي - عريضة ومميزة */
+/* بطاقة الإجمالي - عريضة فقط */
 .summary-card-total {
     grid-column: 1 / -1;
-    background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-    border: 2px solid #0d47a1;
-    box-shadow: 0 4px 8px rgba(13, 71, 161, 0.3);
-    padding: 18px;
-}
-
-.summary-card-total .summary-label {
-    font-weight: 700;
-    color: #ffffff;
-    font-size: 1rem;
-}
-
-.summary-card-total .summary-value {
-    font-weight: 700;
-    color: #ffffff;
-}
-
-.summary-card-total .summary-value .occupied,
-.summary-card-total .summary-value .total {
-    color: #ffffff;
-}
-
-.summary-card-total .summary-value .percentage {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 4px 10px;
-    border-radius: 6px;
 }
 
 .summary-card {
@@ -737,27 +710,16 @@ p[id$="_validation_new"] {
 
 .summary-bar {
     height: 10px;
-    background: rgba(255, 255, 255, 0.3);
+    background: #e9ecef;
     border-radius: 10px;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.summary-card-total .summary-bar {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    height: 12px;
+    border: 1px solid #dee2e6;
 }
 
 .summary-bar-fill {
     height: 100%;
     transition: width 0.5s ease, background-color 0.3s ease;
     border-radius: 10px;
-    background: linear-gradient(90deg, #adb5bd 0%, #6c757d 100%);
-}
-
-.summary-card-total .summary-bar-fill {
-    background: rgba(255, 255, 255, 0.9) !important;
 }
 
 /* ألوان حسب نسبة الإشغال - تدرج من أحمر إلى أخضر */
