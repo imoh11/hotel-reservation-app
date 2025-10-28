@@ -565,7 +565,7 @@ let allReservations = [];
 let currentEditingReservation = null;
 
 /**
- * تحميل جميع الحجوزات من Airtable
+ * تحميل الحجوزات القادمة فقط من Airtable
  */
 async function loadAllReservations() {
     const loadingDiv = document.getElementById('loadingReservations');
@@ -575,7 +575,7 @@ async function loadAllReservations() {
         loadingDiv.style.display = 'block';
         listDiv.innerHTML = '';
         
-        const response = await fetch(`${AIRTABLE_API_URL}?sort[0][field]=${FIELD_IDS.RES_NUMBER}&sort[0][direction]=desc`, {
+        const response = await fetch(`${AIRTABLE_API_URL}`, {
             headers: {
                 'Authorization': `Bearer ${AIRTABLE_API_KEY}`
             }
@@ -586,19 +586,44 @@ async function loadAllReservations() {
         }
         
         const data = await response.json();
-        allReservations = data.records;
+        
+        // ✅ فلترة الحجوزات القادمة فقط (تاريخ الوصول >= اليوم)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        allReservations = data.records.filter(reservation => {
+            const guestArrival = reservation.fields.GUEST_ARRIVAL;
+            const vipArrival = reservation.fields.VIP_ARRIVAL;
+            const royalArrival = reservation.fields.ROYAL_ARRIVAL;
+            
+            // اختيار أول تاريخ متاح
+            const arrivalDate = guestArrival || vipArrival || royalArrival;
+            
+            if (!arrivalDate) return false; // لا توجد تواريخ
+            
+            const arrival = new Date(arrivalDate);
+            return arrival >= today; // فقط الحجوزات القادمة
+        });
+        
+        // ترتيب حسب تاريخ الوصول (الأقرب أولاً)
+        allReservations.sort((a, b) => {
+            const aDate = new Date(a.fields.GUEST_ARRIVAL || a.fields.VIP_ARRIVAL || a.fields.ROYAL_ARRIVAL);
+            const bDate = new Date(b.fields.GUEST_ARRIVAL || b.fields.VIP_ARRIVAL || b.fields.ROYAL_ARRIVAL);
+            return aDate - bDate;
+        });
         
         loadingDiv.style.display = 'none';
         
         if (allReservations.length === 0) {
-            listDiv.innerHTML = '<p class="info-message-block">لا توجد حجوزات بعد.</p>';
+            listDiv.innerHTML = '<p class="info-message-block">لا توجد حجوزات قادمة.</p>';
             return;
         }
         
         allReservations.forEach(reservation => {
-            const resNumber = reservation.fields.RES_NUMBER || 'غير محدد';
-            const resType = reservation.fields.RES_TYPE || 'غير محدد';
-            const guestName = reservation.fields.GUEST_NAME || 'غير محدد';
+            // ✅ قراءة رقم الحجز من الحقل الصحيح
+            const resNumber = reservation.fields[FIELD_IDS.RES_NUMBER] || 'غير محدد';
+            const resType = reservation.fields[FIELD_IDS.RES_TYPE] || 'غير محدد';
+            const guestName = reservation.fields[FIELD_IDS.GUEST_NAME] || 'غير محدد';
             
             let typeClass = '';
             if (resType === 'مؤكد') typeClass = 'confirmed';
@@ -642,23 +667,24 @@ function showReservationDetails(reservation) {
     
     let html = '<div class="details-content">';
     
+    // ✅ قراءة البيانات باستخدام FIELD_IDS
     const fieldMappings = [
-        { label: 'رقم الحجز', value: fields.RES_NUMBER },
-        { label: 'نوع الحجز', value: fields.RES_TYPE },
-        { label: 'اسم النزيل', value: fields.GUEST_NAME },
-        { label: 'رقم الجوال', value: fields.PHONE },
-        { label: 'الكونتر', value: fields.COUNTER },
-        { label: 'المبلغ', value: fields.AMOUNT },
-        { label: 'جناح ضيافة - عدد الغرف', value: fields.GUEST_COUNT },
-        { label: 'جناح ضيافة - الوصول', value: fields.GUEST_ARRIVAL },
-        { label: 'جناح ضيافة - المغادرة', value: fields.GUEST_DEPARTURE },
-        { label: 'جناح VIP - عدد الغرف', value: fields.VIP_COUNT },
-        { label: 'جناح VIP - الوصول', value: fields.VIP_ARRIVAL },
-        { label: 'جناح VIP - المغادرة', value: fields.VIP_DEPARTURE },
-        { label: 'جناح ملكي - عدد الغرف', value: fields.ROYAL_COUNT },
-        { label: 'جناح ملكي - الوصول', value: fields.ROYAL_ARRIVAL },
-        { label: 'جناح ملكي - المغادرة', value: fields.ROYAL_DEPARTURE },
-        { label: 'ملاحظات', value: fields.NOTES }
+        { label: 'رقم الحجز', value: fields[FIELD_IDS.RES_NUMBER] },
+        { label: 'نوع الحجز', value: fields[FIELD_IDS.RES_TYPE] },
+        { label: 'اسم النزيل', value: fields[FIELD_IDS.GUEST_NAME] },
+        { label: 'رقم الجوال', value: fields[FIELD_IDS.PHONE] },
+        { label: 'الكونتر', value: fields[FIELD_IDS.COUNTER] },
+        { label: 'المبلغ', value: fields[FIELD_IDS.AMOUNT] },
+        { label: 'جناح ضيافة - عدد الغرف', value: fields[FIELD_IDS.GUEST_COUNT] },
+        { label: 'جناح ضيافة - الوصول', value: fields[FIELD_IDS.GUEST_ARRIVAL] },
+        { label: 'جناح ضيافة - المغادرة', value: fields[FIELD_IDS.GUEST_DEPARTURE] },
+        { label: 'جناح VIP - عدد الغرف', value: fields[FIELD_IDS.VIP_COUNT] },
+        { label: 'جناح VIP - الوصول', value: fields[FIELD_IDS.VIP_ARRIVAL] },
+        { label: 'جناح VIP - المغادرة', value: fields[FIELD_IDS.VIP_DEPARTURE] },
+        { label: 'جناح ملكي - عدد الغرف', value: fields[FIELD_IDS.ROYAL_COUNT] },
+        { label: 'جناح ملكي - الوصول', value: fields[FIELD_IDS.ROYAL_ARRIVAL] },
+        { label: 'جناح ملكي - المغادرة', value: fields[FIELD_IDS.ROYAL_DEPARTURE] },
+        { label: 'ملاحظات', value: fields[FIELD_IDS.NOTES] }
     ];
     
     fieldMappings.forEach(field => {
@@ -702,46 +728,56 @@ function openEditForm() {
     
     const fields = currentEditingReservation.fields;
     
-    // إضافة خيار "ملغي" في قائمة نوع الحجز
+    // ✅ قراءة البيانات باستخدام FIELD_IDS
+    const resType = fields[FIELD_IDS.RES_TYPE] || '';
+    const guestName = fields[FIELD_IDS.GUEST_NAME] || '';
+    const phone = fields[FIELD_IDS.PHONE] || '';
+    const counter = fields[FIELD_IDS.COUNTER] || '';
+    const amount = fields[FIELD_IDS.AMOUNT] || '';
+    const notes = fields[FIELD_IDS.NOTES] || '';
+    const guestCount = fields[FIELD_IDS.GUEST_COUNT] || '';
+    const guestArrival = fields[FIELD_IDS.GUEST_ARRIVAL] || '';
+    const guestDeparture = fields[FIELD_IDS.GUEST_DEPARTURE] || '';
+    
     formContent.innerHTML = `
         <div class="form-row">
             <div class="form-group">
                 <label>نوع الحجز</label>
                 <select id="edit_type" class="form-control">
-                    <option value="مؤكد" ${fields.RES_TYPE === 'مؤكد' ? 'selected' : ''}>مؤكد</option>
-                    <option value="قيد الانتظار" ${fields.RES_TYPE === 'قيد الانتظار' ? 'selected' : ''}>انتظار</option>
-                    <option value="ملغي" ${fields.RES_TYPE === 'ملغي' ? 'selected' : ''}>ملغي</option>
+                    <option value="مؤكد" ${resType === 'مؤكد' ? 'selected' : ''}>مؤكد</option>
+                    <option value="قيد الانتظار" ${resType === 'قيد الانتظار' ? 'selected' : ''}>انتظار</option>
+                    <option value="ملغي" ${resType === 'ملغي' ? 'selected' : ''}>ملغي</option>
                 </select>
             </div>
             <div class="form-group">
                 <label>اسم النزيل</label>
-                <input type="text" id="edit_guestName" class="form-control" value="${fields.GUEST_NAME || ''}">
+                <input type="text" id="edit_guestName" class="form-control" value="${guestName}">
             </div>
         </div>
         <div class="form-row">
             <div class="form-group">
                 <label>رقم الجوال</label>
-                <input type="tel" id="edit_phone" class="form-control" value="${fields.PHONE || ''}">
+                <input type="tel" id="edit_phone" class="form-control" value="${phone}">
             </div>
             <div class="form-group">
                 <label>الكونتر</label>
                 <select id="edit_counter" class="form-control">
-                    <option value="A1" ${fields.COUNTER === 'A1' ? 'selected' : ''}>A1</option>
-                    <option value="A2" ${fields.COUNTER === 'A2' ? 'selected' : ''}>A2</option>
-                    <option value="A3" ${fields.COUNTER === 'A3' ? 'selected' : ''}>A3</option>
-                    <option value="A4" ${fields.COUNTER === 'A4' ? 'selected' : ''}>A4</option>
-                    <option value="A5" ${fields.COUNTER === 'A5' ? 'selected' : ''}>A5</option>
+                    <option value="A1" ${counter === 'A1' ? 'selected' : ''}>A1</option>
+                    <option value="A2" ${counter === 'A2' ? 'selected' : ''}>A2</option>
+                    <option value="A3" ${counter === 'A3' ? 'selected' : ''}>A3</option>
+                    <option value="A4" ${counter === 'A4' ? 'selected' : ''}>A4</option>
+                    <option value="A5" ${counter === 'A5' ? 'selected' : ''}>A5</option>
                 </select>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group">
                 <label>المبلغ</label>
-                <input type="number" id="edit_amount" class="form-control" value="${fields.AMOUNT || ''}">
+                <input type="number" id="edit_amount" class="form-control" value="${amount}">
             </div>
             <div class="form-group">
                 <label>ملاحظات</label>
-                <textarea id="edit_notes" class="form-control" rows="2">${fields.NOTES || ''}</textarea>
+                <textarea id="edit_notes" class="form-control" rows="2">${notes}</textarea>
             </div>
         </div>
         
@@ -750,15 +786,15 @@ function openEditForm() {
         <div class="form-row">
             <div class="form-group">
                 <label>جناح ضيافة - عدد الغرف</label>
-                <input type="number" id="edit_guestCount" class="form-control" value="${fields.GUEST_COUNT || ''}">
+                <input type="number" id="edit_guestCount" class="form-control" value="${guestCount}">
             </div>
             <div class="form-group">
                 <label>تاريخ الوصول</label>
-                <input type="date" id="edit_guestArrival" class="form-control" value="${fields.GUEST_ARRIVAL || ''}">
+                <input type="date" id="edit_guestArrival" class="form-control" value="${guestArrival}">
             </div>
             <div class="form-group">
                 <label>تاريخ المغادرة</label>
-                <input type="date" id="edit_guestDeparture" class="form-control" value="${fields.GUEST_DEPARTURE || ''}">
+                <input type="date" id="edit_guestDeparture" class="form-control" value="${guestDeparture}">
             </div>
         </div>
     `;
@@ -838,7 +874,8 @@ async function saveEditAndSendWhatsApp() {
     const guestName = document.getElementById('edit_guestName').value;
     const phone = document.getElementById('edit_phone').value;
     const resType = document.getElementById('edit_type').value;
-    const resNumber = currentEditingReservation.fields.RES_NUMBER;
+    // ✅ قراءة رقم الحجز باستخدام FIELD_IDS
+    const resNumber = currentEditingReservation.fields[FIELD_IDS.RES_NUMBER];
     
     const guestArrival = document.getElementById('edit_guestArrival').value;
     const guestDeparture = document.getElementById('edit_guestDeparture').value;
