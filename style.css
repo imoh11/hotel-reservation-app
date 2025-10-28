@@ -34,7 +34,7 @@ body {
 .container {
     max-width: 900px;
     margin: 0 auto;
-    background: white;
+    background: #f9f9f9;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     overflow: hidden; 
@@ -440,7 +440,7 @@ p[id$="_validation_new"] {
 
 .reservation-details {
     padding: 20px;
-    background: white;
+    background: #f9f9f9;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
 }
@@ -486,7 +486,7 @@ p[id$="_validation_new"] {
 
 .edit-form {
     padding: 20px;
-    background: white;
+    background: #f9f9f9;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
 }
@@ -562,7 +562,7 @@ p[id$="_validation_new"] {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
-    background: white;
+    background: #f9f9f9;
 }
 
 .reservation-accordion-content.active {
@@ -638,7 +638,7 @@ p[id$="_validation_new"] {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
-    background: white;
+    background: #f9f9f9;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     padding: 20px;
@@ -763,7 +763,7 @@ p[id$="_validation_new"] {
 .occupancy-filter {
     margin-bottom: 20px;
     padding: 20px;
-    background: white;
+    background: #f9f9f9;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
 }
@@ -801,7 +801,7 @@ p[id$="_validation_new"] {
 
 /* الجدول */
 .occupancy-table-container {
-    background: white;
+    background: #f9f9f9;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     overflow: hidden;
