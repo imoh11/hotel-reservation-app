@@ -635,53 +635,68 @@ p[id$="_validation_new"] {
 }
 
 .summary-card {
-    background: white;
-    padding: 15px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid #dee2e6;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
 .summary-label {
-    font-size: 0.875rem;
-    color: var(--gray);
-    margin-bottom: 8px;
-    font-weight: 500;
+    font-size: 0.9rem;
+    color: #495057;
+    margin-bottom: 10px;
+    font-weight: 600;
 }
 
 .summary-value {
-    font-size: 0.875rem;
-    color: var(--dark);
-    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: #212529;
+    margin-bottom: 12px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 5px;
 }
 
 .summary-value .occupied {
+    font-size: 1.2rem;
     font-weight: 700;
-    font-size: 1.1rem;
-    color: var(--primary);
+    color: #495057;
+}
+
+.summary-value .total {
+    color: #6c757d;
 }
 
 .summary-value .percentage {
-    margin-right: auto;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
+    margin-left: auto;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    background: #ffffff;
+    border: 1px solid #dee2e6;
 }
 
 .summary-bar {
-    height: 8px;
-    background: #f0f0f0;
-    border-radius: 4px;
+    height: 10px;
+    background: #e9ecef;
+    border-radius: 10px;
     overflow: hidden;
+    border: 1px solid #dee2e6;
 }
 
 .summary-bar-fill {
     height: 100%;
-    transition: width 0.3s ease, background-color 0.3s ease;
-    border-radius: 4px;
+    transition: width 0.5s ease, background-color 0.3s ease;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #adb5bd 0%, #6c757d 100%);
 }
 
 /* ألوان حسب نسبة الإشغال - درجات رمادي */

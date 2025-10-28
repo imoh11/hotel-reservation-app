@@ -198,9 +198,24 @@
         </div>
 
         <div id="query" class="tab-content">
+            <!-- بحث وفلترة -->
+            <div class="occupancy-filter">
+                <div class="filter-inputs">
+                    <input type="date" id="filterFromDate" class="form-control" placeholder="من تاريخ">
+                    <input type="date" id="filterToDate" class="form-control" placeholder="إلى تاريخ">
+                    <button id="applyFilterBtn" class="btn btn-primary">بحث</button>
+                </div>
+                <div class="filter-shortcuts">
+                    <span class="filter-label">اختصارات:</span>
+                    <button id="filterTodayBtn" class="btn btn-outline btn-sm">اليوم</button>
+                    <button id="filterWeekBtn" class="btn btn-outline btn-sm">أسبوع</button>
+                    <button id="filterMonthBtn" class="btn btn-outline btn-sm">شهر</button>
+                    <button id="filterAllBtn" class="btn btn-outline btn-sm">الكل</button>
+                </div>
+            </div>
+
             <!-- ملخص الإشغال -->
             <div class="occupancy-summary">
-                <h3>ملخص الإشغال في الـ 50 يوم القادمة</h3>
                 <div class="summary-cards">
                     <div class="summary-card">
                         <div class="summary-label">جناح ضيافة (14 غرفة)</div>
@@ -229,22 +244,6 @@
                 </div>
             </div>
 
-            <!-- بحث وفلترة -->
-            <div class="occupancy-filter">
-                <div class="filter-inputs">
-                    <input type="date" id="filterFromDate" class="form-control" placeholder="من تاريخ">
-                    <input type="date" id="filterToDate" class="form-control" placeholder="إلى تاريخ">
-                    <button id="applyFilterBtn" class="btn btn-primary">بحث</button>
-                </div>
-                <div class="filter-shortcuts">
-                    <span class="filter-label">اختصارات:</span>
-                    <button id="filterTodayBtn" class="btn btn-outline btn-sm">اليوم</button>
-                    <button id="filterWeekBtn" class="btn btn-outline btn-sm">أسبوع</button>
-                    <button id="filterMonthBtn" class="btn btn-outline btn-sm">شهر</button>
-                    <button id="filterAllBtn" class="btn btn-outline btn-sm">الكل</button>
-                </div>
-            </div>
-
             <!-- جدول الإشغال -->
             <div class="occupancy-table-container">
                 <div id="loadingOccupancy" class="loading-message">جاري تحميل بيانات الإشغال... ⏳</div>
@@ -265,6 +264,7 @@
                 </table>
             </div>
         </div>
+
     </div>
 
     <script src="script.js"></script> 
