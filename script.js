@@ -989,11 +989,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // ✅ سلوك accordion: فتح قائمة واحدة فقط
     document.querySelectorAll('.collapsible-header').forEach(header => {
         header.addEventListener('click', () => {
             const content = header.nextElementSibling;
-            header.classList.toggle('active');
-            content.classList.toggle('active');
+            const isCurrentlyActive = header.classList.contains('active');
+            
+            // إغلاق جميع القوائم الأخرى في نفس التبويب
+            const parentTab = header.closest('.tab-content');
+            if (parentTab) {
+                parentTab.querySelectorAll('.collapsible-header').forEach(h => {
+                    h.classList.remove('active');
+                    const c = h.nextElementSibling;
+                    if (c) c.classList.remove('active');
+                });
+            }
+            
+            // فتح القائمة الحالية إذا لم تكن مفتوحة
+            if (!isCurrentlyActive) {
+                header.classList.add('active');
+                content.classList.add('active');
+            }
         });
     });
 
@@ -1018,10 +1034,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     document.querySelector('.tab-button.active')?.click(); 
     
-    document.querySelectorAll('#newReservation .collapsible-header').forEach(header => {
-        header.classList.add('active');
-        const content = header.nextElementSibling;
-        if(content) content.classList.add('active');
-    });
+    // ✅ جميع القوائم مغلقة عند فتح الصفحة
+    // تم حذف الكود الذي كان يفتح القوائم تلقائياً
 
 });
