@@ -674,7 +674,6 @@ async function loadAllReservations() {
                     <span class="reservation-guest">${guestName}</span>
                 </div>
                 <div class="reservation-actions">
-                    <button class="edit-icon-btn" title="تحرير الحجز">✏️</button>
                     <span class="accordion-arrow">▼</span>
                 </div>
             `;
@@ -716,6 +715,7 @@ async function loadAllReservations() {
                 detailsHTML += `<div class="detail-row full-width"><span class="detail-label">ملاحظات:</span><span class="detail-value">${notes}</span></div>`;
             }
             detailsHTML += '</div>';
+            detailsHTML += '<div class="detail-actions"><button class="btn btn-primary edit-reservation-btn">✏️ تحرير الحجز</button></div>';
             
             contentDiv.innerHTML = detailsHTML;
             
@@ -745,13 +745,17 @@ async function loadAllReservations() {
                 }
             });
             
-            // فتح نموذج التعديل عند النقر على أيقونة التحرير
-            const editBtn = headerDiv.querySelector('.edit-icon-btn');
-            editBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                currentEditingReservation = reservation;
-                openEditForm();
-            });
+            // فتح نموذج التعديل عند النقر على زر التحرير
+            setTimeout(() => {
+                const editBtn = contentDiv.querySelector('.edit-reservation-btn');
+                if (editBtn) {
+                    editBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        currentEditingReservation = reservation;
+                        openEditForm();
+                    });
+                }
+            }, 100);
         });
         
     } catch (error) {

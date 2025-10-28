@@ -507,7 +507,7 @@ p[id$="_validation_new"] {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 15px;
+    padding: 10px 15px;  /* ✅ تقليل الارتفاع */
     cursor: pointer;
     transition: var(--transition);
     background: #f5f5f5;
@@ -528,20 +528,7 @@ p[id$="_validation_new"] {
     gap: 10px;
 }
 
-.edit-icon-btn {
-    background: transparent;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 5px;
-    transition: var(--transition);
-    opacity: 0.7;
-}
 
-.edit-icon-btn:hover {
-    opacity: 1;
-    transform: scale(1.2);
-}
 
 .accordion-arrow {
     font-size: 0.8rem;
@@ -561,8 +548,20 @@ p[id$="_validation_new"] {
 }
 
 .reservation-accordion-content.active {
-    max-height: 500px;
+    max-height: 600px;  /* ✅ زيادة قليلة للمحتوى */
     padding: 15px;
+}
+
+.detail-actions {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: center;
+}
+
+.detail-actions .btn {
+    min-width: 150px;
 }
 
 .reservation-details-grid {
@@ -590,11 +589,11 @@ p[id$="_validation_new"] {
 .detail-label {
     font-weight: 600;
     color: var(--gray);
-    font-size: 0.9rem;
+    font-size: 0.875rem;  /* ✅ توحيد مع باقي الموقع */
 }
 
 .detail-value {
     color: var(--text);
-    font-size: 0.95rem;
+    font-size: 0.875rem;  /* ✅ توحيد مع باقي الموقع */
 }
 
