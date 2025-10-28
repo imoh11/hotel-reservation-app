@@ -1457,27 +1457,27 @@ function updateSummaryCard(summaryId, barId, occupied, capacity, daysCount) {
     if (percentage === 0) {
         percentageSpan.classList.add('occupancy-empty');
         barDiv.style.width = '0%';
-        barDiv.style.backgroundColor = '#dc3545'; // أحمر
+        barDiv.style.backgroundColor = '#28a745'; // أخضر
     } else if (percentage <= 30) {
         percentageSpan.classList.add('occupancy-low');
         barDiv.style.width = `${percentage}%`;
-        barDiv.style.backgroundColor = '#dc3545'; // أحمر
+        barDiv.style.backgroundColor = '#28a745'; // أخضر
     } else if (percentage <= 50) {
         percentageSpan.classList.add('occupancy-low-medium');
         barDiv.style.width = `${percentage}%`;
-        barDiv.style.backgroundColor = '#fd7e14'; // برتقالي
+        barDiv.style.backgroundColor = '#28a745'; // أخضر
     } else if (percentage <= 70) {
         percentageSpan.classList.add('occupancy-medium');
         barDiv.style.width = `${percentage}%`;
-        barDiv.style.backgroundColor = '#ffc107'; // أصفر
+        barDiv.style.backgroundColor = '#28a745'; // أخضر
     } else if (percentage <= 85) {
         percentageSpan.classList.add('occupancy-medium-high');
         barDiv.style.width = `${percentage}%`;
-        barDiv.style.backgroundColor = '#20c997'; // أخضر فاتح
+        barDiv.style.backgroundColor = '#28a745'; // أخضر
     } else {
         percentageSpan.classList.add('occupancy-high');
         barDiv.style.width = `${percentage}%`;
-        barDiv.style.backgroundColor = '#28a745'; // أخضر غامق
+        barDiv.style.backgroundColor = '#28a745'; // أخضر
     }
 }
 

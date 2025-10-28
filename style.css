@@ -619,10 +619,6 @@ p[id$="_validation_new"] {
 
 .occupancy-summary {
     margin-bottom: 30px;
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    padding: 20px;
 }
 
 .occupancy-summary h3 {
@@ -636,6 +632,10 @@ p[id$="_validation_new"] {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 15px;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 20px;
 }
 
 .summary-card {
