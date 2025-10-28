@@ -533,6 +533,8 @@ async function saveAndSendWhatsApp() {
         message = `ضيفنا العزيز: ${guestName}\nتم تأكيد حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nنتمنى لك طيب الإقامة\nفندق إكليل الجبل - الشفا`;
     } else if (resType === 'قيد الانتظار') {
         message = `ضيفنا العزيز: ${guestName}\nحجزك قيد الانتظار\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nالرجاء المبادرة بالدفع لتأكيد الحجز\nفندق إكليل الجبل - الشفا`;
+    } else if (resType === 'ملغي') {
+        message = `ضيفنا العزيز: ${guestName}\nتم إلغاء حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nوفي حال الدفع سيتم تحويل المبلغ لك في غضون 3 أيام عمل\nونرجو أن نراك قريبا\nفندق إكليل الجبل - الشفا`;
     } else {
         message = `ضيفنا العزيز: ${guestName}\nتم حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nفندق إكليل الجبل - الشفا`;
     }
@@ -556,7 +558,319 @@ async function saveAndSendWhatsApp() {
 }
 
 // ===============================================
-// 7. وظيفة تبديل التبويبات وتهيئة الأحداث
+// 7. وظائف تعديل وإلغاء الحجز
+// ===============================================
+
+let allReservations = [];
+let currentEditingReservation = null;
+
+/**
+ * تحميل جميع الحجوزات من Airtable
+ */
+async function loadAllReservations() {
+    const loadingDiv = document.getElementById('loadingReservations');
+    const listDiv = document.getElementById('reservationsList');
+    
+    try {
+        loadingDiv.style.display = 'block';
+        listDiv.innerHTML = '';
+        
+        const response = await fetch(`${AIRTABLE_API_URL}?sort[0][field]=${FIELD_IDS.RES_NUMBER}&sort[0][direction]=desc`, {
+            headers: {
+                'Authorization': `Bearer ${AIRTABLE_API_KEY}`
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`فشل تحميل الحجوزات: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        allReservations = data.records;
+        
+        loadingDiv.style.display = 'none';
+        
+        if (allReservations.length === 0) {
+            listDiv.innerHTML = '<p class="info-message-block">لا توجد حجوزات بعد.</p>';
+            return;
+        }
+        
+        allReservations.forEach(reservation => {
+            const resNumber = reservation.fields.RES_NUMBER || 'غير محدد';
+            const resType = reservation.fields.RES_TYPE || 'غير محدد';
+            const guestName = reservation.fields.GUEST_NAME || 'غير محدد';
+            
+            let typeClass = '';
+            if (resType === 'مؤكد') typeClass = 'confirmed';
+            else if (resType === 'قيد الانتظار') typeClass = 'waiting';
+            else if (resType === 'ملغي') typeClass = 'cancelled';
+            
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'reservation-item';
+            itemDiv.innerHTML = `
+                <div class="reservation-item-info">
+                    <span class="reservation-number">#${resNumber}</span>
+                    <span class="reservation-type ${typeClass}">${resType}</span>
+                    <span class="reservation-guest">${guestName}</span>
+                </div>
+            `;
+            
+            itemDiv.addEventListener('click', () => showReservationDetails(reservation));
+            listDiv.appendChild(itemDiv);
+        });
+        
+    } catch (error) {
+        console.error('Error loading reservations:', error);
+        loadingDiv.innerHTML = `<p class="error">❌ فشل تحميل الحجوزات: ${error.message}</p>`;
+    }
+}
+
+/**
+ * عرض تفاصيل حجز معين
+ */
+function showReservationDetails(reservation) {
+    currentEditingReservation = reservation;
+    
+    const listContainer = document.querySelector('.reservations-list-container');
+    const detailsDiv = document.getElementById('reservationDetails');
+    const contentDiv = document.getElementById('detailsContent');
+    
+    listContainer.style.display = 'none';
+    detailsDiv.classList.remove('hidden');
+    
+    const fields = reservation.fields;
+    
+    let html = '<div class="details-content">';
+    
+    const fieldMappings = [
+        { label: 'رقم الحجز', value: fields.RES_NUMBER },
+        { label: 'نوع الحجز', value: fields.RES_TYPE },
+        { label: 'اسم النزيل', value: fields.GUEST_NAME },
+        { label: 'رقم الجوال', value: fields.PHONE },
+        { label: 'الكونتر', value: fields.COUNTER },
+        { label: 'المبلغ', value: fields.AMOUNT },
+        { label: 'جناح ضيافة - عدد الغرف', value: fields.GUEST_COUNT },
+        { label: 'جناح ضيافة - الوصول', value: fields.GUEST_ARRIVAL },
+        { label: 'جناح ضيافة - المغادرة', value: fields.GUEST_DEPARTURE },
+        { label: 'جناح VIP - عدد الغرف', value: fields.VIP_COUNT },
+        { label: 'جناح VIP - الوصول', value: fields.VIP_ARRIVAL },
+        { label: 'جناح VIP - المغادرة', value: fields.VIP_DEPARTURE },
+        { label: 'جناح ملكي - عدد الغرف', value: fields.ROYAL_COUNT },
+        { label: 'جناح ملكي - الوصول', value: fields.ROYAL_ARRIVAL },
+        { label: 'جناح ملكي - المغادرة', value: fields.ROYAL_DEPARTURE },
+        { label: 'ملاحظات', value: fields.NOTES }
+    ];
+    
+    fieldMappings.forEach(field => {
+        if (field.value !== undefined && field.value !== null && field.value !== '') {
+            html += `
+                <div class="detail-item">
+                    <div class="detail-label">${field.label}</div>
+                    <div class="detail-value">${field.value}</div>
+                </div>
+            `;
+        }
+    });
+    
+    html += '</div>';
+    contentDiv.innerHTML = html;
+}
+
+/**
+ * إغلاق تفاصيل الحجز
+ */
+function closeReservationDetails() {
+    const listContainer = document.querySelector('.reservations-list-container');
+    const detailsDiv = document.getElementById('reservationDetails');
+    
+    detailsDiv.classList.add('hidden');
+    listContainer.style.display = 'block';
+}
+
+/**
+ * فتح نموذج تعديل الحجز
+ */
+function openEditForm() {
+    if (!currentEditingReservation) return;
+    
+    const detailsDiv = document.getElementById('reservationDetails');
+    const editFormDiv = document.getElementById('editReservationForm');
+    const formContent = document.getElementById('editFormContent');
+    
+    detailsDiv.classList.add('hidden');
+    editFormDiv.classList.remove('hidden');
+    
+    const fields = currentEditingReservation.fields;
+    
+    // إضافة خيار "ملغي" في قائمة نوع الحجز
+    formContent.innerHTML = `
+        <div class="form-row">
+            <div class="form-group">
+                <label>نوع الحجز</label>
+                <select id="edit_type" class="form-control">
+                    <option value="مؤكد" ${fields.RES_TYPE === 'مؤكد' ? 'selected' : ''}>مؤكد</option>
+                    <option value="قيد الانتظار" ${fields.RES_TYPE === 'قيد الانتظار' ? 'selected' : ''}>انتظار</option>
+                    <option value="ملغي" ${fields.RES_TYPE === 'ملغي' ? 'selected' : ''}>ملغي</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>اسم النزيل</label>
+                <input type="text" id="edit_guestName" class="form-control" value="${fields.GUEST_NAME || ''}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>رقم الجوال</label>
+                <input type="tel" id="edit_phone" class="form-control" value="${fields.PHONE || ''}">
+            </div>
+            <div class="form-group">
+                <label>الكونتر</label>
+                <select id="edit_counter" class="form-control">
+                    <option value="A1" ${fields.COUNTER === 'A1' ? 'selected' : ''}>A1</option>
+                    <option value="A2" ${fields.COUNTER === 'A2' ? 'selected' : ''}>A2</option>
+                    <option value="A3" ${fields.COUNTER === 'A3' ? 'selected' : ''}>A3</option>
+                    <option value="A4" ${fields.COUNTER === 'A4' ? 'selected' : ''}>A4</option>
+                    <option value="A5" ${fields.COUNTER === 'A5' ? 'selected' : ''}>A5</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>المبلغ</label>
+                <input type="number" id="edit_amount" class="form-control" value="${fields.AMOUNT || ''}">
+            </div>
+            <div class="form-group">
+                <label>ملاحظات</label>
+                <textarea id="edit_notes" class="form-control" rows="2">${fields.NOTES || ''}</textarea>
+            </div>
+        </div>
+        
+        <h4 style="margin-top: 20px; margin-bottom: 10px; color: var(--primary);">تفاصيل الأجنحة</h4>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>جناح ضيافة - عدد الغرف</label>
+                <input type="number" id="edit_guestCount" class="form-control" value="${fields.GUEST_COUNT || ''}">
+            </div>
+            <div class="form-group">
+                <label>تاريخ الوصول</label>
+                <input type="date" id="edit_guestArrival" class="form-control" value="${fields.GUEST_ARRIVAL || ''}">
+            </div>
+            <div class="form-group">
+                <label>تاريخ المغادرة</label>
+                <input type="date" id="edit_guestDeparture" class="form-control" value="${fields.GUEST_DEPARTURE || ''}">
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * إغلاق نموذج التعديل
+ */
+function closeEditForm() {
+    const detailsDiv = document.getElementById('reservationDetails');
+    const editFormDiv = document.getElementById('editReservationForm');
+    
+    editFormDiv.classList.add('hidden');
+    detailsDiv.classList.remove('hidden');
+}
+
+/**
+ * حفظ التعديلات
+ */
+async function saveReservationEdits() {
+    if (!currentEditingReservation) return;
+    
+    const statusDivId = 'editReservation';
+    
+    try {
+        showStatus('جاري حفظ التعديلات... ⏳', 'info', statusDivId, false);
+        
+        const updatedFields = {
+            [FIELD_IDS.RES_TYPE]: document.getElementById('edit_type').value,
+            [FIELD_IDS.GUEST_NAME]: document.getElementById('edit_guestName').value,
+            [FIELD_IDS.PHONE]: document.getElementById('edit_phone').value,
+            [FIELD_IDS.COUNTER]: document.getElementById('edit_counter').value,
+            [FIELD_IDS.AMOUNT]: parseFloat(document.getElementById('edit_amount').value) || undefined,
+            [FIELD_IDS.NOTES]: document.getElementById('edit_notes').value || undefined,
+            [FIELD_IDS.GUEST_COUNT]: parseInt(document.getElementById('edit_guestCount').value) || undefined,
+            [FIELD_IDS.GUEST_ARRIVAL]: document.getElementById('edit_guestArrival').value || undefined,
+            [FIELD_IDS.GUEST_DEPARTURE]: document.getElementById('edit_guestDeparture').value || undefined
+        };
+        
+        Object.keys(updatedFields).forEach(key => {
+            if (updatedFields[key] === undefined) delete updatedFields[key];
+        });
+        
+        const response = await fetch(`${AIRTABLE_API_URL}/${currentEditingReservation.id}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ fields: updatedFields })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`فشل حفظ التعديلات: ${response.status}`);
+        }
+        
+        showStatus('✅ تم حفظ التعديلات بنجاح', 'success', statusDivId);
+        
+        setTimeout(() => {
+            closeEditForm();
+            closeReservationDetails();
+            loadAllReservations();
+        }, 1500);
+        
+    } catch (error) {
+        console.error('Error saving edits:', error);
+        showStatus(`❌ فشل حفظ التعديلات: ${error.message}`, 'error', statusDivId);
+    }
+}
+
+/**
+ * حفظ وإرسال عبر WhatsApp
+ */
+async function saveEditAndSendWhatsApp() {
+    if (!currentEditingReservation) return;
+    
+    const guestName = document.getElementById('edit_guestName').value;
+    const phone = document.getElementById('edit_phone').value;
+    const resType = document.getElementById('edit_type').value;
+    const resNumber = currentEditingReservation.fields.RES_NUMBER;
+    
+    const guestArrival = document.getElementById('edit_guestArrival').value;
+    const guestDeparture = document.getElementById('edit_guestDeparture').value;
+    
+    if (!guestName || !phone || !resType) {
+        showStatus('الرجاء إدخال جميع البيانات المطلوبة.', 'error', 'editReservation');
+        return;
+    }
+    
+    let message = '';
+    
+    if (resType === 'مؤكد') {
+        message = `ضيفنا العزيز: ${guestName}\nتم تأكيد حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${guestArrival}\nتاريخ المغادرة: ${guestDeparture}\n\nنتمنى لك طيب الإقامة\nفندق إكليل الجبل - الشفا`;
+    } else if (resType === 'قيد الانتظار') {
+        message = `ضيفنا العزيز: ${guestName}\nحجزك قيد الانتظار\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${guestArrival}\nتاريخ المغادرة: ${guestDeparture}\n\nالرجاء المبادرة بالدفع لتأكيد الحجز\nفندق إكليل الجبل - الشفا`;
+    } else if (resType === 'ملغي') {
+        message = `ضيفنا العزيز: ${guestName}\nتم إلغاء حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${guestArrival}\nتاريخ المغادرة: ${guestDeparture}\n\nوفي حال الدفع سيتم تحويل المبلغ لك في غضون 3 أيام عمل\nونرجو أن نراك قريبا\nفندق إكليل الجبل - الشفا`;
+    }
+    
+    let cleanPhone = phone.replace(/\D/g, '');
+    if (cleanPhone.startsWith('05')) {
+        cleanPhone = '966' + cleanPhone.substring(1);
+    }
+    
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+    
+    await saveReservationEdits();
+}
+
+// ===============================================
+// 8. وظيفة تبديل التبويبات وتهيئة الأحداث
 // ===============================================
 
 function switchTab(tabName, button) {
@@ -620,8 +934,20 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', () => {
             const tabName = button.getAttribute('data-tab');
             switchTab(tabName, button);
+            
+            // ✅ تحميل الحجوزات عند فتح تبويب التعديل
+            if (tabName === 'editReservation') {
+                loadAllReservations();
+            }
         });
     });
+    
+    // ✅ أزرار تبويب التعديل
+    document.getElementById('closeDetailsBtn')?.addEventListener('click', closeReservationDetails);
+    document.getElementById('editReservationBtn')?.addEventListener('click', openEditForm);
+    document.getElementById('closeEditFormBtn')?.addEventListener('click', closeEditForm);
+    document.getElementById('saveEditBtn')?.addEventListener('click', saveReservationEdits);
+    document.getElementById('saveEditAndSendBtn')?.addEventListener('click', saveEditAndSendWhatsApp);
     
     document.querySelector('.tab-button.active')?.click(); 
     
