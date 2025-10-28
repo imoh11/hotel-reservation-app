@@ -489,3 +489,112 @@ p[id$="_validation_new"] {
     display: none !important;
 }
 
+
+
+/* ===================================
+   Reservation Accordion Styles
+   =================================== */
+
+.reservation-accordion {
+    margin-bottom: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background: #f5f5f5;
+}
+
+.reservation-accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: var(--transition);
+    background: #f5f5f5;
+}
+
+.reservation-accordion-header:hover {
+    background: #e8e8e8;
+}
+
+.reservation-accordion-header.active {
+    background: #e0e0e0;
+    border-bottom: 1px solid #d0d0d0;
+}
+
+.reservation-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.edit-icon-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px;
+    transition: var(--transition);
+    opacity: 0.7;
+}
+
+.edit-icon-btn:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+.accordion-arrow {
+    font-size: 0.8rem;
+    color: var(--gray);
+    transition: transform 0.3s ease;
+}
+
+.reservation-accordion-header.active .accordion-arrow {
+    transform: rotate(180deg);
+}
+
+.reservation-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: white;
+}
+
+.reservation-accordion-content.active {
+    max-height: 500px;
+    padding: 15px;
+}
+
+.reservation-details-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.detail-row {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-row.full-width {
+    grid-template-columns: 1fr;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: var(--gray);
+    font-size: 0.9rem;
+}
+
+.detail-value {
+    color: var(--text);
+    font-size: 0.95rem;
+}
+

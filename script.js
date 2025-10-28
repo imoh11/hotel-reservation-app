@@ -660,18 +660,98 @@ async function loadAllReservations() {
             else if (resType === 'قيد الانتظار') typeClass = 'waiting';
             else if (resType === 'ملغي') typeClass = 'cancelled';
             
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'reservation-item';
-            itemDiv.innerHTML = `
+            // ✅ إنشاء قائمة منسدلة (accordion)
+            const accordionDiv = document.createElement('div');
+            accordionDiv.className = 'reservation-accordion';
+            
+            // العنوان (قابل للنقر)
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'reservation-accordion-header';
+            headerDiv.innerHTML = `
                 <div class="reservation-item-info">
                     <span class="reservation-number">📅 ${arrivalDate}</span>
                     <span class="reservation-type ${typeClass}">${resType}</span>
                     <span class="reservation-guest">${guestName}</span>
                 </div>
+                <div class="reservation-actions">
+                    <button class="edit-icon-btn" title="تحرير الحجز">✏️</button>
+                    <span class="accordion-arrow">▼</span>
+                </div>
             `;
             
-            itemDiv.addEventListener('click', () => showReservationDetails(reservation));
-            listDiv.appendChild(itemDiv);
+            // التفاصيل (مخفية بشكل افتراضي)
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'reservation-accordion-content';
+            
+            // بناء التفاصيل
+            const fields = reservation.fields;
+            const resNumber = fields[FIELD_NAMES.RES_NUMBER] || 'غير محدد';
+            const phone = fields[FIELD_NAMES.PHONE] || 'غير محدد';
+            const counter = fields[FIELD_NAMES.COUNTER] || 'غير محدد';
+            const amount = fields[FIELD_NAMES.AMOUNT] || 'غير محدد';
+            const guestCount = fields[FIELD_NAMES.GUEST_COUNT] || '';
+            const guestDeparture = fields[FIELD_NAMES.GUEST_DEPARTURE] || '';
+            const vipCount = fields[FIELD_NAMES.VIP_COUNT] || '';
+            const vipDeparture = fields[FIELD_NAMES.VIP_DEPARTURE] || '';
+            const royalCount = fields[FIELD_NAMES.ROYAL_COUNT] || '';
+            const royalDeparture = fields[FIELD_NAMES.ROYAL_DEPARTURE] || '';
+            const notes = fields[FIELD_NAMES.NOTES] || '';
+            
+            let detailsHTML = '<div class="reservation-details-grid">';
+            detailsHTML += `<div class="detail-row"><span class="detail-label">رقم الحجز:</span><span class="detail-value">${resNumber}</span></div>`;
+            detailsHTML += `<div class="detail-row"><span class="detail-label">رقم الجوال:</span><span class="detail-value">${phone}</span></div>`;
+            detailsHTML += `<div class="detail-row"><span class="detail-label">الكونتر:</span><span class="detail-value">${counter}</span></div>`;
+            detailsHTML += `<div class="detail-row"><span class="detail-label">المبلغ:</span><span class="detail-value">${amount}</span></div>`;
+            
+            if (guestCount) {
+                detailsHTML += `<div class="detail-row"><span class="detail-label">جناح ضيافة:</span><span class="detail-value">${guestCount} غرف (📅 ${arrivalDate} → ${guestDeparture})</span></div>`;
+            }
+            if (vipCount) {
+                detailsHTML += `<div class="detail-row"><span class="detail-label">جناح VIP:</span><span class="detail-value">${vipCount} غرف (📅 ${vipArrival} → ${vipDeparture})</span></div>`;
+            }
+            if (royalCount) {
+                detailsHTML += `<div class="detail-row"><span class="detail-label">جناح ملكي:</span><span class="detail-value">${royalCount} غرف (📅 ${royalArrival} → ${royalDeparture})</span></div>`;
+            }
+            if (notes) {
+                detailsHTML += `<div class="detail-row full-width"><span class="detail-label">ملاحظات:</span><span class="detail-value">${notes}</span></div>`;
+            }
+            detailsHTML += '</div>';
+            
+            contentDiv.innerHTML = detailsHTML;
+            
+            // تجميع العناصر
+            accordionDiv.appendChild(headerDiv);
+            accordionDiv.appendChild(contentDiv);
+            listDiv.appendChild(accordionDiv);
+            
+            // فتح/إغلاق التفاصيل عند النقر على العنوان
+            headerDiv.addEventListener('click', (e) => {
+                // تجاهل النقر على زر التحرير
+                if (e.target.closest('.edit-icon-btn')) return;
+                
+                const isActive = headerDiv.classList.contains('active');
+                
+                // إغلاق جميع القوائم الأخرى
+                document.querySelectorAll('.reservation-accordion-header').forEach(h => {
+                    h.classList.remove('active');
+                    const c = h.nextElementSibling;
+                    if (c) c.classList.remove('active');
+                });
+                
+                // فتح القائمة الحالية إذا لم تكن مفتوحة
+                if (!isActive) {
+                    headerDiv.classList.add('active');
+                    contentDiv.classList.add('active');
+                }
+            });
+            
+            // فتح نموذج التعديل عند النقر على أيقونة التحرير
+            const editBtn = headerDiv.querySelector('.edit-icon-btn');
+            editBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentEditingReservation = reservation;
+                openEditForm();
+            });
         });
         
     } catch (error) {
@@ -681,9 +761,17 @@ async function loadAllReservations() {
 }
 
 /**
- * عرض تفاصيل حجز معين
+ * تم حذف showReservationDetails - التفاصيل الآن داخل accordion
  */
-function showReservationDetails(reservation) {
+
+/**
+ * تم حذف closeReservationDetails - لم تعد مطلوبة
+ */
+
+/**
+ * فتح نموذج تعديل الحجز
+ */
+function openEditForm_OLD_DELETED(reservation) {
     currentEditingReservation = reservation;
     
     const listContainer = document.querySelector('.reservations-list-container');
@@ -732,10 +820,7 @@ function showReservationDetails(reservation) {
     contentDiv.innerHTML = html;
 }
 
-/**
- * إغلاق تفاصيل الحجز
- */
-function closeReservationDetails() {
+function closeReservationDetails_OLD_DELETED() {
     const listContainer = document.querySelector('.reservations-list-container');
     const detailsDiv = document.getElementById('reservationDetails');
     
