@@ -7,8 +7,33 @@ const TABLE_NAME = 'tbloqjxnWuD2aH66H';
 const AIRTABLE_API_URL = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`;
 
 // =================================================================
-// 2. FIELD IDS (معرّفات الحقول الثابتة والصحيحة)
+// 2. FIELD NAMES & IDS
 // =================================================================
+
+// Field Names (for reading from Airtable)
+const FIELD_NAMES = {
+    RES_NUMBER: 'RES_NUMBER',
+    RES_TYPE: 'RES_TYPE',
+    COUNTER: 'COUNTER',
+    SOURCE: 'SOURCE',
+    GUEST_NAME: 'GUEST_NAME',
+    PHONE: 'PHONE',
+    AMOUNT: 'AMOUNT',
+    GUEST_ARRIVAL: 'GUEST_ARRIVAL',
+    GUEST_DEPARTURE: 'GUEST_DEPARTURE',
+    GUEST_COUNT: 'GUEST_COUNT',
+    VIP_ARRIVAL: 'VIP_ARRIVAL',
+    VIP_DEPARTURE: 'VIP_DEPARTURE',
+    VIP_COUNT: 'VIP_COUNT',
+    ROYAL_ARRIVAL: 'ROYAL_ARRIVAL',
+    ROYAL_DEPARTURE: 'ROYAL_DEPARTURE',
+    ROYAL_COUNT: 'ROYAL_COUNT',
+    TRANSFERER_NAME: 'TRANSFERER_NAME',
+    TRANSFER_DATE: 'TRANSFER_DATE',
+    NOTES: 'NOTES'
+};
+
+// Field IDs (for writing to Airtable)
 const FIELD_IDS = {
     // الحقول الأساسية
     RES_NUMBER: 'fldMTOwOZ7jM8axbf',
@@ -592,9 +617,9 @@ async function loadAllReservations() {
         today.setHours(0, 0, 0, 0);
         
         allReservations = data.records.filter(reservation => {
-            const guestArrival = reservation.fields.GUEST_ARRIVAL;
-            const vipArrival = reservation.fields.VIP_ARRIVAL;
-            const royalArrival = reservation.fields.ROYAL_ARRIVAL;
+            const guestArrival = reservation.fields[FIELD_NAMES.GUEST_ARRIVAL];
+            const vipArrival = reservation.fields[FIELD_NAMES.VIP_ARRIVAL];
+            const royalArrival = reservation.fields[FIELD_NAMES.ROYAL_ARRIVAL];
             
             // اختيار أول تاريخ متاح
             const arrivalDate = guestArrival || vipArrival || royalArrival;
@@ -607,8 +632,8 @@ async function loadAllReservations() {
         
         // ترتيب حسب تاريخ الوصول (الأقرب أولاً)
         allReservations.sort((a, b) => {
-            const aDate = new Date(a.fields.GUEST_ARRIVAL || a.fields.VIP_ARRIVAL || a.fields.ROYAL_ARRIVAL);
-            const bDate = new Date(b.fields.GUEST_ARRIVAL || b.fields.VIP_ARRIVAL || b.fields.ROYAL_ARRIVAL);
+            const aDate = new Date(a.fields[FIELD_NAMES.GUEST_ARRIVAL] || a.fields[FIELD_NAMES.VIP_ARRIVAL] || a.fields[FIELD_NAMES.ROYAL_ARRIVAL]);
+            const bDate = new Date(b.fields[FIELD_NAMES.GUEST_ARRIVAL] || b.fields[FIELD_NAMES.VIP_ARRIVAL] || b.fields[FIELD_NAMES.ROYAL_ARRIVAL]);
             return aDate - bDate;
         });
         
@@ -620,10 +645,10 @@ async function loadAllReservations() {
         }
         
         allReservations.forEach(reservation => {
-            // ✅ قراءة رقم الحجز من الحقل الصحيح
-            const resNumber = reservation.fields[FIELD_IDS.RES_NUMBER] || 'غير محدد';
-            const resType = reservation.fields[FIELD_IDS.RES_TYPE] || 'غير محدد';
-            const guestName = reservation.fields[FIELD_IDS.GUEST_NAME] || 'غير محدد';
+            // ✅ قراءة البيانات باستخدام FIELD_NAMES
+            const resNumber = reservation.fields[FIELD_NAMES.RES_NUMBER] || 'غير محدد';
+            const resType = reservation.fields[FIELD_NAMES.RES_TYPE] || 'غير محدد';
+            const guestName = reservation.fields[FIELD_NAMES.GUEST_NAME] || 'غير محدد';
             
             let typeClass = '';
             if (resType === 'مؤكد') typeClass = 'confirmed';
@@ -667,24 +692,24 @@ function showReservationDetails(reservation) {
     
     let html = '<div class="details-content">';
     
-    // ✅ قراءة البيانات باستخدام FIELD_IDS
+    // ✅ قراءة البيانات باستخدام FIELD_NAMES
     const fieldMappings = [
-        { label: 'رقم الحجز', value: fields[FIELD_IDS.RES_NUMBER] },
-        { label: 'نوع الحجز', value: fields[FIELD_IDS.RES_TYPE] },
-        { label: 'اسم النزيل', value: fields[FIELD_IDS.GUEST_NAME] },
-        { label: 'رقم الجوال', value: fields[FIELD_IDS.PHONE] },
-        { label: 'الكونتر', value: fields[FIELD_IDS.COUNTER] },
-        { label: 'المبلغ', value: fields[FIELD_IDS.AMOUNT] },
-        { label: 'جناح ضيافة - عدد الغرف', value: fields[FIELD_IDS.GUEST_COUNT] },
-        { label: 'جناح ضيافة - الوصول', value: fields[FIELD_IDS.GUEST_ARRIVAL] },
-        { label: 'جناح ضيافة - المغادرة', value: fields[FIELD_IDS.GUEST_DEPARTURE] },
-        { label: 'جناح VIP - عدد الغرف', value: fields[FIELD_IDS.VIP_COUNT] },
-        { label: 'جناح VIP - الوصول', value: fields[FIELD_IDS.VIP_ARRIVAL] },
-        { label: 'جناح VIP - المغادرة', value: fields[FIELD_IDS.VIP_DEPARTURE] },
-        { label: 'جناح ملكي - عدد الغرف', value: fields[FIELD_IDS.ROYAL_COUNT] },
-        { label: 'جناح ملكي - الوصول', value: fields[FIELD_IDS.ROYAL_ARRIVAL] },
-        { label: 'جناح ملكي - المغادرة', value: fields[FIELD_IDS.ROYAL_DEPARTURE] },
-        { label: 'ملاحظات', value: fields[FIELD_IDS.NOTES] }
+        { label: 'رقم الحجز', value: fields[FIELD_NAMES.RES_NUMBER] },
+        { label: 'نوع الحجز', value: fields[FIELD_NAMES.RES_TYPE] },
+        { label: 'اسم النزيل', value: fields[FIELD_NAMES.GUEST_NAME] },
+        { label: 'رقم الجوال', value: fields[FIELD_NAMES.PHONE] },
+        { label: 'الكونتر', value: fields[FIELD_NAMES.COUNTER] },
+        { label: 'المبلغ', value: fields[FIELD_NAMES.AMOUNT] },
+        { label: 'جناح ضيافة - عدد الغرف', value: fields[FIELD_NAMES.GUEST_COUNT] },
+        { label: 'جناح ضيافة - الوصول', value: fields[FIELD_NAMES.GUEST_ARRIVAL] },
+        { label: 'جناح ضيافة - المغادرة', value: fields[FIELD_NAMES.GUEST_DEPARTURE] },
+        { label: 'جناح VIP - عدد الغرف', value: fields[FIELD_NAMES.VIP_COUNT] },
+        { label: 'جناح VIP - الوصول', value: fields[FIELD_NAMES.VIP_ARRIVAL] },
+        { label: 'جناح VIP - المغادرة', value: fields[FIELD_NAMES.VIP_DEPARTURE] },
+        { label: 'جناح ملكي - عدد الغرف', value: fields[FIELD_NAMES.ROYAL_COUNT] },
+        { label: 'جناح ملكي - الوصول', value: fields[FIELD_NAMES.ROYAL_ARRIVAL] },
+        { label: 'جناح ملكي - المغادرة', value: fields[FIELD_NAMES.ROYAL_DEPARTURE] },
+        { label: 'ملاحظات', value: fields[FIELD_NAMES.NOTES] }
     ];
     
     fieldMappings.forEach(field => {
@@ -728,16 +753,16 @@ function openEditForm() {
     
     const fields = currentEditingReservation.fields;
     
-    // ✅ قراءة البيانات باستخدام FIELD_IDS
-    const resType = fields[FIELD_IDS.RES_TYPE] || '';
-    const guestName = fields[FIELD_IDS.GUEST_NAME] || '';
-    const phone = fields[FIELD_IDS.PHONE] || '';
-    const counter = fields[FIELD_IDS.COUNTER] || '';
-    const amount = fields[FIELD_IDS.AMOUNT] || '';
-    const notes = fields[FIELD_IDS.NOTES] || '';
-    const guestCount = fields[FIELD_IDS.GUEST_COUNT] || '';
-    const guestArrival = fields[FIELD_IDS.GUEST_ARRIVAL] || '';
-    const guestDeparture = fields[FIELD_IDS.GUEST_DEPARTURE] || '';
+    // ✅ قراءة البيانات باستخدام FIELD_NAMES
+    const resType = fields[FIELD_NAMES.RES_TYPE] || '';
+    const guestName = fields[FIELD_NAMES.GUEST_NAME] || '';
+    const phone = fields[FIELD_NAMES.PHONE] || '';
+    const counter = fields[FIELD_NAMES.COUNTER] || '';
+    const amount = fields[FIELD_NAMES.AMOUNT] || '';
+    const notes = fields[FIELD_NAMES.NOTES] || '';
+    const guestCount = fields[FIELD_NAMES.GUEST_COUNT] || '';
+    const guestArrival = fields[FIELD_NAMES.GUEST_ARRIVAL] || '';
+    const guestDeparture = fields[FIELD_NAMES.GUEST_DEPARTURE] || '';
     
     formContent.innerHTML = `
         <div class="form-row">
@@ -874,8 +899,8 @@ async function saveEditAndSendWhatsApp() {
     const guestName = document.getElementById('edit_guestName').value;
     const phone = document.getElementById('edit_phone').value;
     const resType = document.getElementById('edit_type').value;
-    // ✅ قراءة رقم الحجز باستخدام FIELD_IDS
-    const resNumber = currentEditingReservation.fields[FIELD_IDS.RES_NUMBER];
+    // ✅ قراءة رقم الحجز باستخدام FIELD_NAMES
+    const resNumber = currentEditingReservation.fields[FIELD_NAMES.RES_NUMBER];
     
     const guestArrival = document.getElementById('edit_guestArrival').value;
     const guestDeparture = document.getElementById('edit_guestDeparture').value;
