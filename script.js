@@ -838,11 +838,12 @@ function closeReservationDetails_OLD_DELETED() {
 function openEditForm() {
     if (!currentEditingReservation) return;
     
-    const detailsDiv = document.getElementById('reservationDetails');
+    // ✅ إخفاء قائمة الحجوزات وإظهار نموذج التعديل
+    const listContainer = document.querySelector('.reservations-list-container');
     const editFormDiv = document.getElementById('editReservationForm');
     const formContent = document.getElementById('editFormContent');
     
-    detailsDiv.classList.add('hidden');
+    if (listContainer) listContainer.style.display = 'none';
     editFormDiv.classList.remove('hidden');
     
     const fields = currentEditingReservation.fields;
@@ -923,11 +924,12 @@ function openEditForm() {
  * إغلاق نموذج التعديل
  */
 function closeEditForm() {
-    const detailsDiv = document.getElementById('reservationDetails');
+    // ✅ إخفاء نموذج التعديل وإظهار قائمة الحجوزات
+    const listContainer = document.querySelector('.reservations-list-container');
     const editFormDiv = document.getElementById('editReservationForm');
     
     editFormDiv.classList.add('hidden');
-    detailsDiv.classList.remove('hidden');
+    if (listContainer) listContainer.style.display = 'block';
 }
 
 /**

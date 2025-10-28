@@ -402,7 +402,7 @@ p[id$="_validation_new"] {
 .reservation-number {
     font-weight: 700;
     color: var(--primary);
-    font-size: 0.95rem;
+    font-size: 0.875rem;  /* ✅ توحيد مع باقي الموقع */
 }
 
 .reservation-type {
@@ -429,7 +429,7 @@ p[id$="_validation_new"] {
 
 .reservation-guest {
     color: var(--gray);
-    font-size: 0.85rem;
+    font-size: 0.875rem;  /* ✅ توحيد مع باقي الموقع */
 }
 
 .reservation-details {
