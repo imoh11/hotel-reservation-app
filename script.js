@@ -645,10 +645,19 @@ async function loadAllReservations() {
         }
         
         allReservations.forEach(reservation => {
-            // ✅ قراءة البيانات باستخدام FIELD_NAMES
-            const resNumber = reservation.fields[FIELD_NAMES.RES_NUMBER] || 'غير محدد';
+            // ✅ سجلات تصحيح لرؤية ما يُرجعه Airtable
+            console.log('[DEBUG] Reservation fields:', reservation.fields);
+            console.log('[DEBUG] Available field names:', Object.keys(reservation.fields));
+            
+            // ✅ قراءة البيانات
             const resType = reservation.fields[FIELD_NAMES.RES_TYPE] || 'غير محدد';
             const guestName = reservation.fields[FIELD_NAMES.GUEST_NAME] || 'غير محدد';
+            
+            // ✅ استبدال رقم الحجز بتاريخ الوصول
+            const guestArrival = reservation.fields[FIELD_NAMES.GUEST_ARRIVAL];
+            const vipArrival = reservation.fields[FIELD_NAMES.VIP_ARRIVAL];
+            const royalArrival = reservation.fields[FIELD_NAMES.ROYAL_ARRIVAL];
+            const arrivalDate = guestArrival || vipArrival || royalArrival || 'غير محدد';
             
             let typeClass = '';
             if (resType === 'مؤكد') typeClass = 'confirmed';
@@ -659,7 +668,7 @@ async function loadAllReservations() {
             itemDiv.className = 'reservation-item';
             itemDiv.innerHTML = `
                 <div class="reservation-item-info">
-                    <span class="reservation-number">#${resNumber}</span>
+                    <span class="reservation-number">📅 ${arrivalDate}</span>
                     <span class="reservation-type ${typeClass}">${resType}</span>
                     <span class="reservation-guest">${guestName}</span>
                 </div>
