@@ -477,7 +477,81 @@ async function saveNewReservation() {
 
 
 // ===============================================
-// 6. وظيفة تبديل التبويبات وتهيئة الأحداث
+// 6. وظيفة حفظ وإرسال عبر WhatsApp
+// ===============================================
+
+/**
+ * حفظ الحجز وإرسال ملخص عبر WhatsApp Web
+ */
+async function saveAndSendWhatsApp() {
+    const statusDivId = 'newReservation';
+    
+    // أولاً: حفظ الحجز
+    const guestName = document.getElementById('guestName_new').value;
+    const phone = document.getElementById('phone_new').value;
+    const resType = document.getElementById('type_new').value;
+    
+    if (!guestName || !phone || !resType) {
+        showStatus('الرجاء إدخال اسم النزيل، رقم الجوال، ونوع الحجز.', 'error', statusDivId);
+        return;
+    }
+    
+    // جمع بيانات التواريخ من جميع الأجنحة
+    const getSuiteValue = (key, type) => {
+        const element = document.getElementById(`${key}${type}_new`);
+        if (!element) return undefined;
+        if (type.includes('Count') || type.includes('Days')) {
+            const val = parseInt(element.value);
+            return isNaN(val) ? undefined : val;
+        }
+        return element.value.trim() === '' ? undefined : element.value;
+    };
+    
+    const guestArrival = getSuiteValue('guest', 'Arrival');
+    const guestDeparture = getSuiteValue('guest', 'Departure');
+    const vipArrival = getSuiteValue('vip', 'Arrival');
+    const vipDeparture = getSuiteValue('vip', 'Departure');
+    const royalArrival = getSuiteValue('royal', 'Arrival');
+    const royalDeparture = getSuiteValue('royal', 'Departure');
+    
+    // اختيار أول تاريخ متاح
+    const arrivalDate = guestArrival || vipArrival || royalArrival;
+    const departureDate = guestDeparture || vipDeparture || royalDeparture;
+    
+    if (!arrivalDate || !departureDate) {
+        showStatus('الرجاء إدخال تواريخ الوصول والمغادرة.', 'error', statusDivId);
+        return;
+    }
+    
+    // توليد رقم الحجز
+    const resNumber = generateResNumber();
+    
+    // إعداد رسالة WhatsApp حسب نوع الحجز
+    let message = '';
+    
+    if (resType === 'مؤكد') {
+        message = `ضيفنا العزيز :\nتم تأكيد حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nنتمنى لك طيب الإقامة\nفندق إكليل الجبل - الشفا`;
+    } else if (resType === 'قيد الانتظار') {
+        message = `ضيفنا العزيز :\nحجزك قيد الانتظار\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nالرجاء المبادرة بالدفع لتأكيد الحجز\nفندق إكليل الجبل - الشفا`;
+    } else {
+        message = `ضيفنا العزيز :\nتم حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nفندق إكليل الجبل - الشفا`;
+    }
+    
+    // تنظيف رقم الجوال (إزالة المسافات والرموز)
+    const cleanPhone = phone.replace(/\D/g, '');
+    
+    // فتح WhatsApp Web مع الرسالة الجاهزة
+    const whatsappUrl = `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(message)}`;
+    
+    // فتح في نافذة جديدة
+    window.open(whatsappUrl, '_blank');
+    
+    // حفظ الحجز في Airtable
+    await saveNewReservation();
+}
+
+// ===============================================
+// 7. وظيفة تبديل التبويبات وتهيئة الأحداث
 // ===============================================
 
 function switchTab(tabName, button) {
@@ -503,6 +577,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('newReservationForm').addEventListener('submit', function(event) {
         event.preventDefault();
         saveNewReservation();
+    });
+    
+    // ✅ إضافة event listener لزر حفظ وإرسال
+    document.getElementById('saveAndSendBtn').addEventListener('click', function(event) {
+        event.preventDefault();
+        saveAndSendWhatsApp();
     });
 
     const prefix = 'new'; 
