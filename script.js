@@ -1180,6 +1180,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (tabName === 'editReservation') {
                 loadAllReservations();
             }
+            if (tabName === 'query') {
+                loadOccupancyData();
+            }
         });
     });
     
@@ -1193,6 +1196,285 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.tab-button.active')?.click(); 
     
     // ✅ جميع القوائم مغلقة عند فتح الصفحة
+    
+    // ✅ أزرار صفحة الإشغال
+    const searchDateInput = document.getElementById('searchDate');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    
+    if (searchDateInput) {
+        searchDateInput.addEventListener('change', filterOccupancyByDate);
+    }
+    
+    if (clearSearchBtn) {
+        clearSearchBtn.addEventListener('click', clearOccupancySearch);
+    }
+
     // تم حذف الكود الذي كان يفتح القوائم تلقائياً
 
 });
+
+// ========================================
+// وظائف صفحة الإشغال
+// ========================================
+
+let occupancyData = [];
+
+/**
+ * تحميل بيانات الإشغال لـ 50 يوم قادمة
+ */
+async function loadOccupancyData() {
+    const loadingDiv = document.getElementById('loadingOccupancy');
+    const tableDiv = document.getElementById('occupancyTable');
+    
+    try {
+        loadingDiv.classList.remove('hidden');
+        tableDiv.classList.add('hidden');
+        
+        // جلب جميع الحجوزات
+        const response = await fetch(AIRTABLE_API_URL, {
+            headers: {
+                'Authorization': `Bearer ${AIRTABLE_API_KEY}`
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // إنشاء خريطة للإشغال لكل يوم
+        const occupancyMap = {};
+        
+        // معالجة كل حجز
+        data.records.forEach(record => {
+            const fields = record.fields;
+            
+            // جناح ضيافة
+            processReservation(occupancyMap, fields[FIELD_NAMES.GUEST_ARRIVAL], fields[FIELD_NAMES.GUEST_DEPARTURE], fields[FIELD_NAMES.GUEST_COUNT] || 0, 'guest');
+            
+            // جناح VIP
+            processReservation(occupancyMap, fields[FIELD_NAMES.VIP_ARRIVAL], fields[FIELD_NAMES.VIP_DEPARTURE], fields[FIELD_NAMES.VIP_COUNT] || 0, 'vip');
+            
+            // جناح ملكي
+            processReservation(occupancyMap, fields[FIELD_NAMES.ROYAL_ARRIVAL], fields[FIELD_NAMES.ROYAL_DEPARTURE], fields[FIELD_NAMES.ROYAL_COUNT] || 0, 'royal');
+        });
+        
+        // إنشاء بيانات لـ 50 يوم
+        occupancyData = [];
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        for (let i = 0; i < 50; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() + i);
+            const dateStr = date.toISOString().split('T')[0];
+            
+            const dayData = occupancyMap[dateStr] || { guest: 0, vip: 0, royal: 0 };
+            
+            occupancyData.push({
+                date: dateStr,
+                dayName: getDayName(date),
+                guest: dayData.guest,
+                vip: dayData.vip,
+                royal: dayData.royal,
+                total: dayData.guest + dayData.vip + dayData.royal
+            });
+        }
+        
+        // عرض البيانات
+        renderOccupancyTable();
+        updateOccupancySummary();
+        
+        loadingDiv.classList.add('hidden');
+        tableDiv.classList.remove('hidden');
+        
+    } catch (error) {
+        console.error('Error loading occupancy data:', error);
+        loadingDiv.innerHTML = `<p class="error">❌ فشل تحميل بيانات الإشغال: ${error.message}</p>`;
+    }
+}
+
+/**
+ * معالجة حجز واحد وإضافته للخريطة
+ */
+function processReservation(occupancyMap, arrivalDate, departureDate, count, suiteType) {
+    if (!arrivalDate || !departureDate || !count) return;
+    
+    const arrival = new Date(arrivalDate);
+    const departure = new Date(departureDate);
+    
+    // لكل يوم في الحجز
+    for (let d = new Date(arrival); d < departure; d.setDate(d.getDate() + 1)) {
+        const dateStr = d.toISOString().split('T')[0];
+        
+        if (!occupancyMap[dateStr]) {
+            occupancyMap[dateStr] = { guest: 0, vip: 0, royal: 0 };
+        }
+        
+        occupancyMap[dateStr][suiteType] += count;
+    }
+}
+
+/**
+ * الحصول على اسم اليوم بالعربية
+ */
+function getDayName(date) {
+    const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+    return days[date.getDay()];
+}
+
+/**
+ * عرض جدول الإشغال
+ */
+function renderOccupancyTable() {
+    const tbody = document.getElementById('occupancyTableBody');
+    tbody.innerHTML = '';
+    
+    occupancyData.forEach(day => {
+        const row = document.createElement('tr');
+        row.dataset.date = day.date;
+        
+        // التاريخ
+        const dateCell = document.createElement('td');
+        dateCell.textContent = day.date;
+        row.appendChild(dateCell);
+        
+        // اليوم
+        const dayCell = document.createElement('td');
+        dayCell.textContent = day.dayName;
+        row.appendChild(dayCell);
+        
+        // ضيافة
+        const guestCell = document.createElement('td');
+        guestCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.guest, 14)}">${day.guest}</span>`;
+        row.appendChild(guestCell);
+        
+        // VIP
+        const vipCell = document.createElement('td');
+        vipCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.vip, 8)}">${day.vip}</span>`;
+        row.appendChild(vipCell);
+        
+        // ملكي
+        const royalCell = document.createElement('td');
+        royalCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.royal, 4)}">${day.royal}</span>`;
+        row.appendChild(royalCell);
+        
+        // الإجمالي
+        const totalCell = document.createElement('td');
+        totalCell.innerHTML = `<span class="total-cell">${day.total}</span>`;
+        row.appendChild(totalCell);
+        
+        tbody.appendChild(row);
+    });
+}
+
+/**
+ * الحصول على فئة الإشغال (للألوان)
+ */
+function getOccupancyClass(occupied, capacity) {
+    if (occupied === 0) return 'cell-empty';
+    
+    const percentage = (occupied / capacity) * 100;
+    
+    if (percentage <= 50) return 'cell-low';
+    if (percentage <= 80) return 'cell-medium';
+    return 'cell-high';
+}
+
+/**
+ * تحديث ملخص الإشغال
+ */
+function updateOccupancySummary() {
+    let guestTotal = 0;
+    let vipTotal = 0;
+    let royalTotal = 0;
+    
+    occupancyData.forEach(day => {
+        guestTotal += day.guest;
+        vipTotal += day.vip;
+        royalTotal += day.royal;
+    });
+    
+    const guestCapacity = 14 * 50;
+    const vipCapacity = 8 * 50;
+    const royalCapacity = 4 * 50;
+    
+    updateSummaryCard('guestSummary', 'guestBar', guestTotal, guestCapacity);
+    updateSummaryCard('vipSummary', 'vipBar', vipTotal, vipCapacity);
+    updateSummaryCard('royalSummary', 'royalBar', royalTotal, royalCapacity);
+}
+
+/**
+ * تحديث بطاقة ملخص واحدة
+ */
+function updateSummaryCard(summaryId, barId, occupied, capacity) {
+    const summaryDiv = document.getElementById(summaryId);
+    const barDiv = document.getElementById(barId);
+    
+    const percentage = Math.round((occupied / capacity) * 100);
+    
+    summaryDiv.querySelector('.occupied').textContent = occupied;
+    summaryDiv.querySelector('.total').textContent = capacity;
+    
+    const percentageSpan = summaryDiv.querySelector('.percentage');
+    percentageSpan.textContent = `${percentage}%`;
+    
+    // الألوان
+    percentageSpan.className = 'percentage';
+    barDiv.className = 'summary-bar-fill';
+    
+    if (percentage === 0) {
+        percentageSpan.classList.add('occupancy-empty');
+        barDiv.style.width = '0%';
+        barDiv.style.backgroundColor = '#6c757d';
+    } else if (percentage <= 50) {
+        percentageSpan.classList.add('occupancy-low');
+        barDiv.style.width = `${percentage}%`;
+        barDiv.style.backgroundColor = '#28a745';
+    } else if (percentage <= 80) {
+        percentageSpan.classList.add('occupancy-medium');
+        barDiv.style.width = `${percentage}%`;
+        barDiv.style.backgroundColor = '#ffc107';
+    } else {
+        percentageSpan.classList.add('occupancy-high');
+        barDiv.style.width = `${percentage}%`;
+        barDiv.style.backgroundColor = '#dc3545';
+    }
+}
+
+/**
+ * فلترة الجدول حسب التاريخ
+ */
+function filterOccupancyByDate() {
+    const searchDate = document.getElementById('searchDate').value;
+    
+    if (!searchDate) {
+        // إظهار جميع الصفوف
+        document.querySelectorAll('#occupancyTableBody tr').forEach(row => {
+            row.style.display = '';
+            row.classList.remove('highlight');
+        });
+        return;
+    }
+    
+    // إخفاء جميع الصفوف إلا المطابق
+    document.querySelectorAll('#occupancyTableBody tr').forEach(row => {
+        if (row.dataset.date === searchDate) {
+            row.style.display = '';
+            row.classList.add('highlight');
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+/**
+ * مسح البحث
+ */
+function clearOccupancySearch() {
+    document.getElementById('searchDate').value = '';
+    filterOccupancyByDate();
+}
+

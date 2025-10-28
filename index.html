@@ -19,7 +19,7 @@
         <div class="tabs">
             <button class="tab-button active" data-tab="newReservation">حجز جديد</button>
             <button class="tab-button" data-tab="editReservation">تعديل / إلغاء حجز</button> 
-            <button class="tab-button" data-tab="query">الحجوزات القادمة</button>
+            <button class="tab-button" data-tab="query">الإشغال</button>
         </div>
 
         <div id="newReservation" class="tab-content active">
@@ -200,9 +200,62 @@
         </div>
 
         <div id="query" class="tab-content">
-            <p class="info status-message active info-message-block">
-                هذه الصفحة فارغة بناءً على طلبك. لتركيز العمل على "حجز جديد".
-            </p>
+            <!-- ملخص الإشغال -->
+            <div class="occupancy-summary">
+                <h3>ملخص الإشغال في الـ 50 يوم القادمة</h3>
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="summary-label">جناح ضيافة (14 غرفة)</div>
+                        <div class="summary-value" id="guestSummary">
+                            <span class="occupied">0</span> / <span class="total">700</span>
+                            <span class="percentage">0%</span>
+                        </div>
+                        <div class="summary-bar"><div class="summary-bar-fill" id="guestBar"></div></div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">جناح VIP (8 غرف)</div>
+                        <div class="summary-value" id="vipSummary">
+                            <span class="occupied">0</span> / <span class="total">400</span>
+                            <span class="percentage">0%</span>
+                        </div>
+                        <div class="summary-bar"><div class="summary-bar-fill" id="vipBar"></div></div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">جناح ملكي (4 غرف)</div>
+                        <div class="summary-value" id="royalSummary">
+                            <span class="occupied">0</span> / <span class="total">200</span>
+                            <span class="percentage">0%</span>
+                        </div>
+                        <div class="summary-bar"><div class="summary-bar-fill" id="royalBar"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- بحث -->
+            <div class="occupancy-search">
+                <input type="date" id="searchDate" class="form-control" placeholder="ابحث عن تاريخ...">
+                <button id="clearSearchBtn" class="btn btn-outline">مسح البحث</button>
+            </div>
+
+            <!-- جدول الإشغال -->
+            <div class="occupancy-table-container">
+                <div id="loadingOccupancy" class="loading-message">جاري تحميل بيانات الإشغال... ⏳</div>
+                <table id="occupancyTable" class="occupancy-table hidden">
+                    <thead>
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>اليوم</th>
+                            <th>ضيافة (14)</th>
+                            <th>VIP (8)</th>
+                            <th>ملكي (4)</th>
+                            <th>الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody id="occupancyTableBody">
+                        <!-- سيتم ملؤه بواسطة JavaScript -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 

@@ -611,3 +611,209 @@ p[id$="_validation_new"] {
     font-size: 0.875rem;  /* ✅ توحيد مع باقي الموقع */
 }
 
+
+
+/* ========================================
+   صفحة الإشغال
+======================================== */
+
+.occupancy-summary {
+    margin-bottom: 30px;
+}
+
+.occupancy-summary h3 {
+    font-size: 0.95rem;
+    color: var(--primary);
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.summary-card {
+    background: white;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.summary-label {
+    font-size: 0.875rem;
+    color: var(--gray);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.summary-value {
+    font-size: 0.875rem;
+    color: var(--dark);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.summary-value .occupied {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--primary);
+}
+
+.summary-value .percentage {
+    margin-right: auto;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+}
+
+.summary-bar {
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.summary-bar-fill {
+    height: 100%;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    border-radius: 4px;
+}
+
+/* ألوان حسب نسبة الإشغال */
+.occupancy-low {
+    background: #d4edda;
+    color: #155724;
+}
+
+.occupancy-medium {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.occupancy-high {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.occupancy-empty {
+    background: #f8f9fa;
+    color: #6c757d;
+}
+
+/* البحث */
+.occupancy-search {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.occupancy-search input {
+    max-width: 250px;
+    font-size: 0.875rem;
+}
+
+.occupancy-search .btn {
+    font-size: 0.875rem;
+}
+
+/* الجدول */
+.occupancy-table-container {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+}
+
+.occupancy-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.occupancy-table thead {
+    background: var(--primary);
+    color: white;
+}
+
+.occupancy-table th {
+    padding: 10px 12px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.occupancy-table tbody tr {
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease;
+}
+
+.occupancy-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.occupancy-table tbody tr.highlight {
+    background: #fff3cd !important;
+    animation: highlightFade 2s ease;
+}
+
+@keyframes highlightFade {
+    0% { background: #ffc107; }
+    100% { background: #fff3cd; }
+}
+
+.occupancy-table td {
+    padding: 8px 12px;
+    text-align: center;
+    font-size: 0.875rem;
+}
+
+.occupancy-table td:first-child {
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.occupancy-table td:nth-child(2) {
+    color: var(--gray);
+    font-size: 0.8rem;
+}
+
+.occupancy-cell {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+    min-width: 35px;
+}
+
+/* ألوان الخلايا */
+.cell-empty {
+    background: #f8f9fa;
+    color: #6c757d;
+}
+
+.cell-low {
+    background: #d4edda;
+    color: #155724;
+}
+
+.cell-medium {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.cell-high {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.occupancy-table .total-cell {
+    font-weight: 700;
+    color: var(--primary);
+}
+
