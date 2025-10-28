@@ -1123,11 +1123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         saveNewReservation();
     });
     
-    // ✅ إضافة event listener لزر حفظ وإرسال
-    document.getElementById('saveAndSendBtn').addEventListener('click', function(event) {
-        event.preventDefault();
-        saveAndSendWhatsApp();
-    });
+    // ✅ زر حفظ وإرسال تم حذفه من صفحة حجز جديد
 
     const prefix = 'new'; 
     ['guest', 'vip', 'royal'].forEach(suiteKey => {
