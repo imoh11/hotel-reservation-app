@@ -1280,7 +1280,7 @@ async function loadOccupancyData() {
         
         for (let i = 0; i < 50; i++) {
             const date = new Date(today);
-            date.setDate(today.getDate() + i);
+            date.setDate(date.getDate() + i);
             const dateStr = date.toISOString().split('T')[0];
             
             const dayData = occupancyMap[dateStr] || { guest: 0, vip: 0, royal: 0 };

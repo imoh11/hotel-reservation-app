@@ -649,19 +649,27 @@ p[id$="_validation_new"] {
 }
 
 .summary-label {
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     color: #495057;
-    margin-bottom: 10px;
     font-weight: 600;
+    min-width: 150px;
 }
 
 .summary-value {
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     color: #212529;
-    margin-bottom: 12px;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
+    flex: 1;
+}
+
+.summary-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 15px;
 }
 
 .summary-value .occupied {
@@ -675,13 +683,13 @@ p[id$="_validation_new"] {
 }
 
 .summary-value .percentage {
-    margin-left: auto;
     font-weight: 700;
     padding: 4px 10px;
     border-radius: 6px;
     font-size: 0.85rem;
     background: #ffffff;
     border: 1px solid #dee2e6;
+    white-space: nowrap;
 }
 
 .summary-bar {
@@ -727,12 +735,18 @@ p[id$="_validation_new"] {
     background: var(--bg-secondary);
     border-radius: 8px;
 }
+.filter-shortcuts {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
 
 .filter-inputs {
     display: flex;
     gap: 10px;
     align-items: center;
-    margin-bottom: 12px;
     flex-wrap: wrap;
 }
 
@@ -745,20 +759,6 @@ p[id$="_validation_new"] {
 
 .filter-inputs .btn {
     font-size: 0.875rem;
-}
-
-.filter-shortcuts {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.filter-label {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    font-weight: 500;
-    margin-right: 5px;
 }
 
 .btn-sm {
@@ -903,12 +903,6 @@ p[id$="_validation_new"] {
     
     .filter-shortcuts {
         justify-content: center;
-    }
-    
-    .filter-label {
-        width: 100%;
-        text-align: center;
-        margin-bottom: 5px;
     }
     
     .occupancy-table-container {
