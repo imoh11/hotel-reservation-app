@@ -175,7 +175,7 @@ function calculateDaysPerSuite(prefix, suiteKey) {
 // 4. وظائف التحقق من التوفر (المنطق المصحح والشامل للتواريخ)
 // ===============================================
 
-async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
+async function getAvailableCount(suiteKey, arrivalDate, departureDate, excludeRecordId = null) {
     const config = SUITE_CONFIG[suiteKey];
     const maxCapacity = SUITE_CAPACITIES[suiteKey];
     
@@ -215,6 +215,12 @@ async function getAvailableCount(suiteKey, arrivalDate, departureDate) {
         
         // ضمان قراءة الأرقام بشكل صحيح
         data.records.forEach((record, index) => {
+            // ✅ استثناء الحجز الحالي عند التعديل
+            if (excludeRecordId && record.id === excludeRecordId) {
+                console.log(`    [${index + 1}] Record ID: ${record.id} - EXCLUDED (الحجز الحالي)`);
+                return; // تجاهل هذا الحجز
+            }
+            
             // ✅ الحل: استخدام أسماء الحقول بدلاً من Field IDs
             const reservedCount = parseFloat(record.fields[config.countName]) || 0;
             const recordArrival = record.fields[config.arrivalName] || 'N/A';
@@ -1021,6 +1027,28 @@ async function saveReservationEdits() {
             [FIELD_IDS.GUEST_ARRIVAL]: document.getElementById('edit_guestArrival').value || undefined,
             [FIELD_IDS.GUEST_DEPARTURE]: document.getElementById('edit_guestDeparture').value || undefined
         };
+        
+        // ✅ التحقق من التوفر إذا تم تغيير التواريخ
+        const newArrival = updatedFields[FIELD_IDS.GUEST_ARRIVAL];
+        const newDeparture = updatedFields[FIELD_IDS.GUEST_DEPARTURE];
+        const resType = updatedFields[FIELD_IDS.RES_TYPE];
+        const newCount = updatedFields[FIELD_IDS.GUEST_COUNT];
+        
+        // إذا تم تغيير التواريخ أو نوع الحجز أو عدد الغرف
+        if (newArrival && newDeparture && resType) {
+            showStatus('جاري التحقق من التوفر... 🔍', 'info', statusDivId, false);
+            
+            const suiteKey = resType; // 'guest', 'vip', 'royal'
+            const requestedCount = newCount || 1;
+            
+            // ✅ استثناء الحجز الحالي من التحقق
+            const availableCount = await getAvailableCount(suiteKey, newArrival, newDeparture, currentEditingReservation.id);
+            
+            if (availableCount < requestedCount) {
+                showStatus(`❌ عذراً، لا يوجد غرف متاحة كافية. المتاح: ${availableCount} غرفة`, 'error', statusDivId);
+                return;
+            }
+        }
         
         Object.keys(updatedFields).forEach(key => {
             if (updatedFields[key] === undefined) delete updatedFields[key];
