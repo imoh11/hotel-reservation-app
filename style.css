@@ -756,9 +756,10 @@ p[id$="_validation_new"] {
 /* البحث والفلترة */
 .occupancy-filter {
     margin-bottom: 20px;
-    padding: 15px;
-    background: var(--bg-secondary);
-    border-radius: 8px;
+    padding: 20px;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
 }
 .filter-shortcuts {
     display: flex;
