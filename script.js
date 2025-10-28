@@ -669,7 +669,7 @@ async function loadAllReservations() {
             headerDiv.className = 'reservation-accordion-header';
             headerDiv.innerHTML = `
                 <div class="reservation-item-info">
-                    <span class="reservation-number">📅 ${arrivalDate}</span>
+                    <span class="reservation-number">${arrivalDate}</span>
                     <span class="reservation-type ${typeClass}">${resType}</span>
                     <span class="reservation-guest">${guestName}</span>
                 </div>
@@ -703,13 +703,13 @@ async function loadAllReservations() {
             detailsHTML += `<div class="detail-row"><span class="detail-label">المبلغ:</span><span class="detail-value">${amount}</span></div>`;
             
             if (guestCount) {
-                detailsHTML += `<div class="detail-row"><span class="detail-label">جناح ضيافة:</span><span class="detail-value">${guestCount} غرف (📅 ${arrivalDate} → ${guestDeparture})</span></div>`;
+                detailsHTML += `<div class="detail-row"><span class="detail-label">جناح ضيافة:</span><span class="detail-value">${guestCount} غرف (${arrivalDate} → ${guestDeparture})</span></div>`;
             }
             if (vipCount) {
-                detailsHTML += `<div class="detail-row"><span class="detail-label">جناح VIP:</span><span class="detail-value">${vipCount} غرف (📅 ${vipArrival} → ${vipDeparture})</span></div>`;
+                detailsHTML += `<div class="detail-row"><span class="detail-label">جناح VIP:</span><span class="detail-value">${vipCount} غرف (${vipArrival} → ${vipDeparture})</span></div>`;
             }
             if (royalCount) {
-                detailsHTML += `<div class="detail-row"><span class="detail-label">جناح ملكي:</span><span class="detail-value">${royalCount} غرف (📅 ${royalArrival} → ${royalDeparture})</span></div>`;
+                detailsHTML += `<div class="detail-row"><span class="detail-label">جناح ملكي:</span><span class="detail-value">${royalCount} غرف (${royalArrival} → ${royalDeparture})</span></div>`;
             }
             if (notes) {
                 detailsHTML += `<div class="detail-row full-width"><span class="detail-label">ملاحظات:</span><span class="detail-value">${notes}</span></div>`;
@@ -718,7 +718,7 @@ async function loadAllReservations() {
             detailsHTML += `
                 <div class="detail-actions">
                     <button class="btn btn-primary edit-reservation-btn">تحرير الحجز</button>
-                    <button class="btn btn-success send-whatsapp-btn">حفظ وإرسال 📲</button>
+                    <button class="btn btn-success send-whatsapp-btn">إرسال</button>
                 </div>
             `;
             
