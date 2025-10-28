@@ -1281,7 +1281,11 @@ async function loadOccupancyData() {
         for (let i = 0; i < 50; i++) {
             const date = new Date(today);
             date.setDate(date.getDate() + i);
-            const dateStr = date.toISOString().split('T')[0];
+            // استخدام التوقيت المحلي بدلاً من UTC
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const dateStr = `${year}-${month}-${day}`;
             
             const dayData = occupancyMap[dateStr] || { guest: 0, vip: 0, royal: 0 };
             
@@ -1419,23 +1423,23 @@ function updateOccupancySummary(dataToRender = null) {
     const vipCapacity = 4 * daysCount;
     const royalCapacity = 2 * daysCount;
     
-    updateSummaryCard('guestSummary', 'guestBar', guestTotal, guestCapacity);
-    updateSummaryCard('vipSummary', 'vipBar', vipTotal, vipCapacity);
-    updateSummaryCard('royalSummary', 'royalBar', royalTotal, royalCapacity);
+    // تمرير daysCount للدالة
+    updateSummaryCard('guestSummary', 'guestBar', guestTotal, guestCapacity, daysCount);
+    updateSummaryCard('vipSummary', 'vipBar', vipTotal, vipCapacity, daysCount);
+    updateSummaryCard('royalSummary', 'royalBar', royalTotal, royalCapacity, daysCount);
 }
 
 /**
  * تحديث بطاقة ملخص واحدة
  */
-function updateSummaryCard(summaryId, barId, occupied, capacity) {
+function updateSummaryCard(summaryId, barId, occupied, capacity, daysCount) {
     const summaryDiv = document.getElementById(summaryId);
     const barDiv = document.getElementById(barId);
     
     const percentage = Math.round((occupied / capacity) * 100);
     
     // حساب عدد الغرف المشغولة الفعلي
-    const daysCount = occupancyData.length > 0 ? (capacity / getRoomCapacity(summaryId)) : 1;
-    const actualRoomsOccupied = Math.round(occupied / daysCount);
+    const actualRoomsOccupied = daysCount > 0 ? Math.round(occupied / daysCount) : 0;
     
     summaryDiv.querySelector('.occupied').textContent = actualRoomsOccupied;
     summaryDiv.querySelector('.total').textContent = capacity;
