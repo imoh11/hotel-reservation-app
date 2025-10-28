@@ -229,10 +229,20 @@
                 </div>
             </div>
 
-            <!-- بحث -->
-            <div class="occupancy-search">
-                <input type="date" id="searchDate" class="form-control" placeholder="ابحث عن تاريخ...">
-                <button id="clearSearchBtn" class="btn btn-outline">مسح البحث</button>
+            <!-- بحث وفلترة -->
+            <div class="occupancy-filter">
+                <div class="filter-inputs">
+                    <input type="date" id="filterFromDate" class="form-control" placeholder="من تاريخ">
+                    <input type="date" id="filterToDate" class="form-control" placeholder="إلى تاريخ">
+                    <button id="applyFilterBtn" class="btn btn-primary">بحث</button>
+                </div>
+                <div class="filter-shortcuts">
+                    <span class="filter-label">اختصارات:</span>
+                    <button id="filterTodayBtn" class="btn btn-outline btn-sm">اليوم</button>
+                    <button id="filterWeekBtn" class="btn btn-outline btn-sm">أسبوع</button>
+                    <button id="filterMonthBtn" class="btn btn-outline btn-sm">شهر</button>
+                    <button id="filterAllBtn" class="btn btn-outline btn-sm">الكل</button>
+                </div>
             </div>
 
             <!-- جدول الإشغال -->

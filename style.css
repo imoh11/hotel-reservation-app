@@ -705,21 +705,50 @@ p[id$="_validation_new"] {
     color: #6c757d;
 }
 
-/* البحث */
-.occupancy-search {
+/* البحث والفلترة */
+.occupancy-filter {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+}
+
+.filter-inputs {
     display: flex;
     gap: 10px;
-    margin-bottom: 20px;
     align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
 }
 
-.occupancy-search input {
-    max-width: 250px;
+.filter-inputs input {
+    flex: 1;
+    min-width: 150px;
+    max-width: 200px;
     font-size: 0.875rem;
 }
 
-.occupancy-search .btn {
+.filter-inputs .btn {
     font-size: 0.875rem;
+}
+
+.filter-shortcuts {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-right: 5px;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.8rem;
 }
 
 /* الجدول */
@@ -844,13 +873,27 @@ p[id$="_validation_new"] {
         font-size: 0.95rem;
     }
     
-    .occupancy-search {
+    .occupancy-filter {
+        padding: 12px;
+    }
+    
+    .filter-inputs {
         flex-direction: column;
         align-items: stretch;
     }
     
-    .occupancy-search input {
+    .filter-inputs input {
         max-width: 100%;
+    }
+    
+    .filter-shortcuts {
+        justify-content: center;
+    }
+    
+    .filter-label {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 5px;
     }
     
     .occupancy-table-container {

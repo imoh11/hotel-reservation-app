@@ -1194,15 +1194,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // ✅ جميع القوائم مغلقة عند فتح الصفحة
     
     // ✅ أزرار صفحة الإشغال
-    const searchDateInput = document.getElementById('searchDate');
-    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const filterFromDate = document.getElementById('filterFromDate');
+    const filterToDate = document.getElementById('filterToDate');
+    const applyFilterBtn = document.getElementById('applyFilterBtn');
+    const filterTodayBtn = document.getElementById('filterTodayBtn');
+    const filterWeekBtn = document.getElementById('filterWeekBtn');
+    const filterMonthBtn = document.getElementById('filterMonthBtn');
+    const filterAllBtn = document.getElementById('filterAllBtn');
     
-    if (searchDateInput) {
-        searchDateInput.addEventListener('change', filterOccupancyByDate);
+    if (applyFilterBtn) {
+        applyFilterBtn.addEventListener('click', applyOccupancyFilter);
     }
     
-    if (clearSearchBtn) {
-        clearSearchBtn.addEventListener('click', clearOccupancySearch);
+    if (filterTodayBtn) {
+        filterTodayBtn.addEventListener('click', () => setFilterShortcut('today'));
+    }
+    
+    if (filterWeekBtn) {
+        filterWeekBtn.addEventListener('click', () => setFilterShortcut('week'));
+    }
+    
+    if (filterMonthBtn) {
+        filterMonthBtn.addEventListener('click', () => setFilterShortcut('month'));
+    }
+    
+    if (filterAllBtn) {
+        filterAllBtn.addEventListener('click', () => setFilterShortcut('all'));
     }
 
     // تم حذف الكود الذي كان يفتح القوائم تلقائياً
@@ -1323,11 +1340,12 @@ function getDayName(date) {
 /**
  * عرض جدول الإشغال
  */
-function renderOccupancyTable() {
+function renderOccupancyTable(dataToRender = null) {
+    const data = dataToRender || occupancyData;
     const tbody = document.getElementById('occupancyTableBody');
     tbody.innerHTML = '';
     
-    occupancyData.forEach(day => {
+    data.forEach(day => {
         const row = document.createElement('tr');
         row.dataset.date = day.date;
         
@@ -1381,20 +1399,22 @@ function getOccupancyClass(occupied, capacity) {
 /**
  * تحديث ملخص الإشغال
  */
-function updateOccupancySummary() {
+function updateOccupancySummary(dataToRender = null) {
+    const data = dataToRender || occupancyData;
+    const daysCount = data.length;
     let guestTotal = 0;
     let vipTotal = 0;
     let royalTotal = 0;
     
-    occupancyData.forEach(day => {
+    data.forEach(day => {
         guestTotal += day.guest;
         vipTotal += day.vip;
         royalTotal += day.royal;
     });
     
-    const guestCapacity = 14 * 50;
-    const vipCapacity = 4 * 50;
-    const royalCapacity = 2 * 50;
+    const guestCapacity = 14 * daysCount;
+    const vipCapacity = 4 * daysCount;
+    const royalCapacity = 2 * daysCount;
     
     updateSummaryCard('guestSummary', 'guestBar', guestTotal, guestCapacity);
     updateSummaryCard('vipSummary', 'vipBar', vipTotal, vipCapacity);
@@ -1440,37 +1460,73 @@ function updateSummaryCard(summaryId, barId, occupied, capacity) {
 }
 
 /**
- * فلترة الجدول حسب التاريخ
+ * تعيين اختصار الفترة
  */
-function filterOccupancyByDate() {
-    const searchDate = document.getElementById('searchDate').value;
+function setFilterShortcut(type) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const fromInput = document.getElementById('filterFromDate');
+    const toInput = document.getElementById('filterToDate');
     
-    if (!searchDate) {
-        // إظهار جميع الصفوف
-        document.querySelectorAll('#occupancyTableBody tr').forEach(row => {
-            row.style.display = '';
-            row.classList.remove('highlight');
-        });
-        return;
+    switch(type) {
+        case 'today':
+            const todayStr = today.toISOString().split('T')[0];
+            fromInput.value = todayStr;
+            toInput.value = todayStr;
+            break;
+        case 'week':
+            const weekEnd = new Date(today);
+            weekEnd.setDate(today.getDate() + 7);
+            fromInput.value = today.toISOString().split('T')[0];
+            toInput.value = weekEnd.toISOString().split('T')[0];
+            break;
+        case 'month':
+            const monthEnd = new Date(today);
+            monthEnd.setDate(today.getDate() + 30);
+            fromInput.value = today.toISOString().split('T')[0];
+            toInput.value = monthEnd.toISOString().split('T')[0];
+            break;
+        case 'all':
+            fromInput.value = '';
+            toInput.value = '';
+            break;
     }
     
-    // إخفاء جميع الصفوف إلا المطابق
-    document.querySelectorAll('#occupancyTableBody tr').forEach(row => {
-        if (row.dataset.date === searchDate) {
-            row.style.display = '';
-            row.classList.add('highlight');
-            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else {
-            row.style.display = 'none';
-        }
-    });
+    applyOccupancyFilter();
 }
 
 /**
- * مسح البحث
+ * تطبيق الفلترة
  */
-function clearOccupancySearch() {
-    document.getElementById('searchDate').value = '';
-    filterOccupancyByDate();
+function applyOccupancyFilter() {
+    const fromDate = document.getElementById('filterFromDate').value;
+    const toDate = document.getElementById('filterToDate').value;
+    
+    // إذا كان كلاهما فارغ → عرض الكل
+    if (!fromDate && !toDate) {
+        renderOccupancyTable();
+        updateOccupancySummary();
+        return;
+    }
+    
+    // فلترة البيانات
+    let filteredData = occupancyData;
+    
+    if (fromDate && toDate) {
+        // فترة محددة
+        filteredData = occupancyData.filter(day => {
+            return day.date >= fromDate && day.date <= toDate;
+        });
+    } else if (fromDate) {
+        // من تاريخ فقط
+        filteredData = occupancyData.filter(day => day.date >= fromDate);
+    } else if (toDate) {
+        // إلى تاريخ فقط
+        filteredData = occupancyData.filter(day => day.date <= toDate);
+    }
+    
+    // عرض البيانات المفلترة
+    renderOccupancyTable(filteredData);
+    updateOccupancySummary(filteredData);
 }
 
