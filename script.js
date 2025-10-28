@@ -1594,17 +1594,23 @@ function renderOccupancyTable(dataToRender = null) {
         
         // ضيافة
         const guestCell = document.createElement('td');
-        guestCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.guest, 14)}">${day.guest}</span>`;
+        const guestCapacity = SUITE_CAPACITIES.guest;
+        const guestPercentage = guestCapacity > 0 ? Math.round((day.guest / guestCapacity) * 100) : 0;
+        guestCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.guest, guestCapacity)}">${day.guest}/${guestCapacity} (${guestPercentage}%)</span>`;
         row.appendChild(guestCell);
         
         // VIP
         const vipCell = document.createElement('td');
-        vipCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.vip, 4)}">${day.vip}</span>`;
+        const vipCapacity = SUITE_CAPACITIES.vip;
+        const vipPercentage = vipCapacity > 0 ? Math.round((day.vip / vipCapacity) * 100) : 0;
+        vipCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.vip, vipCapacity)}">${day.vip}/${vipCapacity} (${vipPercentage}%)</span>`;
         row.appendChild(vipCell);
         
         // ملكي
         const royalCell = document.createElement('td');
-        royalCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.royal, 2)}">${day.royal}</span>`;
+        const royalCapacity = SUITE_CAPACITIES.royal;
+        const royalPercentage = royalCapacity > 0 ? Math.round((day.royal / royalCapacity) * 100) : 0;
+        royalCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.royal, royalCapacity)}">${day.royal}/${royalCapacity} (${royalPercentage}%)</span>`;
         row.appendChild(royalCell);
         
         // الإجمالي
