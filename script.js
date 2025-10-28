@@ -1031,15 +1031,30 @@ async function saveReservationEdits() {
         // ✅ التحقق من التوفر إذا تم تغيير التواريخ
         const newArrival = updatedFields[FIELD_IDS.GUEST_ARRIVAL];
         const newDeparture = updatedFields[FIELD_IDS.GUEST_DEPARTURE];
-        const resType = updatedFields[FIELD_IDS.RES_TYPE];
-        const newCount = updatedFields[FIELD_IDS.GUEST_COUNT];
         
-        // إذا تم تغيير التواريخ أو نوع الحجز أو عدد الغرف
-        if (newArrival && newDeparture && resType) {
+        // إذا تم تغيير التواريخ
+        if (newArrival && newDeparture) {
             showStatus('جاري التحقق من التوفر... 🔍', 'info', statusDivId, false);
             
-            const suiteKey = resType; // 'guest', 'vip', 'royal'
-            const requestedCount = newCount || 1;
+            // ✅ الحصول على نوع الجناح من الحجز الأصلي
+            let suiteKey = null;
+            const fields = currentEditingReservation.fields;
+            
+            // التحقق من أي جناح يحتوي على بيانات
+            if (fields[FIELD_NAMES.GUEST_COUNT] > 0 || fields[FIELD_NAMES.GUEST_ARRIVAL]) {
+                suiteKey = 'guest';
+            } else if (fields[FIELD_NAMES.VIP_COUNT] > 0 || fields[FIELD_NAMES.VIP_ARRIVAL]) {
+                suiteKey = 'vip';
+            } else if (fields[FIELD_NAMES.ROYAL_COUNT] > 0 || fields[FIELD_NAMES.ROYAL_ARRIVAL]) {
+                suiteKey = 'royal';
+            }
+            
+            if (!suiteKey) {
+                showStatus('❌ خطأ: لم يتم التعرف على نوع الجناح', 'error', statusDivId);
+                return;
+            }
+            
+            const requestedCount = updatedFields[FIELD_IDS.GUEST_COUNT] || updatedFields[FIELD_IDS.VIP_COUNT] || updatedFields[FIELD_IDS.ROYAL_COUNT] || 1;
             
             // ✅ استثناء الحجز الحالي من التحقق
             const availableCount = await getAvailableCount(suiteKey, newArrival, newDeparture, currentEditingReservation.id);
