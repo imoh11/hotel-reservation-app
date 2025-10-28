@@ -678,17 +678,7 @@ p[id$="_validation_new"] {
     justify-content: space-between;
     margin-bottom: 10px;
     gap: 15px;
-}
-
-/* اسم الجناح أقصى اليمين */
-.summary-label {
-    order: 1;
-}
-
-/* الأرقام والنسبة أقصى اليسار */
-.summary-value {
-    order: 2;
-    justify-content: flex-end;
+    direction: rtl;
 }
 
 .summary-value .occupied {
