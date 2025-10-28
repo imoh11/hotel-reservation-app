@@ -12,7 +12,7 @@ const AIRTABLE_API_URL = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`;
 
 // Field Names (for reading from Airtable)
 const FIELD_NAMES = {
-    RES_NUMBER: 'RES_NUMBER',
+    RES_NUMBER: 'Res_Number',  // ✅ الاسم الصحيح في Airtable
     RES_TYPE: 'RES_TYPE',
     COUNTER: 'COUNTER',
     SOURCE: 'SOURCE',
@@ -645,10 +645,6 @@ async function loadAllReservations() {
         }
         
         allReservations.forEach(reservation => {
-            // ✅ سجلات تصحيح لرؤية ما يُرجعه Airtable
-            console.log('[DEBUG] Reservation fields:', reservation.fields);
-            console.log('[DEBUG] Available field names:', Object.keys(reservation.fields));
-            
             // ✅ قراءة البيانات
             const resType = reservation.fields[FIELD_NAMES.RES_TYPE] || 'غير محدد';
             const guestName = reservation.fields[FIELD_NAMES.GUEST_NAME] || 'غير محدد';
