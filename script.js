@@ -1299,6 +1299,9 @@ async function loadOccupancyData() {
         renderOccupancyTable();
         updateOccupancySummary();
         
+        // فتح الصفحة على أسبوع افتراضياً
+        setFilterShortcut('week');
+        
         loadingDiv.classList.add('hidden');
         tableDiv.classList.remove('hidden');
         
@@ -1430,32 +1433,56 @@ function updateSummaryCard(summaryId, barId, occupied, capacity) {
     
     const percentage = Math.round((occupied / capacity) * 100);
     
-    summaryDiv.querySelector('.occupied').textContent = occupied;
+    // حساب عدد الغرف المشغولة الفعلي
+    const daysCount = occupancyData.length > 0 ? (capacity / getRoomCapacity(summaryId)) : 1;
+    const actualRoomsOccupied = Math.round(occupied / daysCount);
+    
+    summaryDiv.querySelector('.occupied').textContent = actualRoomsOccupied;
     summaryDiv.querySelector('.total').textContent = capacity;
     
     const percentageSpan = summaryDiv.querySelector('.percentage');
     percentageSpan.textContent = `${percentage}%`;
     
-    // الألوان
+    // الألوان - تدرج من أحمر (قليل) إلى أخضر (كثير)
     percentageSpan.className = 'percentage';
     barDiv.className = 'summary-bar-fill';
     
     if (percentage === 0) {
         percentageSpan.classList.add('occupancy-empty');
         barDiv.style.width = '0%';
-        barDiv.style.backgroundColor = '#6c757d';
-    } else if (percentage <= 50) {
+        barDiv.style.backgroundColor = '#dc3545'; // أحمر
+    } else if (percentage <= 30) {
         percentageSpan.classList.add('occupancy-low');
         barDiv.style.width = `${percentage}%`;
-        barDiv.style.backgroundColor = '#b8b8b8'; // رمادي فاتح
-    } else if (percentage <= 80) {
+        barDiv.style.backgroundColor = '#dc3545'; // أحمر
+    } else if (percentage <= 50) {
+        percentageSpan.classList.add('occupancy-low-medium');
+        barDiv.style.width = `${percentage}%`;
+        barDiv.style.backgroundColor = '#fd7e14'; // برتقالي
+    } else if (percentage <= 70) {
         percentageSpan.classList.add('occupancy-medium');
         barDiv.style.width = `${percentage}%`;
-        barDiv.style.backgroundColor = '#909090'; // رمادي متوسط
+        barDiv.style.backgroundColor = '#ffc107'; // أصفر
+    } else if (percentage <= 85) {
+        percentageSpan.classList.add('occupancy-medium-high');
+        barDiv.style.width = `${percentage}%`;
+        barDiv.style.backgroundColor = '#20c997'; // أخضر فاتح
     } else {
         percentageSpan.classList.add('occupancy-high');
         barDiv.style.width = `${percentage}%`;
-        barDiv.style.backgroundColor = '#6c757d'; // رمادي غامق
+        barDiv.style.backgroundColor = '#28a745'; // أخضر غامق
+    }
+}
+
+/**
+ * الحصول على سعة الغرف حسب نوع الجناح
+ */
+function getRoomCapacity(summaryId) {
+    switch(summaryId) {
+        case 'guestSummary': return 14;
+        case 'vipSummary': return 4;
+        case 'royalSummary': return 2;
+        default: return 1;
     }
 }
 
@@ -1487,8 +1514,10 @@ function setFilterShortcut(type) {
             toInput.value = monthEnd.toISOString().split('T')[0];
             break;
         case 'all':
-            fromInput.value = '';
-            toInput.value = '';
+            const fiftyDaysEnd = new Date(today);
+            fiftyDaysEnd.setDate(today.getDate() + 49);
+            fromInput.value = today.toISOString().split('T')[0];
+            toInput.value = fiftyDaysEnd.toISOString().split('T')[0];
             break;
     }
     

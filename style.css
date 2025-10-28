@@ -672,6 +672,17 @@ p[id$="_validation_new"] {
     gap: 15px;
 }
 
+/* اسم الجناح أقصى اليمين */
+.summary-label {
+    order: 1;
+}
+
+/* الأرقام والنسبة أقصى اليسار */
+.summary-value {
+    order: 2;
+    justify-content: flex-end;
+}
+
 .summary-value .occupied {
     font-size: 1.2rem;
     font-weight: 700;
@@ -707,25 +718,41 @@ p[id$="_validation_new"] {
     background: linear-gradient(90deg, #adb5bd 0%, #6c757d 100%);
 }
 
-/* ألوان حسب نسبة الإشغال - درجات رمادي */
+/* ألوان حسب نسبة الإشغال - تدرج من أحمر إلى أخضر */
+.occupancy-empty {
+    background: #fff5f5;
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
 .occupancy-low {
-    background: #f0f0f0;
-    color: #495057;
+    background: #fff5f5;
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+.occupancy-low-medium {
+    background: #fff4e6;
+    color: #fd7e14;
+    border-color: #fd7e14;
 }
 
 .occupancy-medium {
-    background: #e0e0e0;
-    color: #495057;
+    background: #fffbeb;
+    color: #ffc107;
+    border-color: #ffc107;
+}
+
+.occupancy-medium-high {
+    background: #e6fffa;
+    color: #20c997;
+    border-color: #20c997;
 }
 
 .occupancy-high {
-    background: #d0d0d0;
-    color: #212529;
-}
-
-.occupancy-empty {
-    background: #f8f9fa;
-    color: #6c757d;
+    background: #e6f7ed;
+    color: #28a745;
+    border-color: #28a745;
 }
 
 /* البحث والفلترة */
@@ -747,6 +774,7 @@ p[id$="_validation_new"] {
     display: flex;
     gap: 10px;
     align-items: center;
+    justify-content: center;
     flex-wrap: wrap;
 }
 
