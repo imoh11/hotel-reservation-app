@@ -386,20 +386,15 @@ p[id$="_validation_new"] {
     justify-content: space-between;
     align-items: center;
     padding: 12px 15px;
-    background: #ffffff;  /* ✅ أبيض افتراضي */
+    background: #f5f5f5;
     border: 1px solid #e0e0e0;
     border-radius: var(--border-radius);
     cursor: pointer;
     transition: var(--transition);
 }
 
-/* ✅ ألوان متناوبة (zebra striping) */
-.reservation-item:nth-child(even) {
-    background: #f8f9fa;  /* رمادي فاتح جداً */
-}
-
 .reservation-item:hover {
-    background: #e3f2fd;  /* ✅ أزرق فاتح عند التمرير */
+    background: #e8e8e8;
     border-color: var(--primary);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -599,8 +594,17 @@ p[id$="_validation_new"] {
     display: grid;
     grid-template-columns: 120px 1fr;
     gap: 10px;
-    padding: 8px 0;
+    padding: 8px 10px;
     border-bottom: 1px solid #f0f0f0;
+}
+
+/* ✅ ألوان متناوبة لصفوف التفاصيل */
+.detail-row:nth-child(odd) {
+    background: #ffffff;
+}
+
+.detail-row:nth-child(even) {
+    background: #f8f9fa;
 }
 
 .detail-row:last-child {
@@ -835,8 +839,17 @@ p[id$="_validation_new"] {
     transition: background-color 0.2s ease;
 }
 
-.occupancy-table tbody tr:hover {
+/* ✅ ألوان متناوبة لصفوف جدول الإشغال */
+.occupancy-table tbody tr:nth-child(odd) {
+    background: #ffffff;
+}
+
+.occupancy-table tbody tr:nth-child(even) {
     background: #f8f9fa;
+}
+
+.occupancy-table tbody tr:hover {
+    background: #e3f2fd !important;
 }
 
 .occupancy-table tbody tr.highlight {
