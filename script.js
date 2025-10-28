@@ -1352,12 +1352,12 @@ function renderOccupancyTable() {
         
         // VIP
         const vipCell = document.createElement('td');
-        vipCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.vip, 8)}">${day.vip}</span>`;
+        vipCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.vip, 4)}">${day.vip}</span>`;
         row.appendChild(vipCell);
         
         // ملكي
         const royalCell = document.createElement('td');
-        royalCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.royal, 4)}">${day.royal}</span>`;
+        royalCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.royal, 2)}">${day.royal}</span>`;
         row.appendChild(royalCell);
         
         // الإجمالي
@@ -1397,8 +1397,8 @@ function updateOccupancySummary() {
     });
     
     const guestCapacity = 14 * 50;
-    const vipCapacity = 8 * 50;
-    const royalCapacity = 4 * 50;
+    const vipCapacity = 4 * 50;
+    const royalCapacity = 2 * 50;
     
     updateSummaryCard('guestSummary', 'guestBar', guestTotal, guestCapacity);
     updateSummaryCard('vipSummary', 'vipBar', vipTotal, vipCapacity);
