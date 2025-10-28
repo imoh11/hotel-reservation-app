@@ -817,3 +817,76 @@ p[id$="_validation_new"] {
     color: var(--primary);
 }
 
+/* Responsive للجوال */
+@media (max-width: 768px) {
+    .occupancy-summary h3 {
+        font-size: 0.85rem;
+    }
+    
+    .summary-cards {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .summary-card {
+        padding: 12px;
+    }
+    
+    .summary-label {
+        font-size: 0.8rem;
+    }
+    
+    .summary-value {
+        font-size: 0.8rem;
+    }
+    
+    .summary-value .occupied {
+        font-size: 0.95rem;
+    }
+    
+    .occupancy-search {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .occupancy-search input {
+        max-width: 100%;
+    }
+    
+    .occupancy-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .occupancy-table {
+        font-size: 0.75rem;
+        min-width: 100%;
+    }
+    
+    .occupancy-table th {
+        padding: 8px 6px;
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+    
+    .occupancy-table td {
+        padding: 6px 4px;
+        font-size: 0.75rem;
+    }
+    
+    .occupancy-table td:first-child {
+        font-size: 0.7rem;
+        white-space: nowrap;
+    }
+    
+    .occupancy-table td:nth-child(2) {
+        font-size: 0.7rem;
+    }
+    
+    .occupancy-cell {
+        padding: 3px 6px;
+        font-size: 0.75rem;
+        min-width: 25px;
+    }
+}
+
