@@ -848,6 +848,11 @@ function openEditForm() {
     
     const fields = currentEditingReservation.fields;
     
+    // ✅ سجلات تصحيح
+    console.log('[DEBUG] Opening edit form for reservation:', currentEditingReservation.id);
+    console.log('[DEBUG] All fields:', fields);
+    console.log('[DEBUG] Available field names:', Object.keys(fields));
+    
     // ✅ قراءة البيانات باستخدام FIELD_NAMES
     const resType = fields[FIELD_NAMES.RES_TYPE] || '';
     const guestName = fields[FIELD_NAMES.GUEST_NAME] || '';
@@ -858,6 +863,11 @@ function openEditForm() {
     const guestCount = fields[FIELD_NAMES.GUEST_COUNT] || '';
     const guestArrival = fields[FIELD_NAMES.GUEST_ARRIVAL] || '';
     const guestDeparture = fields[FIELD_NAMES.GUEST_DEPARTURE] || '';
+    
+    console.log('[DEBUG] Extracted values:');
+    console.log('  - guestCount:', guestCount);
+    console.log('  - guestArrival:', guestArrival);
+    console.log('  - guestDeparture:', guestDeparture);
     
     formContent.innerHTML = `
         <div class="form-row">
