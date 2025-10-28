@@ -640,18 +640,33 @@ async function saveAndSendWhatsApp() {
     // توليد رقم الحجز
     const resNumber = generateResNumber();
     
-    // إعداد رسالة WhatsApp حسب نوع الحجز
-    let message = '';
+    // ✅ إعداد رسالة WhatsApp من القوالب في Airtable
+    let messageTemplate = '';
     
     if (resType === 'مؤكد') {
-        message = `ضيفنا العزيز: ${guestName}\nتم تأكيد حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nنتمنى لك طيب الإقامة\nفندق إكليل الجبل - الشفا`;
+        messageTemplate = APP_CONFIG.msg_confirmed || 'ضيفنا العزيز: {name}\nتم تأكيد حجزك';
     } else if (resType === 'قيد الانتظار') {
-        message = `ضيفنا العزيز: ${guestName}\nحجزك قيد الانتظار\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nالرجاء المبادرة بالدفع لتأكيد الحجز\nفندق إكليل الجبل - الشفا`;
+        messageTemplate = APP_CONFIG.msg_waiting || 'ضيفنا العزيز: {name}\nحجزك قيد الانتظار';
     } else if (resType === 'ملغي') {
-        message = `ضيفنا العزيز: ${guestName}\nتم إلغاء حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nوفي حال الدفع سيتم تحويل المبلغ لك في غضون 3 أيام عمل\nونرجو أن نراك قريبا\nفندق إكليل الجبل - الشفا`;
+        messageTemplate = APP_CONFIG.msg_cancelled || 'ضيفنا العزيز: {name}\nتم إلغاء حجزك';
     } else {
-        message = `ضيفنا العزيز: ${guestName}\nتم حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nفندق إكليل الجبل - الشفا`;
+        messageTemplate = APP_CONFIG.msg_confirmed || 'ضيفنا العزيز: {name}\nتم حجزك';
     }
+    
+    // ✅ حساب عدد الضيوف والمبلغ
+    const guestCount = (getSuiteValue('guest', 'Count') || 0) + (getSuiteValue('vip', 'Count') || 0) + (getSuiteValue('royal', 'Count') || 0);
+    const amount = getSuiteValue('amount', '') || 'غير محدد';
+    
+    // ✅ استبدال المتغيرات
+    const message = messageTemplate
+        .replace(/{name}/g, guestName)
+        .replace(/{hotel}/g, APP_CONFIG.hotel_name || 'الفندق')
+        .replace(/{resNumber}/g, resNumber)
+        .replace(/{phone}/g, phone)
+        .replace(/{guestCount}/g, guestCount)
+        .replace(/{arrival}/g, arrivalDate)
+        .replace(/{departure}/g, departureDate)
+        .replace(/{amount}/g, amount);
     
     // ✅ تنظيف وتحويل رقم الجوال
     let cleanPhone = phone.replace(/\D/g, ''); // إزالة المسافات والرموز
@@ -898,15 +913,29 @@ function sendWhatsAppDirectly(reservation) {
     const royalDeparture = fields[FIELD_NAMES.ROYAL_DEPARTURE];
     const departureDate = guestDeparture || vipDeparture || royalDeparture || 'غير محدد';
     
-    // بناء الرسالة
-    let message = '';
+    // ✅ بناء الرسالة من القوالب في Airtable
+    let messageTemplate = '';
     if (resType === 'ملغي') {
-        message = `ضيفنا العزيز: ${guestName}\nتم إلغاء حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\nوفي حال الدفع سيتم تحويل المبلغ لك في غضون 3 أيام عمل\nونرجو أن نراك قريبا\nفندق إكليل الجبل - الشفا`;
+        messageTemplate = APP_CONFIG.msg_cancelled || 'ضيفنا العزيز: {name}\nتم إلغاء حجزك';
     } else if (resType === 'قيد الانتظار') {
-        message = `ضيفنا العزيز: ${guestName}\nحجزك قيد الانتظار\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nالرجاء المبادرة بالدفع لتأكيد الحجز\nفندق إكليل الجبل - الشفا`;
+        messageTemplate = APP_CONFIG.msg_waiting || 'ضيفنا العزيز: {name}\nحجزك قيد الانتظار';
     } else {
-        message = `ضيفنا العزيز: ${guestName}\nتم تأكيد حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nنتمنى لك طيب الإقامة\nفندق إكليل الجبل - الشفا`;
+        messageTemplate = APP_CONFIG.msg_confirmed || 'ضيفنا العزيز: {name}\nتم تأكيد حجزك';
     }
+    
+    // ✅ استبدال المتغيرات
+    const guestCount = (fields[FIELD_NAMES.GUEST_COUNT] || 0) + (fields[FIELD_NAMES.VIP_COUNT] || 0) + (fields[FIELD_NAMES.ROYAL_COUNT] || 0);
+    const amount = fields[FIELD_NAMES.AMOUNT] || 'غير محدد';
+    
+    const message = messageTemplate
+        .replace(/{name}/g, guestName)
+        .replace(/{hotel}/g, APP_CONFIG.hotel_name || 'الفندق')
+        .replace(/{resNumber}/g, resNumber)
+        .replace(/{phone}/g, phone)
+        .replace(/{guestCount}/g, guestCount)
+        .replace(/{arrival}/g, arrivalDate)
+        .replace(/{departure}/g, departureDate)
+        .replace(/{amount}/g, amount);
     
     // تحويل الرقم إلى الصيغة الدولية
     let phoneNumber = phone.replace(/\s+/g, '');
@@ -1199,15 +1228,34 @@ async function saveEditAndSendWhatsApp() {
         return;
     }
     
-    let message = '';
+    // ✅ بناء الرسالة من القوالب في Airtable
+    let messageTemplate = '';
     
     if (resType === 'مؤكد') {
-        message = `ضيفنا العزيز: ${guestName}\nتم تأكيد حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${guestArrival}\nتاريخ المغادرة: ${guestDeparture}\n\nنتمنى لك طيب الإقامة\nفندق إكليل الجبل - الشفا`;
+        messageTemplate = APP_CONFIG.msg_confirmed || 'ضيفنا العزيز: {name}\nتم تأكيد حجزك';
     } else if (resType === 'قيد الانتظار') {
-        message = `ضيفنا العزيز: ${guestName}\nحجزك قيد الانتظار\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${guestArrival}\nتاريخ المغادرة: ${guestDeparture}\n\nالرجاء المبادرة بالدفع لتأكيد الحجز\nفندق إكليل الجبل - الشفا`;
+        messageTemplate = APP_CONFIG.msg_waiting || 'ضيفنا العزيز: {name}\nحجزك قيد الانتظار';
     } else if (resType === 'ملغي') {
-        message = `ضيفنا العزيز: ${guestName}\nتم إلغاء حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${guestArrival}\nتاريخ المغادرة: ${guestDeparture}\n\nوفي حال الدفع سيتم تحويل المبلغ لك في غضون 3 أيام عمل\nونرجو أن نراك قريبا\nفندق إكليل الجبل - الشفا`;
+        messageTemplate = APP_CONFIG.msg_cancelled || 'ضيفنا العزيز: {name}\nتم إلغاء حجزك';
+    } else {
+        messageTemplate = APP_CONFIG.msg_confirmed || 'ضيفنا العزيز: {name}\nتم حجزك';
     }
+    
+    // ✅ حساب عدد الضيوف والمبلغ
+    const fields = currentEditingReservation.fields;
+    const guestCount = (fields[FIELD_NAMES.GUEST_COUNT] || 0) + (fields[FIELD_NAMES.VIP_COUNT] || 0) + (fields[FIELD_NAMES.ROYAL_COUNT] || 0);
+    const amount = fields[FIELD_NAMES.AMOUNT] || 'غير محدد';
+    
+    // ✅ استبدال المتغيرات
+    const message = messageTemplate
+        .replace(/{name}/g, guestName)
+        .replace(/{hotel}/g, APP_CONFIG.hotel_name || 'الفندق')
+        .replace(/{resNumber}/g, resNumber)
+        .replace(/{phone}/g, phone)
+        .replace(/{guestCount}/g, guestCount)
+        .replace(/{arrival}/g, guestArrival)
+        .replace(/{departure}/g, guestDeparture)
+        .replace(/{amount}/g, amount);
     
     let cleanPhone = phone.replace(/\D/g, '');
     if (cleanPhone.startsWith('05')) {
@@ -1242,6 +1290,38 @@ function switchTab(tabName, button) {
 }
 
 
+/**
+ * تحديث واجهة المستخدم من الإعدادات
+ */
+function updateUIFromConfig() {
+    // ✅ تحديث اسم الفندق
+    const hotelNameElement = document.getElementById('hotel-name');
+    if (hotelNameElement && APP_CONFIG.hotel_name) {
+        hotelNameElement.textContent = APP_CONFIG.hotel_name;
+    }
+    
+    // ✅ تحديث أسماء الأجنحة
+    document.querySelectorAll('[data-suite-name="guest"]').forEach(el => {
+        if (APP_CONFIG.guest_name_ar) {
+            el.textContent = APP_CONFIG.guest_name_ar;
+        }
+    });
+    
+    document.querySelectorAll('[data-suite-name="vip"]').forEach(el => {
+        if (APP_CONFIG.vip_name_ar) {
+            el.textContent = APP_CONFIG.vip_name_ar;
+        }
+    });
+    
+    document.querySelectorAll('[data-suite-name="royal"]').forEach(el => {
+        if (APP_CONFIG.royal_name_ar) {
+            el.textContent = APP_CONFIG.royal_name_ar;
+        }
+    });
+    
+    console.log('✅ تم تحديث واجهة المستخدم');
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     // ✅ تحميل الإعدادات أولاً
     APP_CONFIG = await loadConfig();
@@ -1256,6 +1336,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     SUITE_CONFIG.guest.nameAr = APP_CONFIG.guest_name_ar || 'جناح ضيافة';
     SUITE_CONFIG.vip.nameAr = APP_CONFIG.vip_name_ar || 'جناح VIP';
     SUITE_CONFIG.royal.nameAr = APP_CONFIG.royal_name_ar || 'جناح ملكي';
+    
+    // ✅ تحديث واجهة المستخدم
+    updateUIFromConfig();
 
     document.getElementById('newReservationForm').addEventListener('submit', function(event) {
         event.preventDefault();

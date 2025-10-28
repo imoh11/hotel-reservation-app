@@ -12,7 +12,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h2>Rosemary Hotel</h2>
+            <h2 id="hotel-name">Rosemary Hotel</h2>
             <p>إدارة الحجوزات </p>
         </div>
 
@@ -84,7 +84,7 @@
                     <div class="collapsible-content">
                         <div id="suitesContainer_new" class="suite-selection-container">
                          
-                            <div class="suite-item-header">جناح ضيافة <span id="guest_summary_new" class="suite-summary"></span></div>
+                            <div class="suite-item-header"><span data-suite-name="guest">جناح ضيافة</span> <span id="guest_summary_new" class="suite-summary"></span></div>
                             <div id="suiteDetails_new_guest" class="suite-details-area">
                                 <div class="form-row">
                                     <div class="form-group">
@@ -103,7 +103,7 @@
                                 <p id="guest_validation_new" class="status-message hidden error"></p> 
                             </div>
 
-                            <div class="suite-item-header">جناح VIP <span id="vip_summary_new" class="suite-summary"></span></div>
+                            <div class="suite-item-header"><span data-suite-name="vip">جناح VIP</span> <span id="vip_summary_new" class="suite-summary"></span></div>
                             <div id="suiteDetails_new_vip" class="suite-details-area">
                                 <div class="form-row">
                                     <div class="form-group">
@@ -122,7 +122,7 @@
                                 <p id="vip_validation_new" class="status-message hidden error"></p> 
                             </div>
 
-                            <div class="suite-item-header">جناح ملكي <span id="royal_summary_new" class="suite-summary"></span></div>
+                            <div class="suite-item-header"><span data-suite-name="royal">جناح ملكي</span> <span id="royal_summary_new" class="suite-summary"></span></div>
                             <div id="suiteDetails_new_royal" class="suite-details-area">
                                 <div class="form-row">
                                     <div class="form-group">
@@ -217,7 +217,7 @@
                 <div class="summary-cards">
                     <div class="summary-card">
                         <div class="summary-card-header">
-                            <div class="summary-label">جناح ضيافة</div>
+                            <div class="summary-label" data-suite-name="guest">جناح ضيافة</div>
                             <div class="summary-value" id="guestSummary">
                                 <span class="occupied">0</span> / <span class="total">700</span>
                                 <span class="percentage">0%</span>
@@ -227,7 +227,7 @@
                     </div>
                     <div class="summary-card">
                         <div class="summary-card-header">
-                            <div class="summary-label">جناح VIP</div>
+                            <div class="summary-label" data-suite-name="vip">جناح VIP</div>
                             <div class="summary-value" id="vipSummary">
                                 <span class="occupied">0</span> / <span class="total">200</span>
                                 <span class="percentage">0%</span>
@@ -237,7 +237,7 @@
                     </div>
                     <div class="summary-card">
                         <div class="summary-card-header">
-                            <div class="summary-label">جناح ملكي</div>
+                            <div class="summary-label" data-suite-name="royal">جناح ملكي</div>
                             <div class="summary-value" id="royalSummary">
                                 <span class="occupied">0</span> / <span class="total">100</span>
                                 <span class="percentage">0%</span>
