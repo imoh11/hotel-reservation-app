@@ -80,6 +80,13 @@ const SUITE_CONFIG = {
 // 3. وظائف الواجهة المساعدة
 // ===============================================
 
+/**
+ * توليد رقم حجز عشوائي من 6 أرقام
+ */
+function generateResNumber() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
 function showStatus(message, type = 'info', tabId, autoHide = true) {
     const statusDiv = document.getElementById(`statusMessage_${tabId}`); 
     if (!statusDiv) return;
@@ -330,6 +337,7 @@ async function saveNewReservation() {
     const amount = (amountValue.trim() !== '' && !isNaN(parseFloat(amountValue))) ? parseFloat(amountValue) : undefined;
 
     const data = {
+        [FIELD_IDS.RES_NUMBER]: generateResNumber(), // ✅ توليد رقم حجز عشوائي
         [FIELD_IDS.RES_TYPE]: resType,
         [FIELD_IDS.COUNTER]: counter,
         [FIELD_IDS.GUEST_NAME]: guestName,
