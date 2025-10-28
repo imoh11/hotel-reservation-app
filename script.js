@@ -1423,10 +1423,15 @@ function updateOccupancySummary(dataToRender = null) {
     const vipCapacity = 4 * daysCount;
     const royalCapacity = 2 * daysCount;
     
+    // حساب الإجمالي
+    const totalOccupied = guestTotal + vipTotal + royalTotal;
+    const totalCapacity = guestCapacity + vipCapacity + royalCapacity;
+    
     // تمرير daysCount للدالة
     updateSummaryCard('guestSummary', 'guestBar', guestTotal, guestCapacity, daysCount);
     updateSummaryCard('vipSummary', 'vipBar', vipTotal, vipCapacity, daysCount);
     updateSummaryCard('royalSummary', 'royalBar', royalTotal, royalCapacity, daysCount);
+    updateSummaryCard('totalSummary', 'totalBar', totalOccupied, totalCapacity, daysCount);
 }
 
 /**
