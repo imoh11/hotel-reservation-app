@@ -530,18 +530,23 @@ async function saveAndSendWhatsApp() {
     let message = '';
     
     if (resType === 'مؤكد') {
-        message = `ضيفنا العزيز :\nتم تأكيد حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nنتمنى لك طيب الإقامة\nفندق إكليل الجبل - الشفا`;
+        message = `ضيفنا العزيز: ${guestName}\nتم تأكيد حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nنتمنى لك طيب الإقامة\nفندق إكليل الجبل - الشفا`;
     } else if (resType === 'قيد الانتظار') {
-        message = `ضيفنا العزيز :\nحجزك قيد الانتظار\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nالرجاء المبادرة بالدفع لتأكيد الحجز\nفندق إكليل الجبل - الشفا`;
+        message = `ضيفنا العزيز: ${guestName}\nحجزك قيد الانتظار\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nالرجاء المبادرة بالدفع لتأكيد الحجز\nفندق إكليل الجبل - الشفا`;
     } else {
-        message = `ضيفنا العزيز :\nتم حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nفندق إكليل الجبل - الشفا`;
+        message = `ضيفنا العزيز: ${guestName}\nتم حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nفندق إكليل الجبل - الشفا`;
     }
     
-    // تنظيف رقم الجوال (إزالة المسافات والرموز)
-    const cleanPhone = phone.replace(/\D/g, '');
+    // ✅ تنظيف وتحويل رقم الجوال
+    let cleanPhone = phone.replace(/\D/g, ''); // إزالة المسافات والرموز
     
-    // فتح WhatsApp Web مع الرسالة الجاهزة
-    const whatsappUrl = `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(message)}`;
+    // إذا كان الرقم يبدأ بـ 05، حوله إلى 966
+    if (cleanPhone.startsWith('05')) {
+        cleanPhone = '966' + cleanPhone.substring(1); // إزالة 0 وإضافة 966
+    }
+    
+    // ✅ فتح WhatsApp باستخدام wa.me
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
     
     // فتح في نافذة جديدة
     window.open(whatsappUrl, '_blank');
