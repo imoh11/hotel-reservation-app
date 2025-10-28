@@ -994,5 +994,12 @@ p[id$="_validation_new"] {
         font-size: 0.75rem;
         min-width: 25px;
     }
+
+#notes_edit { 
+
+    height: 150px; 
+
+    resize: none; 
 }
+
 
