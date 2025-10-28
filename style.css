@@ -868,25 +868,25 @@ p[id$="_validation_new"] {
     min-width: 35px;
 }
 
-/* ألوان الخلايا */
+/* ✅ ألوان الخلايا - منطق معكوس */
 .cell-empty {
-    background: #f8f9fa;
-    color: #6c757d;
+    background: #f8d7da;  /* فارغ = أحمر (سيء) */
+    color: #721c24;
 }
 
 .cell-low {
-    background: #d4edda;
-    color: #155724;
+    background: #f8d7da;  /* 1-50% = أحمر (إشغال منخفض) */
+    color: #721c24;
 }
 
 .cell-medium {
-    background: #fff3cd;
+    background: #fff3cd;  /* 51-80% = أصفر (إشغال متوسط) */
     color: #856404;
 }
 
 .cell-high {
-    background: #f8d7da;
-    color: #721c24;
+    background: #d4edda;  /* 81-100% = أخضر (إشغال عالي - جيد) */
+    color: #155724;
 }
 
 .occupancy-table .total-cell {

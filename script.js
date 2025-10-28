@@ -1594,23 +1594,17 @@ function renderOccupancyTable(dataToRender = null) {
         
         // ضيافة
         const guestCell = document.createElement('td');
-        const guestCapacity = SUITE_CAPACITIES.guest;
-        const guestPercentage = guestCapacity > 0 ? Math.round((day.guest / guestCapacity) * 100) : 0;
-        guestCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.guest, guestCapacity)}">${day.guest}/${guestCapacity} (${guestPercentage}%)</span>`;
+        guestCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.guest, SUITE_CAPACITIES.guest)}">${day.guest}</span>`;
         row.appendChild(guestCell);
         
         // VIP
         const vipCell = document.createElement('td');
-        const vipCapacity = SUITE_CAPACITIES.vip;
-        const vipPercentage = vipCapacity > 0 ? Math.round((day.vip / vipCapacity) * 100) : 0;
-        vipCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.vip, vipCapacity)}">${day.vip}/${vipCapacity} (${vipPercentage}%)</span>`;
+        vipCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.vip, SUITE_CAPACITIES.vip)}">${day.vip}</span>`;
         row.appendChild(vipCell);
         
         // ملكي
         const royalCell = document.createElement('td');
-        const royalCapacity = SUITE_CAPACITIES.royal;
-        const royalPercentage = royalCapacity > 0 ? Math.round((day.royal / royalCapacity) * 100) : 0;
-        royalCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.royal, royalCapacity)}">${day.royal}/${royalCapacity} (${royalPercentage}%)</span>`;
+        royalCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.royal, SUITE_CAPACITIES.royal)}">${day.royal}</span>`;
         row.appendChild(royalCell);
         
         // الإجمالي
@@ -1626,13 +1620,14 @@ function renderOccupancyTable(dataToRender = null) {
  * الحصول على فئة الإشغال (للألوان)
  */
 function getOccupancyClass(occupied, capacity) {
-    if (occupied === 0) return 'cell-empty';
+    if (occupied === 0) return 'cell-empty'; // فارغ تماماً - أحمر
     
     const percentage = (occupied / capacity) * 100;
     
-    if (percentage <= 50) return 'cell-low';
-    if (percentage <= 80) return 'cell-medium';
-    return 'cell-high';
+    // ✅ منطق معكوس: إشغال عالي = أخضر (جيد)
+    if (percentage >= 81) return 'cell-high';    // 81-100% = أخضر
+    if (percentage >= 51) return 'cell-medium';  // 51-80% = أصفر
+    return 'cell-low';                           // 1-50% = أحمر
 }
 
 /**
@@ -1682,35 +1677,27 @@ function updateSummaryCard(summaryId, barId, occupied, capacity, daysCount) {
     const percentageSpan = summaryDiv.querySelector('.percentage');
     percentageSpan.textContent = `${percentage}%`;
     
-    // الألوان - تدرج من أحمر (قليل) إلى أخضر (كثير)
+    // ✅ الألوان الشرطية - منطق معكوس: إشغال عالي = أخضر (جيد)
     percentageSpan.className = 'percentage';
     barDiv.className = 'summary-bar-fill';
+    barDiv.style.width = `${percentage}%`;
     
+    let barColor;
     if (percentage === 0) {
         percentageSpan.classList.add('occupancy-empty');
-        barDiv.style.width = '0%';
-        barDiv.style.backgroundColor = '#28a745'; // أخضر
-    } else if (percentage <= 30) {
-        percentageSpan.classList.add('occupancy-low');
-        barDiv.style.width = `${percentage}%`;
-        barDiv.style.backgroundColor = '#28a745'; // أخضر
+        barColor = '#dc3545'; // فارغ = أحمر
     } else if (percentage <= 50) {
-        percentageSpan.classList.add('occupancy-low-medium');
-        barDiv.style.width = `${percentage}%`;
-        barDiv.style.backgroundColor = '#28a745'; // أخضر
-    } else if (percentage <= 70) {
+        percentageSpan.classList.add('occupancy-low');
+        barColor = '#dc3545'; // 1-50% = أحمر (إشغال منخفض)
+    } else if (percentage <= 80) {
         percentageSpan.classList.add('occupancy-medium');
-        barDiv.style.width = `${percentage}%`;
-        barDiv.style.backgroundColor = '#28a745'; // أخضر
-    } else if (percentage <= 85) {
-        percentageSpan.classList.add('occupancy-medium-high');
-        barDiv.style.width = `${percentage}%`;
-        barDiv.style.backgroundColor = '#28a745'; // أخضر
+        barColor = '#ffc107'; // 51-80% = أصفر (إشغال متوسط)
     } else {
         percentageSpan.classList.add('occupancy-high');
-        barDiv.style.width = `${percentage}%`;
-        barDiv.style.backgroundColor = '#28a745'; // أخضر
+        barColor = '#28a745'; // 81-100% = أخضر (إشغال عالي - جيد)
     }
+    
+    barDiv.style.backgroundColor = barColor;
 }
 
 /**
