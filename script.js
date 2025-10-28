@@ -1438,10 +1438,8 @@ function updateSummaryCard(summaryId, barId, occupied, capacity, daysCount) {
     
     const percentage = Math.round((occupied / capacity) * 100);
     
-    // حساب عدد الغرف المشغولة الفعلي
-    const actualRoomsOccupied = daysCount > 0 ? Math.round(occupied / daysCount) : 0;
-    
-    summaryDiv.querySelector('.occupied').textContent = actualRoomsOccupied;
+    // عرض مجموع الغرف-يوم (بدلاً من المتوسط)
+    summaryDiv.querySelector('.occupied').textContent = occupied;
     summaryDiv.querySelector('.total').textContent = capacity;
     
     const percentageSpan = summaryDiv.querySelector('.percentage');
@@ -1499,29 +1497,37 @@ function setFilterShortcut(type) {
     const fromInput = document.getElementById('filterFromDate');
     const toInput = document.getElementById('filterToDate');
     
+    // دالة لتحويل التاريخ إلى نص بالتوقيت المحلي
+    const formatLocalDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+    
     switch(type) {
         case 'today':
-            const todayStr = today.toISOString().split('T')[0];
+            const todayStr = formatLocalDate(today);
             fromInput.value = todayStr;
             toInput.value = todayStr;
             break;
         case 'week':
             const weekEnd = new Date(today);
-            weekEnd.setDate(today.getDate() + 7);
-            fromInput.value = today.toISOString().split('T')[0];
-            toInput.value = weekEnd.toISOString().split('T')[0];
+            weekEnd.setDate(today.getDate() + 6);
+            fromInput.value = formatLocalDate(today);
+            toInput.value = formatLocalDate(weekEnd);
             break;
         case 'month':
             const monthEnd = new Date(today);
-            monthEnd.setDate(today.getDate() + 30);
-            fromInput.value = today.toISOString().split('T')[0];
-            toInput.value = monthEnd.toISOString().split('T')[0];
+            monthEnd.setDate(today.getDate() + 29);
+            fromInput.value = formatLocalDate(today);
+            toInput.value = formatLocalDate(monthEnd);
             break;
         case 'all':
             const fiftyDaysEnd = new Date(today);
             fiftyDaysEnd.setDate(today.getDate() + 49);
-            fromInput.value = today.toISOString().split('T')[0];
-            toInput.value = fiftyDaysEnd.toISOString().split('T')[0];
+            fromInput.value = formatLocalDate(today);
+            toInput.value = formatLocalDate(fiftyDaysEnd);
             break;
     }
     
