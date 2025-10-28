@@ -291,6 +291,12 @@ body {
     border: 1px solid var(--gray-light);
     color: var(--gray);
 }
+
+.btn-outline.active {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
  
 .status-message-container {
     margin-top: 10px;

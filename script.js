@@ -1502,6 +1502,23 @@ function setFilterShortcut(type) {
     const fromInput = document.getElementById('filterFromDate');
     const toInput = document.getElementById('filterToDate');
     
+    // إزالة active من جميع الأزرار
+    document.querySelectorAll('.filter-shortcuts .btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // إضافة active للزر المحدد
+    const buttonMap = {
+        'today': 'filterTodayBtn',
+        'week': 'filterWeekBtn',
+        'month': 'filterMonthBtn',
+        'all': 'filterAllBtn'
+    };
+    const activeButton = document.getElementById(buttonMap[type]);
+    if (activeButton) {
+        activeButton.classList.add('active');
+    }
+    
     // دالة لتحويل التاريخ إلى نص بالتوقيت المحلي
     const formatLocalDate = (date) => {
         const year = date.getFullYear();
