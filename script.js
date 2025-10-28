@@ -4,7 +4,12 @@
 const AIRTABLE_API_KEY = "AIRTABLE_API_KEY_PLACEHOLDER"; // 🚨 يجب استبدال هذا المفتاح بمفتاحك الخاص
 const BASE_ID = 'appZm1T1ecVIlWOwy';
 const TABLE_NAME = 'tbloqjxnWuD2aH66H'; 
+const CONFIG_TABLE_ID = 'tblbL4TOvGCv9eEmS'; // ✅ جدول الإعدادات
 const AIRTABLE_API_URL = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`;
+const AIRTABLE_CONFIG_URL = `https://api.airtable.com/v0/${BASE_ID}/${CONFIG_TABLE_ID}`; // ✅ URL جدول الإعدادات
+
+// ✅ متغير عام لحفظ الإعدادات
+let APP_CONFIG = {};
 
 // =================================================================
 // 2. FIELD NAMES & IDS
@@ -101,6 +106,84 @@ const SUITE_CONFIG = {
         prefix: 'royal'
     }
 };
+
+// =================================================================
+// 2.5. تحميل الإعدادات من Airtable
+// =================================================================
+
+/**
+ * تحميل الإعدادات من جدول Config
+ */
+async function loadConfig() {
+    try {
+        // ✅ محاولة قراءة من localStorage أولاً (أسرع)
+        const cachedConfig = localStorage.getItem('app_config');
+        const cacheTime = localStorage.getItem('app_config_time');
+        const now = Date.now();
+        
+        // إذا كان ال cache أحدث من 5 دقائق، استخدمه
+        if (cachedConfig && cacheTime && (now - parseInt(cacheTime)) < 5 * 60 * 1000) {
+            console.log('✅ تحميل الإعدادات من cache');
+            return JSON.parse(cachedConfig);
+        }
+        
+        console.log('🔄 تحميل الإعدادات من Airtable...');
+        
+        const response = await fetch(AIRTABLE_CONFIG_URL, {
+            headers: {
+                'Authorization': `Bearer ${AIRTABLE_API_KEY}`
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`فشل تحميل الإعدادات: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        const config = {};
+        
+        // ✅ تحويل الصفوف إلى object
+        data.records.forEach(record => {
+            const key = record.fields['Setting Key'];
+            const value = record.fields['Setting Value'];
+            if (key && value !== undefined) {
+                config[key] = value;
+            }
+        });
+        
+        // ✅ حفظ في localStorage
+        localStorage.setItem('app_config', JSON.stringify(config));
+        localStorage.setItem('app_config_time', now.toString());
+        
+        console.log('✅ تم تحميل الإعدادات بنجاح:', config);
+        return config;
+        
+    } catch (error) {
+        console.error('❌ فشل تحميل الإعدادات:', error);
+        // ✅ إرجاع قيم افتراضية
+        return getDefaultConfig();
+    }
+}
+
+/**
+ * إرجاع قيم افتراضية في حال فشل تحميل الإعدادات
+ */
+function getDefaultConfig() {
+    return {
+        hotel_name: "فندق الضيافة",
+        hotel_phone: "0501234567",
+        guest_capacity: "14",
+        vip_capacity: "4",
+        royal_capacity: "2",
+        guest_name_ar: "جناح ضيافة",
+        vip_name_ar: "جناح VIP",
+        royal_name_ar: "جناح ملكي",
+        msg_confirmed: "مرحباً {name}، \n\nتم تأكيد حجزك بنجاح!",
+        msg_waiting: "شكراً {name}، \n\nحجزك قيد الانتظار",
+        msg_cancelled: "عزيزي {name}، \n\nتم إلغاء حجزك"
+    };
+}
+
 // ===============================================
 // 3. وظائف الواجهة المساعدة
 // ===============================================
@@ -1159,7 +1242,20 @@ function switchTab(tabName, button) {
 }
 
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // ✅ تحميل الإعدادات أولاً
+    APP_CONFIG = await loadConfig();
+    console.log('✅ تم تحميل الإعدادات:', APP_CONFIG);
+    
+    // ✅ تحديث SUITE_CAPACITIES من الإعدادات
+    SUITE_CAPACITIES.guest = parseInt(APP_CONFIG.guest_capacity) || 14;
+    SUITE_CAPACITIES.vip = parseInt(APP_CONFIG.vip_capacity) || 4;
+    SUITE_CAPACITIES.royal = parseInt(APP_CONFIG.royal_capacity) || 2;
+    
+    // ✅ تحديث أسماء الأجنحة
+    SUITE_CONFIG.guest.nameAr = APP_CONFIG.guest_name_ar || 'جناح ضيافة';
+    SUITE_CONFIG.vip.nameAr = APP_CONFIG.vip_name_ar || 'جناح VIP';
+    SUITE_CONFIG.royal.nameAr = APP_CONFIG.royal_name_ar || 'جناح ملكي';
 
     document.getElementById('newReservationForm').addEventListener('submit', function(event) {
         event.preventDefault();
