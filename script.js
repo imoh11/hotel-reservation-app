@@ -715,7 +715,12 @@ async function loadAllReservations() {
                 detailsHTML += `<div class="detail-row full-width"><span class="detail-label">ملاحظات:</span><span class="detail-value">${notes}</span></div>`;
             }
             detailsHTML += '</div>';
-            detailsHTML += '<div class="detail-actions"><button class="btn btn-primary edit-reservation-btn">✏️ تحرير الحجز</button></div>';
+            detailsHTML += `
+                <div class="detail-actions">
+                    <button class="btn btn-primary edit-reservation-btn">تحرير الحجز</button>
+                    <button class="btn btn-success send-whatsapp-btn">حفظ وإرسال 📲</button>
+                </div>
+            `;
             
             contentDiv.innerHTML = detailsHTML;
             
@@ -748,11 +753,21 @@ async function loadAllReservations() {
             // فتح نموذج التعديل عند النقر على زر التحرير
             setTimeout(() => {
                 const editBtn = contentDiv.querySelector('.edit-reservation-btn');
+                const sendBtn = contentDiv.querySelector('.send-whatsapp-btn');
+                
                 if (editBtn) {
                     editBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
                         currentEditingReservation = reservation;
                         openEditForm();
+                    });
+                }
+                
+                if (sendBtn) {
+                    sendBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        // إرسال رسالة WhatsApp مباشرة بدون حفظ
+                        sendWhatsAppDirectly(reservation);
                     });
                 }
             }, 100);
@@ -771,6 +786,48 @@ async function loadAllReservations() {
 /**
  * تم حذف closeReservationDetails - لم تعد مطلوبة
  */
+
+/**
+ * إرسال رسالة WhatsApp مباشرة بدون حفظ
+ */
+function sendWhatsAppDirectly(reservation) {
+    const fields = reservation.fields;
+    
+    const resNumber = fields[FIELD_NAMES.RES_NUMBER] || 'غير محدد';
+    const resType = fields[FIELD_NAMES.RES_TYPE] || '';
+    const guestName = fields[FIELD_NAMES.GUEST_NAME] || 'غير محدد';
+    const phone = fields[FIELD_NAMES.PHONE] || '';
+    
+    // الحصول على أول تاريخ متاح
+    const guestArrival = fields[FIELD_NAMES.GUEST_ARRIVAL];
+    const vipArrival = fields[FIELD_NAMES.VIP_ARRIVAL];
+    const royalArrival = fields[FIELD_NAMES.ROYAL_ARRIVAL];
+    const arrivalDate = guestArrival || vipArrival || royalArrival || 'غير محدد';
+    
+    const guestDeparture = fields[FIELD_NAMES.GUEST_DEPARTURE];
+    const vipDeparture = fields[FIELD_NAMES.VIP_DEPARTURE];
+    const royalDeparture = fields[FIELD_NAMES.ROYAL_DEPARTURE];
+    const departureDate = guestDeparture || vipDeparture || royalDeparture || 'غير محدد';
+    
+    // بناء الرسالة
+    let message = '';
+    if (resType === 'ملغي') {
+        message = `ضيفنا العزيز: ${guestName}\nتم إلغاء حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\nوفي حال الدفع سيتم تحويل المبلغ لك في غضون 3 أيام عمل\nونرجو أن نراك قريبا\nفندق إكليل الجبل - الشفا`;
+    } else if (resType === 'قيد الانتظار') {
+        message = `ضيفنا العزيز: ${guestName}\nحجزك قيد الانتظار\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nالرجاء المبادرة بالدفع لتأكيد الحجز\nفندق إكليل الجبل - الشفا`;
+    } else {
+        message = `ضيفنا العزيز: ${guestName}\nتم تأكيد حجزك\n\nرقم الحجز: ${resNumber}\nتاريخ الوصول: ${arrivalDate}\nتاريخ المغادرة: ${departureDate}\n\nنتمنى لك طيب الإقامة\nفندق إكليل الجبل - الشفا`;
+    }
+    
+    // تحويل الرقم إلى الصيغة الدولية
+    let phoneNumber = phone.replace(/\s+/g, '');
+    if (phoneNumber.startsWith('05')) {
+        phoneNumber = '966' + phoneNumber.substring(1);
+    }
+    
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+}
 
 /**
  * فتح نموذج تعديل الحجز

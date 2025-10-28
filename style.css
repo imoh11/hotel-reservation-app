@@ -485,6 +485,18 @@ p[id$="_validation_new"] {
     box-shadow: var(--box-shadow);
 }
 
+.edit-form label,
+.edit-form input,
+.edit-form select,
+.edit-form textarea,
+.edit-form h4 {
+    font-size: 0.875rem !important;  /* ✅ توحيد حجم الخط */
+}
+
+.edit-form h4 {
+    font-size: 0.95rem !important;  /* ✅ العناوين أكبر قليلاً */
+}
+
 .hidden {
     display: none !important;
 }
@@ -507,7 +519,7 @@ p[id$="_validation_new"] {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 15px;  /* ✅ تقليل الارتفاع */
+    padding: 8px 12px;  /* ✅ تقليل الارتفاع أكثر */
     cursor: pointer;
     transition: var(--transition);
     background: #f5f5f5;
@@ -558,10 +570,12 @@ p[id$="_validation_new"] {
     border-top: 1px solid #f0f0f0;
     display: flex;
     justify-content: center;
+    gap: 10px;  /* ✅ مسافة بين الأزرار */
 }
 
 .detail-actions .btn {
-    min-width: 150px;
+    min-width: 130px;  /* ✅ أصغر قليلاً */
+    font-size: 0.875rem;  /* ✅ توحيد حجم الخط */
 }
 
 .reservation-details-grid {
