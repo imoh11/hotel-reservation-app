@@ -630,7 +630,7 @@ p[id$="_validation_new"] {
 
 .summary-cards {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 15px;
     background: white;
     border-radius: var(--border-radius);
@@ -646,9 +646,9 @@ p[id$="_validation_new"] {
     border: 1px solid #dee2e6;
 }
 
-/* بطاقة الإجمالي - عريضة فقط */
+/* بطاقة الإجمالي - عادية */
 .summary-card-total {
-    grid-column: 1 / -1;
+    /* لا تأخذ عرض كامل */
 }
 
 .summary-card {
