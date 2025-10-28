@@ -684,20 +684,20 @@ p[id$="_validation_new"] {
     border-radius: 4px;
 }
 
-/* ألوان حسب نسبة الإشغال */
+/* ألوان حسب نسبة الإشغال - درجات رمادي */
 .occupancy-low {
-    background: #d4edda;
-    color: #155724;
+    background: #f0f0f0;
+    color: #495057;
 }
 
 .occupancy-medium {
-    background: #fff3cd;
-    color: #856404;
+    background: #e0e0e0;
+    color: #495057;
 }
 
 .occupancy-high {
-    background: #f8d7da;
-    color: #721c24;
+    background: #d0d0d0;
+    color: #212529;
 }
 
 .occupancy-empty {

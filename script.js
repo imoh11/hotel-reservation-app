@@ -1447,15 +1447,15 @@ function updateSummaryCard(summaryId, barId, occupied, capacity) {
     } else if (percentage <= 50) {
         percentageSpan.classList.add('occupancy-low');
         barDiv.style.width = `${percentage}%`;
-        barDiv.style.backgroundColor = '#28a745';
+        barDiv.style.backgroundColor = '#b8b8b8'; // رمادي فاتح
     } else if (percentage <= 80) {
         percentageSpan.classList.add('occupancy-medium');
         barDiv.style.width = `${percentage}%`;
-        barDiv.style.backgroundColor = '#ffc107';
+        barDiv.style.backgroundColor = '#909090'; // رمادي متوسط
     } else {
         percentageSpan.classList.add('occupancy-high');
         barDiv.style.width = `${percentage}%`;
-        barDiv.style.backgroundColor = '#dc3545';
+        barDiv.style.backgroundColor = '#6c757d'; // رمادي غامق
     }
 }
 
