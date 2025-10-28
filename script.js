@@ -1419,6 +1419,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const filterToDate = document.getElementById('filterToDate');
     const applyFilterBtn = document.getElementById('applyFilterBtn');
     const filterTodayBtn = document.getElementById('filterTodayBtn');
+    const filterTomorrowBtn = document.getElementById('filterTomorrowBtn');
     const filterWeekBtn = document.getElementById('filterWeekBtn');
     const filterMonthBtn = document.getElementById('filterMonthBtn');
     const filterAllBtn = document.getElementById('filterAllBtn');
@@ -1429,6 +1430,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (filterTodayBtn) {
         filterTodayBtn.addEventListener('click', () => setFilterShortcut('today'));
+    }
+    
+    if (filterTomorrowBtn) {
+        filterTomorrowBtn.addEventListener('click', () => setFilterShortcut('tomorrow'));
     }
     
     if (filterWeekBtn) {
@@ -1731,6 +1736,7 @@ function setFilterShortcut(type) {
     // إضافة active للزر المحدد
     const buttonMap = {
         'today': 'filterTodayBtn',
+        'tomorrow': 'filterTomorrowBtn',
         'week': 'filterWeekBtn',
         'month': 'filterMonthBtn',
         'all': 'filterAllBtn'
@@ -1753,6 +1759,13 @@ function setFilterShortcut(type) {
             const todayStr = formatLocalDate(today);
             fromInput.value = todayStr;
             toInput.value = todayStr;
+            break;
+        case 'tomorrow':
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            const tomorrowStr = formatLocalDate(tomorrow);
+            fromInput.value = tomorrowStr;
+            toInput.value = tomorrowStr;
             break;
         case 'week':
             const weekEnd = new Date(today);
