@@ -695,162 +695,193 @@ let allReservations = [];
 let currentEditingReservation = null;
 
 /**
- * تحميل الحجوزات القائمة (حتى المغادرة) + الدوائر + إصلاح القوائم المنسدلة
+ * تحميل الحجوزات القائمة (التي لم تغادر بعد)
  */
 async function loadAllReservations() {
     const loadingDiv = document.getElementById('loadingReservations');
     const listDiv = document.getElementById('reservationsList');
-
+    
     try {
-        if (loadingDiv) loadingDiv.style.display = 'block';
-        if (listDiv) listDiv.innerHTML = '';
-
+        loadingDiv.style.display = 'block';
+        listDiv.innerHTML = '';
+        
         const response = await fetch(`${AIRTABLE_API_URL}`, {
-            headers: { 'Authorization': `Bearer ${AIRTABLE_API_KEY}` }
+            headers: {
+                'Authorization': `Bearer ${AIRTABLE_API_KEY}`
+            }
         });
-
+        
         if (!response.ok) {
             throw new Error(`فشل تحميل الحجوزات: ${response.status}`);
         }
-
+        
         const data = await response.json();
-
+        
+        // ✅ فلترة الحجوزات القائمة (حسب المغادرة)
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        const todayStr = today.toISOString().split('T')[0];
-
-        // فلترة الحجوزات حسب تاريخ المغادرة
-        allReservations = (data.records || []).filter(record => {
-            const dep =
-                record.fields[FIELD_NAMES.GUEST_DEPARTURE] ||
-                record.fields[FIELD_NAMES.VIP_DEPARTURE] ||
-                record.fields[FIELD_NAMES.ROYAL_DEPARTURE];
-            if (!dep) return false;
-            return new Date(dep) >= today;
+        
+        allReservations = data.records.filter(reservation => {
+            const guestDeparture = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE];
+            const vipDeparture = reservation.fields[FIELD_NAMES.VIP_DEPARTURE];
+            const royalDeparture = reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
+            
+            const departureDate = guestDeparture || vipDeparture || royalDeparture;
+            if (!departureDate) return false;
+            
+            const departure = new Date(departureDate);
+            return departure >= today;
         });
-
-        // ترتيب حسب تاريخ الوصول
+        
+        // ✅ ترتيب الحجوزات حسب تاريخ الوصول (الأقرب أولًا)
         allReservations.sort((a, b) => {
-            const aDate =
-                a.fields[FIELD_NAMES.GUEST_ARRIVAL] ||
-                a.fields[FIELD_NAMES.VIP_ARRIVAL] ||
-                a.fields[FIELD_NAMES.ROYAL_ARRIVAL];
-            const bDate =
-                b.fields[FIELD_NAMES.GUEST_ARRIVAL] ||
-                b.fields[FIELD_NAMES.VIP_ARRIVAL] ||
-                b.fields[FIELD_NAMES.ROYAL_ARRIVAL];
-            return new Date(aDate || 0) - new Date(bDate || 0);
+            const aDate = new Date(a.fields[FIELD_NAMES.GUEST_ARRIVAL] || a.fields[FIELD_NAMES.VIP_ARRIVAL] || a.fields[FIELD_NAMES.ROYAL_ARRIVAL]);
+            const bDate = new Date(b.fields[FIELD_NAMES.GUEST_ARRIVAL] || b.fields[FIELD_NAMES.VIP_ARRIVAL] || b.fields[FIELD_NAMES.ROYAL_ARRIVAL]);
+            return aDate - bDate;
         });
-
-        if (loadingDiv) loadingDiv.style.display = 'none';
-        if (!allReservations.length) {
+        
+        loadingDiv.style.display = 'none';
+        
+        if (allReservations.length === 0) {
             listDiv.innerHTML = '<p class="info-message-block">لا توجد حجوزات حالية.</p>';
             return;
         }
-
-        // بناء القائمة
+        
         allReservations.forEach(reservation => {
-            const f = reservation.fields;
+            const resType = reservation.fields[FIELD_NAMES.RES_TYPE] || 'غير محدد';
+            const guestName = reservation.fields[FIELD_NAMES.GUEST_NAME] || 'غير محدد';
+            
+            const guestArrival = reservation.fields[FIELD_NAMES.GUEST_ARRIVAL];
+            const vipArrival = reservation.fields[FIELD_NAMES.VIP_ARRIVAL];
+            const royalArrival = reservation.fields[FIELD_NAMES.ROYAL_ARRIVAL];
+            const arrivalDate = guestArrival || vipArrival || royalArrival || 'غير محدد';
 
-            const resType = f[FIELD_NAMES.RES_TYPE] || 'غير محدد';
-            const guestName = f[FIELD_NAMES.GUEST_NAME] || 'غير محدد';
-            const phone = f[FIELD_NAMES.PHONE] || 'غير محدد';
-            const resNumber = f[FIELD_NAMES.RES_NUMBER] || 'غير محدد';
-
-            const arr =
-                f[FIELD_NAMES.GUEST_ARRIVAL] ||
-                f[FIELD_NAMES.VIP_ARRIVAL] ||
-                f[FIELD_NAMES.ROYAL_ARRIVAL] ||
-                '';
-            const dep =
-                f[FIELD_NAMES.GUEST_DEPARTURE] ||
-                f[FIELD_NAMES.VIP_DEPARTURE] ||
-                f[FIELD_NAMES.ROYAL_DEPARTURE] ||
-                '';
-
-            const arrivalDateStr = arr ? arr.slice(0, 10) : '';
-            const departureDateStr = dep ? dep.slice(0, 10) : '';
-
-            // اليوم
+            // ✅ إضافة اليوم بجانب التاريخ
             let dayName = '';
-            if (arrivalDateStr) {
-                const days = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
-                dayName = days[new Date(arrivalDateStr).getDay()];
+            if (arrivalDate && arrivalDate !== 'غير محدد') {
+                const dateObj = new Date(arrivalDate);
+                const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+                dayName = days[dateObj.getDay()];
             }
 
-            // لون الحالة
-            let statusColor = 'gray';
-            if (departureDateStr === todayStr) statusColor = 'red'; // مغادر اليوم
-            else if (arrivalDateStr === todayStr) statusColor = 'yellow'; // واصل اليوم
-            else if (arrivalDateStr < todayStr && departureDateStr > todayStr) statusColor = 'green'; // جاري
-            else if (arrivalDateStr > todayStr) statusColor = 'gray'; // لم يبدأ بعد
-
-            // نوع الحجز
             let typeClass = '';
             if (resType === 'مؤكد') typeClass = 'confirmed';
             else if (resType === 'قيد الانتظار') typeClass = 'waiting';
             else if (resType === 'ملغي') typeClass = 'cancelled';
-
-            // بناء العنصر
+            
             const accordionDiv = document.createElement('div');
             accordionDiv.className = 'reservation-accordion';
-
+            
             const headerDiv = document.createElement('div');
             headerDiv.className = 'reservation-accordion-header';
             headerDiv.innerHTML = `
                 <div class="reservation-item-info">
-                    <span class="status-dot" style="background-color:${statusColor}"></span>
-                    <span class="reservation-number">${arrivalDateStr} <small class="day-name">(${dayName})</small></span>
+                    <span class="reservation-number">${arrivalDate} <small class="day-name">(${dayName})</small></span>
                     <span class="reservation-type ${typeClass}">${resType}</span>
                     <span class="reservation-guest">${guestName}</span>
                 </div>
-                <div class="reservation-actions"><span class="accordion-arrow">▼</span></div>
-            `;
-
+                <div class="reservation-actions">
+                    <span class="accordion-arrow">▼</span>
+                </div>
+            `;            
+            // التفاصيل (مخفية بشكل افتراضي)
             const contentDiv = document.createElement('div');
             contentDiv.className = 'reservation-accordion-content';
-            contentDiv.innerHTML = `
-                <div class="detail-row"><strong>رقم الحجز:</strong> ${resNumber}</div>
-                <div class="detail-row"><strong>رقم الجوال:</strong> ${phone}</div>
-                <div class="detail-row"><strong>الوصول:</strong> ${arrivalDateStr}</div>
-                <div class="detail-row"><strong>المغادرة:</strong> ${departureDateStr}</div>
-                <div class="detail-row"><strong>النوع:</strong> ${resType}</div>
-                <div class="reservation-detail-actions">
-                    <button class="btn btn-sm btn-edit" data-record-id="${reservation.id}">تعديل</button>
-                    <button class="btn btn-sm btn-delete" data-record-id="${reservation.id}">إلغاء</button>
+            
+            // بناء التفاصيل
+            const fields = reservation.fields;
+            const resNumber = fields[FIELD_NAMES.RES_NUMBER] || 'غير محدد';
+            const phone = fields[FIELD_NAMES.PHONE] || 'غير محدد';
+            const counter = fields[FIELD_NAMES.COUNTER] || 'غير محدد';
+            const amount = fields[FIELD_NAMES.AMOUNT] || 'غير محدد';
+            const guestCount = fields[FIELD_NAMES.GUEST_COUNT] || '';
+            const guestDeparture = fields[FIELD_NAMES.GUEST_DEPARTURE] || '';
+            const vipCount = fields[FIELD_NAMES.VIP_COUNT] || '';
+            const vipDeparture = fields[FIELD_NAMES.VIP_DEPARTURE] || '';
+            const royalCount = fields[FIELD_NAMES.ROYAL_COUNT] || '';
+            const royalDeparture = fields[FIELD_NAMES.ROYAL_DEPARTURE] || '';
+            const notes = fields[FIELD_NAMES.NOTES] || '';
+            
+            let detailsHTML = '<div class="reservation-details-grid">';
+            detailsHTML += `<div class="detail-row"><span class="detail-label">رقم الحجز:</span><span class="detail-value">${resNumber}</span></div>`;
+            detailsHTML += `<div class="detail-row"><span class="detail-label">رقم الجوال:</span><span class="detail-value">${phone}</span></div>`;
+            detailsHTML += `<div class="detail-row"><span class="detail-label">الكونتر:</span><span class="detail-value">${counter}</span></div>`;
+            detailsHTML += `<div class="detail-row"><span class="detail-label">المبلغ:</span><span class="detail-value">${amount}</span></div>`;
+            
+            if (guestCount) {
+                detailsHTML += `<div class="detail-row"><span class="detail-label">جناح ضيافة:</span><span class="detail-value">${guestCount} غرف (${arrivalDate} ← ${guestDeparture})</span></div>`;
+            }
+            if (vipCount) {
+                detailsHTML += `<div class="detail-row"><span class="detail-label">جناح VIP:</span><span class="detail-value">${vipCount} غرف (${vipArrival} ← ${vipDeparture})</span></div>`;
+            }
+            if (royalCount) {
+                detailsHTML += `<div class="detail-row"><span class="detail-label">جناح ملكي:</span><span class="detail-value">${royalCount} غرف (${royalArrival} ← ${royalDeparture})</span></div>`;
+            }
+            if (notes) {
+                detailsHTML += `<div class="detail-row full-width"><span class="detail-label">ملاحظات:</span><span class="detail-value">${notes}</span></div>`;
+            }
+            detailsHTML += '</div>';
+            detailsHTML += `
+                <div class="detail-actions">
+                    <button class="btn btn-primary edit-reservation-btn">تحرير الحجز</button>
+                    <button class="btn btn-success send-whatsapp-btn">إرسال</button>
                 </div>
             `;
-
-            // إصلاح الحدث: استخدم pointerdown بدلاً من click لتوافق المتصفحات
-            headerDiv.addEventListener('pointerdown', e => {
-                e.preventDefault();
-                accordionDiv.classList.toggle('active');
-            });
-
+            
+            contentDiv.innerHTML = detailsHTML;
+            
+            // تجميع العناصر
             accordionDiv.appendChild(headerDiv);
             accordionDiv.appendChild(contentDiv);
             listDiv.appendChild(accordionDiv);
-
-            // الأزرار
-            const editBtn = contentDiv.querySelector('.btn-edit');
-            const deleteBtn = contentDiv.querySelector('.btn-delete');
-            if (editBtn)
-                editBtn.addEventListener('click', e => {
-                    e.stopPropagation();
-                    if (typeof openEditForm === 'function') openEditForm(e.target.dataset.recordId);
+            
+            // فتح/إغلاق التفاصيل عند النقر على العنوان
+            headerDiv.addEventListener('click', (e) => {
+                // تجاهل النقر على زر التحرير
+                if (e.target.closest('.edit-icon-btn')) return;
+                
+                const isActive = headerDiv.classList.contains('active');
+                
+                // إغلاق جميع القوائم الأخرى
+                document.querySelectorAll('.reservation-accordion-header').forEach(h => {
+                    h.classList.remove('active');
+                    const c = h.nextElementSibling;
+                    if (c) c.classList.remove('active');
                 });
-            if (deleteBtn)
-                deleteBtn.addEventListener('click', e => {
-                    e.stopPropagation();
-                    if (confirm('هل أنت متأكد من إلغاء هذا الحجز؟'))
-                        if (typeof deleteReservation === 'function') deleteReservation(e.target.dataset.recordId);
-                });
+                
+                // فتح القائمة الحالية إذا لم تكن مفتوحة
+                if (!isActive) {
+                    headerDiv.classList.add('active');
+                    contentDiv.classList.add('active');
+                }
+            });
+            
+            // فتح نموذج التعديل عند النقر على زر التحرير
+            setTimeout(() => {
+                const editBtn = contentDiv.querySelector('.edit-reservation-btn');
+                const sendBtn = contentDiv.querySelector('.send-whatsapp-btn');
+                
+                if (editBtn) {
+                    editBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        currentEditingReservation = reservation;
+                        openEditForm();
+                    });
+                }
+                
+                if (sendBtn) {
+                    sendBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        // إرسال رسالة WhatsApp مباشرة بدون حفظ
+                        sendWhatsAppDirectly(reservation);
+                    });
+                }
+            }, 100);
         });
-    } catch (err) {
-        console.error('Error loading reservations:', err);
-        if (loadingDiv) loadingDiv.style.display = 'none';
-        if (listDiv)
-            listDiv.innerHTML = `<p class="error-message">حدث خطأ أثناء تحميل الحجوزات: ${err.message}</p>`;
+        
+    } catch (error) {
+        console.error('Error loading reservations:', error);
+        loadingDiv.innerHTML = `<p class="error">❌ فشل تحميل الحجوزات: ${error.message}</p>`;
     }
 }
 
