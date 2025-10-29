@@ -405,10 +405,12 @@ p[id$="_validation_new"] {
     align-items: center;
 }
 
-.reservation-number {
-    font-weight: 700;
-    color: var(--primary);
-    font-size: 0.875rem;  /* ✅ توحيد مع باقي الموقع */
+.reservation-number, .reservation-guest {
+    font-size: 0.75rem; /* تصغير الخط */
+}
+
+.reservation-type {
+    font-size: 0.65rem; /* تصغير خط حالة الحجز */
 }
 
 .reservation-type {
