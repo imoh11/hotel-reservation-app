@@ -168,7 +168,7 @@ body {
 
 .form-control {
     width: 100%;
-    padding: 8px 10px;
+    padding: 5px 10px;
     border: 1px solid var(--gray-light);
     border-radius: var(--border-radius);
     font-family: 'Tajawal', sans-serif;
