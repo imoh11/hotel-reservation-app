@@ -775,15 +775,7 @@ allReservations = data.records.filter(reservation => {
             headerDiv.className = 'reservation-accordion-header';
             headerDiv.innerHTML = `
                 <div class="reservation-item-info">
-                    <span class="reservation-number">${arrivalDate} <small class="day-name">(${dayName})</small></span>
-
-                   // ✅ إضافة اسم اليوم بجانب التاريخ
-let dayName = '';
-if (arrivalDate && arrivalDate !== 'غير محدد') {
-  const dateObj = new Date(arrivalDate);
-  const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-  dayName = days[dateObj.getDay()];
-}
+                    <span class="reservation-number">${arrivalDate}</span>
                     <span class="reservation-type ${typeClass}">${resType}</span>
                     <span class="reservation-guest">${guestName}</span>
                 </div>
