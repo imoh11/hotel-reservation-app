@@ -525,7 +525,7 @@ p[id$="_validation_new"] {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 12px;  /* ✅ تقليل الارتفاع أكثر */
+    padding: 1px 12px;  /* ✅ تقليل الارتفاع أكثر */
     cursor: pointer;
     transition: var(--transition);
     background: #f5f5f5;
