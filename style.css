@@ -997,6 +997,20 @@ p[id$="_validation_new"] {
 /* =======================================================
    تنسيق حقل الملاحظات (#notes_edit) 
    ======================================================= */
+.status-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.day-name {
+  color: #777;
+  font-size: 0.85em;
+  margin-right: 4px;
+}
 
 #notes_edit { 
     /* 1. يحدد الارتفاع الأولي ليتطابق بصرياً مع الحقول المجاورة */
