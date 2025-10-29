@@ -725,7 +725,13 @@ allReservations = data.records.filter(reservation => {
     const guestDeparture = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE];
     const vipDeparture = reservation.fields[FIELD_NAMES.VIP_DEPARTURE];
     const royalDeparture = reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
-    
+    // ✅ إضافة اليوم بجانب التاريخ
+let dayName = '';
+if (arrivalDate && arrivalDate !== 'غير محدد') {
+  const dateObj = new Date(arrivalDate);
+  const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+  dayName = days[dateObj.getDay()];
+}
     // اختيار أول تاريخ مغادرة متاح
     const departureDate = guestDeparture || vipDeparture || royalDeparture;
     
@@ -773,16 +779,17 @@ allReservations = data.records.filter(reservation => {
             // العنوان (قابل للنقر)
             const headerDiv = document.createElement('div');
             headerDiv.className = 'reservation-accordion-header';
-            headerDiv.innerHTML = `
-                <div class="reservation-item-info">
-                    <span class="reservation-number">${arrivalDate}</span>
-                    <span class="reservation-type ${typeClass}">${resType}</span>
-                    <span class="reservation-guest">${guestName}</span>
-                </div>
-                <div class="reservation-actions">
-                    <span class="accordion-arrow">▼</span>
-                </div>
-            `;
+           headerDiv.innerHTML = `
+    <div class="reservation-item-info">
+        <span class="reservation-number">${arrivalDate} <small class="day-name">(${dayName})</small></span>
+        <span class="reservation-type ${typeClass}">${resType}</span>
+        <span class="reservation-guest">${guestName}</span>
+    </div>
+    <div class="reservation-actions">
+        <span class="accordion-arrow">▼</span>
+    </div>
+`;
+
             
             // التفاصيل (مخفية بشكل افتراضي)
             const contentDiv = document.createElement('div');
