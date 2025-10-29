@@ -733,7 +733,7 @@ async function loadAllReservations() {
             return departure >= today;
         });
         
-        // ✅ ترتيب الحجوزات حسب تاريخ الوصول
+        // ✅ ترتيب الحجوزات حسب تاريخ الوصول (الأقرب أولًا)
         allReservations.sort((a, b) => {
             const aDate = new Date(a.fields[FIELD_NAMES.GUEST_ARRIVAL] || a.fields[FIELD_NAMES.VIP_ARRIVAL] || a.fields[FIELD_NAMES.ROYAL_ARRIVAL]);
             const bDate = new Date(b.fields[FIELD_NAMES.GUEST_ARRIVAL] || b.fields[FIELD_NAMES.VIP_ARRIVAL] || b.fields[FIELD_NAMES.ROYAL_ARRIVAL]);
@@ -755,30 +755,13 @@ async function loadAllReservations() {
             const vipArrival = reservation.fields[FIELD_NAMES.VIP_ARRIVAL];
             const royalArrival = reservation.fields[FIELD_NAMES.ROYAL_ARRIVAL];
             const arrivalDate = guestArrival || vipArrival || royalArrival || 'غير محدد';
-            
-            const guestDeparture = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE];
-            const vipDeparture = reservation.fields[FIELD_NAMES.VIP_DEPARTURE];
-            const royalDeparture = reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
-            const departureDate = guestDeparture || vipDeparture || royalDeparture || 'غير محدد';
 
-            // ✅ اليوم
+            // ✅ إضافة اليوم بجانب التاريخ
             let dayName = '';
             if (arrivalDate && arrivalDate !== 'غير محدد') {
                 const dateObj = new Date(arrivalDate);
                 const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
                 dayName = days[dateObj.getDay()];
-            }
-
-            // ✅ تحديد لون الدائرة حسب الحالة
-            let statusColor = 'gray'; // افتراضي: لم يحن بعد
-            const todayStr = today.toISOString().split('T')[0];
-            
-            if (departureDate === todayStr) {
-                statusColor = 'red'; // المغادرة اليوم
-            } else if (arrivalDate <= todayStr && departureDate > todayStr) {
-                statusColor = 'green'; // حجز قائم الآن
-            } else if (arrivalDate > todayStr) {
-                statusColor = 'gray'; // لم يبدأ بعد
             }
 
             let typeClass = '';
@@ -793,7 +776,6 @@ async function loadAllReservations() {
             headerDiv.className = 'reservation-accordion-header';
             headerDiv.innerHTML = `
                 <div class="reservation-item-info">
-                    <span class="status-dot" style="background-color: ${statusColor};"></span>
                     <span class="reservation-number">${arrivalDate} <small class="day-name">(${dayName})</small></span>
                     <span class="reservation-type ${typeClass}">${resType}</span>
                     <span class="reservation-guest">${guestName}</span>
@@ -801,18 +783,7 @@ async function loadAllReservations() {
                 <div class="reservation-actions">
                     <span class="accordion-arrow">▼</span>
                 </div>
-            `;
-            
-            accordionDiv.appendChild(headerDiv);
-            listDiv.appendChild(accordionDiv);
-        });
-        
-    } catch (error) {
-        console.error('Error loading reservations:', error);
-        loadingDiv.style.display = 'none';
-        listDiv.innerHTML = `<p class="error-message">حدث خطأ أثناء تحميل الحجوزات: ${error.message}</p>`;
-    }
-}
+            `;            
             // التفاصيل (مخفية بشكل افتراضي)
             const contentDiv = document.createElement('div');
             contentDiv.className = 'reservation-accordion-content';
