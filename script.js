@@ -621,21 +621,22 @@ async function saveAndSendWhatsApp() {
         return element.value.trim() === '' ? undefined : element.value;
     };
     
-    const guestArrival = getSuiteValue('guest', 'Arrival');
-    const guestDeparture = getSuiteValue('guest', 'Departure');
-    const vipArrival = getSuiteValue('vip', 'Arrival');
-    const vipDeparture = getSuiteValue('vip', 'Departure');
-    const royalArrival = getSuiteValue('royal', 'Arrival');
-    const royalDeparture = getSuiteValue('royal', 'Departure');
-    
-    // اختيار أول تاريخ متاح
+   const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+allReservations = data.records.filter(reservation => {
+    const guestArrival = reservation.fields[FIELD_NAMES.GUEST_ARRIVAL];
+    const vipArrival = reservation.fields[FIELD_NAMES.VIP_ARRIVAL];
+    const royalArrival = reservation.fields[FIELD_NAMES.ROYAL_ARRIVAL];
+
+    // اختيار أول تاريخ متاح (تاريخ الوصول)
     const arrivalDate = guestArrival || vipArrival || royalArrival;
-    const departureDate = guestDeparture || vipDeparture || royalDeparture;
+
+    if (!arrivalDate) return false; 
     
-    if (!arrivalDate || !departureDate) {
-        showStatus('الرجاء إدخال تواريخ الوصول والمغادرة.', 'error', statusDivId);
-        return;
-    }
+    const arrival = new Date(arrivalDate);
+    return arrival >= today; // ❌ شرط الوصول
+});
     
     // توليد رقم الحجز
     const resNumber = generateResNumber();
