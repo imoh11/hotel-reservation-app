@@ -401,16 +401,16 @@ p[id$="_validation_new"] {
 
 .reservation-item-info {
     display: flex;
-    gap: 15px;
+    gap: 9px;
     align-items: center;
 }
 
 .reservation-number, .reservation-guest {
-    font-size: 0.75rem; /* تصغير الخط */
+    font-size: 0.45rem; /* تصغير الخط */
 }
 
 .reservation-type {
-    font-size: 0.65rem; /* تصغير خط حالة الحجز */
+    font-size: 0.45rem; /* تصغير خط حالة الحجز */
 }
 
 .reservation-type {
