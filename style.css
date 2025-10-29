@@ -1,494 +1,494 @@
 :root {
-    --primary: #3498db; /* أزرق */
-    --primary-dark: #2980b9;
-    --secondary: #2ecc71; /* أخضر */
-    --secondary-dark: #27ae60;
-    --danger: #e74c3c; /* أحمر */
-    --danger-dark: #c0392b;
-    --info: #007bff; /* أزرق معلومات */
-    --dark: #343a40;
-    --gray: #6c757d;
-    --gray-light: #e9ecef;
-    --border-radius: 6px;
-    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    --transition: all 0.2s ease;
+    --primary: #3498db; /* أزرق */
+    --primary-dark: #2980b9;
+    --secondary: #2ecc71; /* أخضر */
+    --secondary-dark: #27ae60;
+    --danger: #e74c3c; /* أحمر */
+    --danger-dark: #c0392b;
+    --info: #007bff; /* أزرق معلومات */
+    --dark: #343a40;
+    --gray: #6c757d;
+    --gray-light: #e9ecef;
+    --border-radius: 6px;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --transition: all 0.2s ease;
 }
 
 
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    font-family: 'Tajawal', sans-serif;
-    line-height: 1.5;
-    color: var(--dark);
-    background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
-    padding: 15px;
-    min-height: 100vh;
-    font-size: 0.8rem;
+    font-family: 'Tajawal', sans-serif;
+    line-height: 1.5;
+    color: var(--dark);
+    background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+    padding: 15px;
+    min-height: 100vh;
+    font-size: 0.8rem;
 }
 
 .container {
-    max-width: 900px;
-    margin: 0 auto;
-    background: #f9f9f9;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    overflow: hidden; 
+    max-width: 900px;
+    margin: 0 auto;
+    background: #f9f9f9;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden; 
 }
 
 .header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: white;
-    padding: 20px 25px;
-    text-align: center;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 20px 25px;
+    text-align: center;
 }
 
 .tabs {
-    display: flex;
-    background-color: var(--gray-light); 
-    border-bottom: 1px solid var(--gray-light);
+    display: flex;
+    background-color: var(--gray-light); 
+    border-bottom: 1px solid var(--gray-light);
 }
 
 .tab-button {
-    flex: 1;
-    padding: 10px 12px;
-    font-size: 0.8rem;
-    text-align: center;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: 'Tajawal', sans-serif;
-    font-weight: 500;
-    color: var(--gray);
-    transition: var(--transition);
-    position: relative;
-    outline: none;
+    flex: 1;
+    padding: 10px 12px;
+    font-size: 0.8rem;
+    text-align: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    font-weight: 500;
+    color: var(--gray);
+    transition: var(--transition);
+    position: relative;
+    outline: none;
 }
 
 .tab-button.active {
-    color: var(--primary);
-    background-color: white;
+    color: var(--primary);
+    background-color: white;
 }
 
 .tab-button.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 100%;
-    height: 2px;
-    background-color: var(--primary);
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--primary);
 }
 
 .tab-content {
-    padding: 20px;
-    display: none;
-    animation: fadeIn 0.4s ease;
+    padding: 20px;
+    display: none;
+    animation: fadeIn 0.4s ease;
 }
 
 .tab-content.active {
-    display: block;
+    display: block;
 }
 
 /* ------------------------------------------- */
 /* تنسيقات الأقسام المطوية (Collapsible) */
 /* ------------------------------------------- */
 .collapsible-section {
-    margin-bottom: 15px;
-    border: 1px solid var(--gray-light);
-    border-radius: var(--border-radius);
-    overflow: hidden;
+    margin-bottom: 15px;
+    border: 1px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    overflow: hidden;
 }
 
 .collapsible-header {
-    background-color: var(--primary);
-    color: white;
-    padding: 10px 12px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.9rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: var(--transition);
+    background-color: var(--primary);
+    color: white;
+    padding: 10px 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: var(--transition);
 }
 
 .collapsible-header:hover {
-    background-color: var(--primary-dark);
+    background-color: var(--primary-dark);
 }
 
 .collapsible-header.active {
-    background-color: var(--primary-dark);
+    background-color: var(--primary-dark);
 }
 
 .collapsible-icon {
-    display: inline-block;
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid white; 
-    transition: transform 0.3s ease;
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid white; 
+    transition: transform 0.3s ease;
 }
 
 .collapsible-header.active .collapsible-icon {
-    border-top: 5px solid white;
-    transform: rotate(180deg);
+    border-top: 5px solid white;
+    transform: rotate(180deg);
 }
 
 .collapsible-content {
-    max-height: 0;
-    padding: 0 12px;
-    overflow: hidden;
-    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out; 
+    max-height: 0;
+    padding: 0 12px;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out; 
 }
 
 .collapsible-content.active {
-    max-height: 1000px; 
-    padding: 12px;
+    max-height: 1000px; 
+    padding: 12px;
 }
 
 
 /* تنسيقات حقول النموذج */
 .form-group {
-    margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 .form-group label {
-    display: block;
-    margin-bottom: 4px;
-    font-weight: 500;
-    color: var(--primary-dark); 
-    font-size: 0.8rem;
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 500;
+    color: var(--primary-dark); 
+    font-size: 0.8rem;
 }
 
 .form-control {
-    width: 100%;
-    padding: 8px 10px;
-    border: 1px solid var(--gray-light);
-    border-radius: var(--border-radius);
-    font-family: 'Tajawal', sans-serif;
-    font-size: 0.85rem;
-    transition: var(--transition);
-    background-color: white;
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.85rem;
+    transition: var(--transition);
+    background-color: white;
 }
 
 .form-control:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
 .form-control[readonly] {
-    background-color: var(--gray-light);
-    cursor: not-allowed;
+    background-color: var(--gray-light);
+    cursor: not-allowed;
 }
 
 .form-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 .form-row .form-group {
-    flex: 1;
-    min-width: 150px;
+    flex: 1;
+    min-width: 150px;
 }
 
 /* تنسيقات الأجنحة المحجوزة */
 .suite-selection-container {
-    border: 1px solid var(--gray-light);
-    border-radius: var(--border-radius);
-    padding: 8px;
-    background-color: #fafafa;
+    border: 1px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    padding: 8px;
+    background-color: #fafafa;
 }
 
 .suite-item-header {
-    font-weight: 600;
-    color: var(--primary-dark);
-    padding: 6px 0;
-    border-bottom: 1px solid var(--gray-light);
-    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+    padding: 6px 0;
+    border-bottom: 1px solid var(--gray-light);
+    font-size: 0.9rem;
 }
 
 /* إزالة الحد السفلي من آخر عنصر (جناح ملكي) */
 .suite-item-header:last-of-type {
-     border-bottom: none;
+     border-bottom: none;
 }
 
 .suite-summary {
-    font-size: 0.75rem;
-    font-weight: 400;
-    color: var(--secondary-dark); 
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--secondary-dark); 
 }
 
 .suite-details-area {
-    margin-top: 6px;
-    padding: 10px;
-    border-top: 1px dashed var(--gray-light);
-    background-color: #ffffff;
-    border-radius: var(--border-radius);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    margin-bottom: 10px;
+    margin-top: 6px;
+    padding: 10px;
+    border-top: 1px dashed var(--gray-light);
+    background-color: #ffffff;
+    border-radius: var(--border-radius);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    margin-bottom: 10px;
 }
 
 /* الأزرار ورسائل الحالة */
 .button-group {
-    display: flex;
-    gap: 8px;
-    margin-top: 15px;
-    flex-wrap: wrap;
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+    flex-wrap: wrap;
 }
 
 .btn {
-    display: inline-block;
-    padding: 8px 16px;
-    border: none;
-    border-radius: var(--border-radius);
-    font-family: 'Tajawal', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-    text-align: center;
-    outline: none;
+    display: inline-block;
+    padding: 8px 16px;
+    border: none;
+    border-radius: var(--border-radius);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: center;
+    outline: none;
 }
 
 .btn[disabled] {
-    opacity: 0.6;
-    cursor: not-allowed;
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .btn-primary {
-    background-color: var(--primary);
-    color: white;
+    background-color: var(--primary);
+    color: white;
 }
 
 .btn-success {
-    background-color: var(--secondary);
-    color: white;
+    background-color: var(--secondary);
+    color: white;
 }
 
 .btn-success:hover:not(:disabled) {
-    background-color: var(--secondary-dark);
+    background-color: var(--secondary-dark);
 }
 
 .btn-danger {
-    background-color: var(--danger);
-    color: white;
+    background-color: var(--danger);
+    color: white;
 }
 
 .btn-danger:hover:not(:disabled) {
-    background-color: var(--danger-dark);
+    background-color: var(--danger-dark);
 }
 
 .btn-outline {
-    background-color: transparent;
-    border: 1px solid var(--gray-light);
-    color: var(--gray);
+    background-color: transparent;
+    border: 1px solid var(--gray-light);
+    color: var(--gray);
 }
 
 .btn-outline.active {
-    background-color: var(--primary);
-    border-color: var(--primary);
-    color: white;
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
 }
- 
+ 
 .status-message-container {
-    margin-top: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .status-message {
-    padding: 10px;
-    border-radius: var(--border-radius);
-    font-weight: 500;
-    font-size: 0.8rem;
-    margin-top: 5px;
-    text-align: center;
-    max-width: 100%;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    text-align: center;
+    max-width: 100%;
 }
 
 .hidden {
-    display: none !important;
+    display: none !important;
 }
 
 .success {
-    background-color: rgba(46, 204, 113, 0.15);
-    color: var(--secondary-dark);
-    border: 1px solid rgba(46, 204, 113, 0.3);
+    background-color: rgba(46, 204, 113, 0.15);
+    color: var(--secondary-dark);
+    border: 1px solid rgba(46, 204, 113, 0.3);
 }
 
 .error {
-    background-color: rgba(231, 76, 60, 0.15);
-    color: var(--danger-dark);
-    border: 1px solid rgba(231, 76, 60, 0.3);
+    background-color: rgba(231, 76, 60, 0.15);
+    color: var(--danger-dark);
+    border: 1px solid rgba(231, 76, 60, 0.3);
 }
 
 .info {
-    background-color: rgba(52, 152, 219, 0.15);
-    color: var(--primary-dark);
-    border: 1px solid rgba(52, 152, 219, 0.3);
+    background-color: rgba(52, 152, 219, 0.15);
+    color: var(--primary-dark);
+    border: 1px solid rgba(52, 152, 219, 0.3);
 }
 
 .info-message-block {
-    display: block !important;
-    margin-bottom: 10px;
+    display: block !important;
+    margin-bottom: 10px;
 }
- 
+ 
 #phone_new {
-    direction: rtl; 
-    text-align: right; 
+    direction: rtl; 
+    text-align: right; 
 }
 
 /* تنسيق رسائل التحقق من التوفر */
 p[id$="_validation_new"] {
-    text-align: center;
-    margin: 10px auto;
-    max-width: 100%;
+    text-align: center;
+    margin: 10px auto;
+    max-width: 100%;
 }
 
 
 /* ===============================================
-   تنسيق قائمة الحجوزات وتفاصيلها
-   =============================================== */
+   تنسيق قائمة الحجوزات وتفاصيلها
+   =============================================== */
 
 .reservations-list-container {
-    padding: 20px;
+    padding: 20px;
 }
 
 .reservations-list-container h3 {
-    margin-bottom: 15px;
-    color: var(--primary);
+    margin-bottom: 15px;
+    color: var(--primary);
 }
 
 .loading-message {
-    text-align: center;
-    padding: 20px;
-    color: var(--gray);
-    font-size: 0.9rem;
+    text-align: center;
+    padding: 20px;
+    color: var(--gray);
+    font-size: 0.9rem;
 }
 
 .reservations-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .reservation-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 15px;
-    background: #f5f5f5;
-    border: 1px solid #e0e0e0;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: var(--transition);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
 }
 
 .reservation-item:hover {
-    background: #e8e8e8;
-    border-color: var(--primary);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: #e8e8e8;
+    border-color: var(--primary);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .reservation-item-info {
-    display: flex;
-    gap: 15px;
-    align-items: center;
+    display: flex;
+    gap: 15px;
+    align-items: center;
 }
 
 .reservation-number {
-    font-weight: 700;
-    color: var(--primary);
-    font-size: 0.875rem;  /* ✅ توحيد مع باقي الموقع */
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 0.875rem;  /* ✅ توحيد مع باقي الموقع */
 }
 
 .reservation-type {
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
 }
 
 .reservation-type.confirmed {
-    background: #d4edda;
-    color: #155724;
+    background: #d4edda;
+    color: #155724;
 }
 
 .reservation-type.waiting {
-    background: #fff3cd;
-    color: #856404;
+    background: #fff3cd;
+    color: #856404;
 }
 
 .reservation-type.cancelled {
-    background: #f8d7da;
-    color: #721c24;
+    background: #f8d7da;
+    color: #721c24;
 }
 
 .reservation-guest {
-    color: var(--gray);
-    font-size: 0.875rem;  /* ✅ توحيد مع باقي الموقع */
+    color: var(--gray);
+    font-size: 0.875rem;  /* ✅ توحيد مع باقي الموقع */
 }
 
 .reservation-details {
-    padding: 20px;
-    background: #f9f9f9;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
 }
 
 .details-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--gray-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--gray-light);
 }
 
 .details-header h3 {
-    margin: 0;
-    color: var(--primary);
+    margin: 0;
+    color: var(--primary);
 }
 
 .details-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
 }
 
 .detail-item {
-    padding: 10px;
-    background: #f8f9fa;
-    border-radius: var(--border-radius);
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: var(--border-radius);
 }
 
 .detail-label {
-    font-size: 0.75rem;
-    color: var(--gray);
-    margin-bottom: 5px;
+    font-size: 0.75rem;
+    color: var(--gray);
+    margin-bottom: 5px;
 }
 
 .detail-value {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--dark);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--dark);
 }
 
 .edit-form {
-    padding: 20px;
-    background: #f9f9f9;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
 }
 
 .edit-form label,
@@ -496,570 +496,566 @@ p[id$="_validation_new"] {
 .edit-form select,
 .edit-form textarea,
 .edit-form h4 {
-    font-size: 0.875rem !important;  /* ✅ توحيد حجم الخط */
+    font-size: 0.875rem !important;  /* ✅ توحيد حجم الخط */
 }
 
 .edit-form h4 {
-    font-size: 0.95rem !important;  /* ✅ العناوين أكبر قليلاً */
+    font-size: 0.95rem !important;  /* ✅ العناوين أكبر قليلاً */
 }
 
 .hidden {
-    display: none !important;
+    display: none !important;
 }
 
 
 
 /* ===================================
-   Reservation Accordion Styles
-   =================================== */
+   Reservation Accordion Styles
+   =================================== */
 
 .reservation-accordion {
-    margin-bottom: 10px;
-    border: 1px solid #e0e0e0;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    background: #f5f5f5;
+    margin-bottom: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background: #f5f5f5;
 }
 
 .reservation-accordion-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 12px;  /* ✅ تقليل الارتفاع أكثر */
-    cursor: pointer;
-    transition: var(--transition);
-    background: #f5f5f5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;  /* ✅ تقليل الارتفاع أكثر */
+    cursor: pointer;
+    transition: var(--transition);
+    background: #f5f5f5;
 }
 
 .reservation-accordion-header:hover {
-    background: #e8e8e8;
+    background: #e8e8e8;
 }
 
 .reservation-accordion-header.active {
-    background: #e0e0e0;
-    border-bottom: 1px solid #d0d0d0;
+    background: #e0e0e0;
+    border-bottom: 1px solid #d0d0d0;
 }
 
 .reservation-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 
 
 .accordion-arrow {
-    font-size: 0.8rem;
-    color: var(--gray);
-    transition: transform 0.3s ease;
+    font-size: 0.8rem;
+    color: var(--gray);
+    transition: transform 0.3s ease;
 }
 
 .reservation-accordion-header.active .accordion-arrow {
-    transform: rotate(180deg);
+    transform: rotate(180deg);
 }
 
 .reservation-accordion-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-    background: #f9f9f9;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: #f9f9f9;
 }
 
 .reservation-accordion-content.active {
-    max-height: 600px;  /* ✅ زيادة قليلة للمحتوى */
-    padding: 15px;
+    max-height: 600px;  /* ✅ زيادة قليلة للمحتوى */
+    padding: 15px;
 }
 
 .detail-actions {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid #f0f0f0;
-    display: flex;
-    justify-content: center;
-    gap: 10px;  /* ✅ مسافة بين الأزرار */
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;  /* ✅ مسافة بين الأزرار */
 }
 
 .detail-actions .btn {
-    min-width: 130px;  /* ✅ أصغر قليلاً */
-    font-size: 0.875rem;  /* ✅ توحيد حجم الخط */
+    min-width: 130px;  /* ✅ أصغر قليلاً */
+    font-size: 0.875rem;  /* ✅ توحيد حجم الخط */
 }
 
 .reservation-details-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .detail-row {
-    display: grid;
-    grid-template-columns: 120px 1fr;
-    gap: 10px;
-    padding: 8px 10px;
-    border-bottom: 1px solid #f0f0f0;
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 10px;
+    padding: 8px 10px;
+    border-bottom: 1px solid #f0f0f0;
 }
 
 /* ✅ ألوان متناوبة لصفوف التفاصيل */
 .detail-row:nth-child(odd) {
-    background: #ffffff;
+    background: #ffffff;
 }
 
 .detail-row:nth-child(even) {
-    background: #f8f9fa;
+    background: #f8f9fa;
 }
 
 .detail-row:last-child {
-    border-bottom: none;
+    border-bottom: none;
 }
 
 .detail-row.full-width {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr;
 }
 
 .detail-label {
-    font-weight: 600;
-    color: var(--gray);
-    font-size: 0.875rem;  /* ✅ توحيد مع باقي الموقع */
+    font-weight: 600;
+    color: var(--gray);
+    font-size: 0.875rem;  /* ✅ توحيد مع باقي الموقع */
 }
 
 .detail-value {
-    color: var(--text);
-    font-size: 0.875rem;  /* ✅ توحيد مع باقي الموقع */
+    color: var(--text);
+    font-size: 0.875rem;  /* ✅ توحيد مع باقي الموقع */
 }
 
 
 
 /* ========================================
-   صفحة الإشغال
+   صفحة الإشغال
 ======================================== */
 
 .occupancy-summary {
-    margin-bottom: 30px;
+    margin-bottom: 30px;
 }
 
 .occupancy-summary h3 {
-    font-size: 0.95rem;
-    color: var(--primary);
-    margin-bottom: 15px;
-    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--primary);
+    margin-bottom: 15px;
+    font-weight: 600;
 }
 
 .summary-cards {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    background: #f9f9f9;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    background: #f9f9f9;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 20px;
 }
 
 .summary-card {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    border: 1px solid #dee2e6;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 1px solid #dee2e6;
 }
 
 /* بطاقة الإجمالي - عادية */
 .summary-card-total {
-    /* لا تأخذ عرض كامل */
+    /* لا تأخذ عرض كامل */
 }
 
 .summary-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .summary-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
 .summary-label {
-    font-size: 0.875rem;
-    color: #495057;
-    font-weight: 600;
-    min-width: 150px;
+    font-size: 0.875rem;
+    color: #495057;
+    font-weight: 600;
+    min-width: 150px;
 }
 
 .summary-value {
-    font-size: 0.875rem;
-    color: #212529;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex: 1;
+    font-size: 0.875rem;
+    color: #212529;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
 }
 
 .summary-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    gap: 15px;
-    direction: rtl;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 15px;
+    direction: rtl;
 }
 
 .summary-value .occupied {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #495057;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #495057;
 }
 
 .summary-value .total {
-    color: #6c757d;
+    color: #6c757d;
 }
 
 .summary-value .percentage {
-    font-weight: 700;
-    font-size: 0.85rem;
-    white-space: nowrap;
-    margin-left: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    margin-left: 8px;
 }
 
 .summary-bar {
-    height: 10px;
-    background: #e9ecef;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid #dee2e6;
+    height: 10px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #dee2e6;
 }
 
 .summary-bar-fill {
-    height: 100%;
-    transition: width 0.5s ease, background-color 0.3s ease;
-    border-radius: 10px;
+    height: 100%;
+    transition: width 0.5s ease, background-color 0.3s ease;
+    border-radius: 10px;
 }
 
 /* ألوان حسب نسبة الإشغال - تدرج من أحمر إلى أخضر */
 .occupancy-empty {
-    background: #fff5f5;
-    color: #dc3545;
-    border-color: #dc3545;
+    background: #fff5f5;
+    color: #dc3545;
+    border-color: #dc3545;
 }
 
 .occupancy-low {
-    background: #fff5f5;
-    color: #dc3545;
-    border-color: #dc3545;
+    background: #fff5f5;
+    color: #dc3545;
+    border-color: #dc3545;
 }
 
 .occupancy-low-medium {
-    background: #fff4e6;
-    color: #fd7e14;
-    border-color: #fd7e14;
+    background: #fff4e6;
+    color: #fd7e14;
+    border-color: #fd7e14;
 }
 
 .occupancy-medium {
-    background: #fffbeb;
-    color: #ffc107;
-    border-color: #ffc107;
+    background: #fffbeb;
+    color: #ffc107;
+    border-color: #ffc107;
 }
 
 .occupancy-medium-high {
-    background: #e6fffa;
-    color: #20c997;
-    border-color: #20c997;
+    background: #e6fffa;
+    color: #20c997;
+    border-color: #20c997;
 }
 
 .occupancy-high {
-    background: #e6f7ed;
-    color: #28a745;
-    border-color: #28a745;
+    background: #e6f7ed;
+    color: #28a745;
+    border-color: #28a745;
 }
 
 /* البحث والفلترة */
 .occupancy-filter {
-    margin-bottom: 20px;
-    padding: 20px;
-    background: #f9f9f9;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
 }
 .filter-shortcuts {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 15px;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
 }
 
 .filter-inputs {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .filter-inputs input {
-    flex: 1;
-    min-width: 150px;
-    max-width: 200px;
-    font-size: 0.875rem;
+    flex: 1;
+    min-width: 150px;
+    max-width: 200px;
+    font-size: 0.875rem;
 }
 
 .filter-inputs .btn {
-    font-size: 0.875rem;
+    font-size: 0.875rem;
 }
 
 .btn-sm {
-    padding: 6px 12px;
-    font-size: 0.8rem;
+    padding: 6px 12px;
+    font-size: 0.8rem;
 }
 
 /* الجدول */
 .occupancy-table-container {
-    background: #f9f9f9;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    overflow: hidden;
+    background: #f9f9f9;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
 }
 
 .occupancy-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.875rem;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
 }
 
 .occupancy-table thead {
-    background: var(--primary);
-    color: white;
+    background: var(--primary);
+    color: white;
 }
 
 .occupancy-table th {
-    padding: 10px 12px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 0.875rem;
+    padding: 10px 12px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.875rem;
 }
 
 .occupancy-table tbody tr {
-    border-bottom: 1px solid #f0f0f0;
-    transition: background-color 0.2s ease;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease;
 }
 
 /* ✅ ألوان متناوبة لصفوف جدول الإشغال */
 .occupancy-table tbody tr:nth-child(odd) {
-    background: #ffffff;
+    background: #ffffff;
 }
 
 .occupancy-table tbody tr:nth-child(even) {
-    background: #f8f9fa;
+    background: #f8f9fa;
 }
 
 .occupancy-table tbody tr:hover {
-    background: #e3f2fd !important;
+    background: #e3f2fd !important;
 }
 
 .occupancy-table tbody tr.highlight {
-    background: #fff3cd !important;
-    animation: highlightFade 2s ease;
+    background: #fff3cd !important;
+    animation: highlightFade 2s ease;
 }
 
 @keyframes highlightFade {
-    0% { background: #ffc107; }
-    100% { background: #fff3cd; }
+    0% { background: #ffc107; }
+    100% { background: #fff3cd; }
 }
 
 .occupancy-table td {
-    padding: 8px 12px;
-    text-align: center;
-    font-size: 0.875rem;
+    padding: 8px 12px;
+    text-align: center;
+    font-size: 0.875rem;
 }
 
 .occupancy-table td:first-child {
-    font-weight: 600;
-    color: var(--dark);
+    font-weight: 600;
+    color: var(--dark);
 }
 
 .occupancy-table td:nth-child(2) {
-    color: var(--gray);
-    font-size: 0.8rem;
+    color: var(--gray);
+    font-size: 0.8rem;
 }
 
 .occupancy-cell {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-weight: 600;
-    min-width: 35px;
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+    min-width: 35px;
 }
 
 /* ✅ ألوان الخلايا - منطق معكوس */
 .cell-empty {
-    background: #f8d7da;  /* فارغ = أحمر (سيء) */
-    color: #721c24;
+    background: #f8d7da;  /* فارغ = أحمر (سيء) */
+    color: #721c24;
 }
 
 .cell-low {
-    background: #f8d7da;  /* 1-50% = أحمر (إشغال منخفض) */
-    color: #721c24;
+    background: #f8d7da;  /* 1-50% = أحمر (إشغال منخفض) */
+    color: #721c24;
 }
 
 .cell-medium {
-    background: #fff3cd;  /* 51-80% = أصفر (إشغال متوسط) */
-    color: #856404;
+    background: #fff3cd;  /* 51-80% = أصفر (إشغال متوسط) */
+    color: #856404;
 }
 
 .cell-high {
-    background: #d4edda;  /* 81-100% = أخضر (إشغال عالي - جيد) */
-    color: #155724;
+    background: #d4edda;  /* 81-100% = أخضر (إشغال عالي - جيد) */
+    color: #155724;
 }
 
 .occupancy-table .total-cell {
-    font-weight: 700;
-    color: var(--primary);
+    font-weight: 700;
+    color: var(--primary);
 }
 
-/* =======================================================
-   تنسيق حقل الملاحظات (#notes_edit) 
-   ======================================================= */
-#notes_edit { 
-    /* 1. يحدد الارتفاع الأولي ليتطابق بصرياً مع الحقول المجاورة */
-    min-height: 200px; 
-    
-    /* 2. يسمح للمستخدم بتغيير حجم الحقل عمودياً فقط */
-    resize: vertical; 
-}
-
-
-/* ✅ تنسيق الدائرة الصغيرة (حالة الحجز) */
-.status-dot {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    margin-left: 6px;
-    vertical-align: middle;
-}
-
-/* ✅ لتوضيح اليوم بجانب التاريخ */
-.day-name {
-    color: #777;
-    font-size: 0.85em;
-    margin-right: 4px;
-}
-
-/* ✅ تحسين مظهر الصف */
-.reservation-item-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* ✅ عندما تكون القائمة مفتوحة */
-.reservation-accordion.active .reservation-accordion-header {
-    background-color: #f8f8f8;
-}
-
-.reservation-accordion-header {
-    cursor: pointer;
-    user-select: none;
-    transition: background-color 0.2s ease;
-}
-
-
-/* =======================================================
-   تنسيقات الاستجابة على الجوال (Mobile Responsive)
-   ======================================================= */
-
+/* Responsive للجوال */
 @media (max-width: 768px) {
-    
-    /* 1. 📐 قواعد العرض والزحف الموحدة (الحجز والفلتر) 📐 */
-    .form-row .form-group, /* حقول صفحة الحجز */
-    .filter-inputs input,   /* حقول الفلتر */
-    .filter-inputs .btn {   /* زر الفلتر */
-        /* الحل الحاسم لمنع الزحف الأفقي: */
-        min-width: 0 !important; /* يلغي القيود الصلبة على العرض الأدنى */
-        width: 93% !important; /* العرض المصغر الذي يحل مشكلة التجاوز */
-        max-width: 100%;
-        box-sizing: border-box;
+    .occupancy-summary h3 {
+        font-size: 0.85rem;
     }
     
-    /* 2. 📝 قواعد التصميم الموحدة للحقول */
-    .form-control,
-    .filter-inputs input {
-        font-size: 0.8rem !important; /* تصغير الخط قليلاً على الجوال */
-        padding: 6px 8px; /* تقليل الحشو قليلاً */
+    .summary-cards {
+        grid-template-columns: 1fr;
     }
-
-    /* 3. ⚙️ قواعد إخفاء عناصر WebKit (التاريخ والرقم) */
-    .form-control::-webkit-inner-spin-button, 
-    .form-control::-webkit-calendar-picker-indicator,
-    .filter-inputs input::-webkit-inner-spin-button, 
-    .filter-inputs input::-webkit-calendar-picker-indicator {
-        display: none; 
-        -webkit-appearance: none;
-        opacity: 0;
+    
+    .summary-card-total {
+        grid-column: 1;
     }
-
-    /* 4. 🔄 تحويل تخطيطات Flexbox إلى عمودي */
-    .form-row {
-        flex-direction: column; 
-        gap: 10px;
+    
+    .summary-card {
+        padding: 12px;
     }
+    
+    .summary-label {
+        font-size: 0.8rem;
+    }
+    
+    .summary-value {
+        font-size: 0.8rem;
+    }
+    
+    .summary-value .occupied {
+        font-size: 0.95rem;
+    }
+    
+    .occupancy-filter {
+        padding: 12px;
+    }
+    
     .filter-inputs {
         flex-direction: column;
         align-items: stretch;
     }
     
-    /* 5. 📊 تنسيقات الملخص والجدول (كما كانت) */
-    .occupancy-summary h3 {
-        font-size: 0.85rem;
+    .filter-inputs input {
+        max-width: 93%;
     }
-    .summary-cards {
-        grid-template-columns: 1fr;
-        padding: 12px;
-    }
-    .summary-card-total {
-        grid-column: 1;
-    }
-    .summary-card {
-        padding: 12px;
-    }
-    .summary-label {
-        font-size: 0.8rem;
-    }
-    .summary-value {
-        font-size: 0.8rem;
-    }
-    .summary-value .occupied {
-        font-size: 0.95rem;
-    }
-    .occupancy-filter {
-        padding: 12px;
-    }
+    
     .filter-shortcuts {
         justify-content: center;
     }
+    
     .occupancy-table-container {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
+    
     .occupancy-table {
         font-size: 0.75rem;
         min-width: 100%;
     }
+    
     .occupancy-table th {
         padding: 8px 6px;
         font-size: 0.75rem;
         white-space: nowrap;
     }
+    
     .occupancy-table td {
         padding: 6px 4px;
         font-size: 0.75rem;
     }
+    
     .occupancy-table td:first-child {
         font-size: 0.7rem;
         white-space: nowrap;
     }
+    
     .occupancy-table td:nth-child(2) {
         font-size: 0.7rem;
     }
+    
     .occupancy-cell {
         padding: 3px 6px;
         font-size: 0.75rem;
         min-width: 25px;
     }
+/* =======================================================
+   تنسيق حقل الملاحظات (#notes_edit) 
+   ======================================================= */
+/* ✅ تنسيق الدائرة الصغيرة (حالة الحجز) */
+.status-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-left: 6px;
+    vertical-align: middle;
 }
+
+/* ✅ لتوضيح اليوم بجانب التاريخ */
+.day-name {
+    color: #777;
+    font-size: 0.9em;
+    margin-right: 4px;
+}
+
+/* ✅ تحسين مظهر الصف */
+.reservation-item-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ✅ عندما تكون القائمة مفتوحة */
+.reservation-accordion.active .reservation-accordion-header {
+    background-color: #f8f8f8;
+}
+
+.reservation-accordion-header {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease;
+}
+
+
+
+.day-name {
+  color: #777;
+  font-size: 0.85em;
+  margin-right: 4px;
+}
+
+#notes_edit { 
+    /* 1. يحدد الارتفاع الأولي ليتطابق بصرياً مع الحقول المجاورة */
+    min-height: 200px; 
+    
+    /* 2. يسمح للمستخدم بتغيير حجم الحقل عمودياً فقط */
+    resize: vertical; 
+}
+
+
+#notes_edit { 
+    /* 1. يحدد الارتفاع الأولي ليتطابق بصرياً مع الحقول المجاورة */
+    min-height: 200px; 
+    
+    /* 2. يسمح للمستخدم بتغيير حجم الحقل عمودياً فقط */
+    resize: vertical; 
+}
+
+
+
