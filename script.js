@@ -350,29 +350,25 @@ async function checkAndValidateAvailability(suiteKey, prefix) {
         return; 
     }
     
-    // ✅ التحقق من أن تاريخ الوصول ليس قبل اليوم
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // إزالة الوقت للمقارنة بالتاريخ فقط
-    const arrivalDateObj = new Date(arrivalDate);
+   const today = new Date();
+today.setHours(0, 0, 0, 0); // نضبط الوقت إلى 00:00 للمقارنة بالتاريخ فقط
+
+allReservations = data.records.filter(reservation => {
+    // 💡 التغيير هنا: سنستخدم تواريخ المغادرة
+    const guestDeparture = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE];
+    const vipDeparture = reservation.fields[FIELD_NAMES.VIP_DEPARTURE];
+    const royalDeparture = reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
+
+    // اختيار أول تاريخ مغادرة متاح
+    const departureDate = guestDeparture || vipDeparture || royalDeparture;
     
-    if (arrivalDateObj < today) {
-        validationMessage.textContent = '❌ لا يمكن الحجز في تاريخ قبل اليوم.';
-        validationMessage.classList.remove('hidden');
-        validationMessage.classList.remove('success');
-        validationMessage.classList.add('error');
-        submitButton.disabled = true;
-        return;
-    }
+    if (!departureDate) return false; // تجاهل الحجوزات التي ليس لها تاريخ مغادرة محدد
     
-    // ✅ التحقق من أن تاريخ المغادرة بعد تاريخ الوصول
-    if (Date.parse(departureDate) <= Date.parse(arrivalDate)) {
-        validationMessage.textContent = '❌ تاريخ المغادرة يجب أن يكون بعد تاريخ الوصول.';
-        validationMessage.classList.remove('hidden');
-        validationMessage.classList.remove('success');
-        validationMessage.classList.add('error');
-        submitButton.disabled = true;
-        return;
-    }
+    const departure = new Date(departureDate);
+    // 🚀 التعديل الرئيسي: نُبقي على الحجز إذا كان تاريخ المغادرة أكبر من (أو يساوي) تاريخ اليوم.
+    // نستخدم (> اليوم) للتأكد من أن الحجز الذي مغادرته اليوم مازال قائماً لآخر اليوم.
+    return departure > today; 
+});
     
     validationMessage.textContent = 'جاري التحقق من التوفر... ⏳';
     validationMessage.classList.remove('hidden');
