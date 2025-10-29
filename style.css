@@ -997,39 +997,19 @@ p[id$="_validation_new"] {
 /* =======================================================
    تنسيق حقل الملاحظات (#notes_edit) 
    ======================================================= */
-/* ✅ تنسيق الدائرة الصغيرة (حالة الحجز) */
 .status-dot {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    margin-left: 6px;
-    vertical-align: middle;
+    display: inline-block !important;
+    width: 12px !important;
+    height: 12px !important;
+    border-radius: 50% !important;
+    margin-left: 8px !important;
+    vertical-align: middle !important;
 }
 
-/* ✅ لتوضيح اليوم بجانب التاريخ */
-.day-name {
-    color: #777;
-    font-size: 0.9em;
-    margin-right: 4px;
-}
-
-/* ✅ تحسين مظهر الصف */
 .reservation-item-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* ✅ عندما تكون القائمة مفتوحة */
-.reservation-accordion.active .reservation-accordion-header {
-    background-color: #f8f8f8;
-}
-
-.reservation-accordion-header {
-    cursor: pointer;
-    user-select: none;
-    transition: background-color 0.2s ease;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
 }
 
 
