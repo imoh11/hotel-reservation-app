@@ -914,68 +914,6 @@ p[id$="_validation_new"] {
 
 /* Responsive للجوال */
 @media (max-width: 768px) {
-    /* ✅ تحسينات قائمة الحجوزات للجوال */
-    .reservation-accordion-header {
-        padding: 6px 10px !important;  /* تقليل الارتفاع */
-    }
-    
-    .reservation-item-info {
-        gap: 6px !important;
-        flex-wrap: nowrap;
-        overflow: hidden;
-    }
-    
-    .status-dot {
-        width: 10px !important;
-        height: 10px !important;
-        margin-left: 4px !important;
-    }
-    
-    .reservation-number {
-        font-size: 0.7rem !important;  /* تصغير الخط */
-        white-space: nowrap;
-    }
-    
-    .day-name {
-        font-size: 0.65rem !important;
-    }
-    
-    .reservation-type {
-        font-size: 0.6rem !important;  /* تصغير الخط */
-        padding: 2px 5px !important;
-    }
-    
-    .reservation-guest {
-        font-size: 0.7rem !important;  /* تصغير الخط */
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        flex: 1;
-        min-width: 0;
-    }
-    
-    .accordion-arrow {
-        font-size: 0.7rem !important;
-    }
-    
-    .reservation-accordion-content {
-        font-size: 0.75rem !important;
-    }
-    
-    .detail-row {
-        padding: 5px 0 !important;
-        font-size: 0.75rem !important;
-    }
-    
-    .reservation-detail-actions {
-        gap: 8px !important;
-    }
-    
-    .btn-sm {
-        font-size: 0.7rem !important;
-        padding: 4px 8px !important;
-    }
-    
     .occupancy-summary h3 {
         font-size: 0.85rem;
     }
@@ -1059,40 +997,39 @@ p[id$="_validation_new"] {
 /* =======================================================
    تنسيق حقل الملاحظات (#notes_edit) 
    ======================================================= */
-/* ✅ دوائر ملونة ديناميكية وجميلة */
+/* ✅ تنسيق الدائرة الصغيرة (حالة الحجز) */
 .status-dot {
-    display: inline-block !important;
-    width: 12px !important;
-    height: 12px !important;
-    border-radius: 50% !important;
-    margin-left: 8px !important;
-    vertical-align: middle !important;
-    flex-shrink: 0;
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3), 0 0 8px rgba(0, 0, 0, 0.2);
-    animation: pulse-dot 2s ease-in-out infinite;
-    transition: all 0.3s ease;
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-left: 6px;
+    vertical-align: middle;
 }
 
-.status-dot:hover {
-    transform: scale(1.2);
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5), 0 0 12px rgba(0, 0, 0, 0.3);
+/* ✅ لتوضيح اليوم بجانب التاريخ */
+.day-name {
+    color: #777;
+    font-size: 0.9em;
+    margin-right: 4px;
 }
 
-@keyframes pulse-dot {
-    0%, 100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-    50% {
-        transform: scale(1.15);
-        opacity: 0.85;
-    }
-}
-
+/* ✅ تحسين مظهر الصف */
 .reservation-item-info {
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ✅ عندما تكون القائمة مفتوحة */
+.reservation-accordion.active .reservation-accordion-header {
+    background-color: #f8f8f8;
+}
+
+.reservation-accordion-header {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease;
 }
 
 
