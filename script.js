@@ -721,19 +721,20 @@ async function loadAllReservations() {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
-        allReservations = data.records.filter(reservation => {
-            const guestArrival = reservation.fields[FIELD_NAMES.GUEST_ARRIVAL];
-            const vipArrival = reservation.fields[FIELD_NAMES.VIP_ARRIVAL];
-            const royalArrival = reservation.fields[FIELD_NAMES.ROYAL_ARRIVAL];
-            
-            // اختيار أول تاريخ متاح
-            const arrivalDate = guestArrival || vipArrival || royalArrival;
-            
-            if (!arrivalDate) return false; // لا توجد تواريخ
-            
-            const arrival = new Date(arrivalDate);
-            return arrival >= today; // فقط الحجوزات القادمة
-        });
+allReservations = data.records.filter(reservation => {
+    const guestDeparture = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE];
+    const vipDeparture = reservation.fields[FIELD_NAMES.VIP_DEPARTURE];
+    const royalDeparture = reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
+    
+    // اختيار أول تاريخ مغادرة متاح
+    const departureDate = guestDeparture || vipDeparture || royalDeparture;
+    
+    if (!departureDate) return false; // لا توجد تواريخ
+    
+    const departure = new Date(departureDate);
+    return departure >= today; // إبقاء الحجوزات التي لم تغادر بعد
+});
+
         
         // ترتيب حسب تاريخ الوصول (الأقرب أولاً)
         allReservations.sort((a, b) => {
