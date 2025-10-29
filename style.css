@@ -943,7 +943,7 @@ p[id$="_validation_new"] {
     }
     
     .occupancy-filter {
-        padding: 8px;
+        padding: 12px;
     }
     
     .filter-inputs {
@@ -952,7 +952,7 @@ p[id$="_validation_new"] {
     }
     
     .filter-inputs input {
-        max-width: 100%;
+        max-width: 50%;
     }
     
     .filter-shortcuts {
