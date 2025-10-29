@@ -999,12 +999,14 @@ p[id$="_validation_new"] {
    ======================================================= */
 .status-dot {
   display: inline-block;
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  margin-left: 6px;
+  margin-inline-start: 8px;
   vertical-align: middle;
+  border: 1px solid #ccc;
 }
+
 
 .day-name {
   color: #777;
