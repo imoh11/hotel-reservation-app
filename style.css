@@ -952,7 +952,7 @@ p[id$="_validation_new"] {
     }
     
     .filter-inputs input {
-        max-width: 50%;
+        max-width: 90%;
     }
     
     .filter-shortcuts {
