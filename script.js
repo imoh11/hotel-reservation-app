@@ -779,16 +779,15 @@ async function loadAllReservations() {
             }
 
             // تحديد لون الدائرة حسب حالة النزيل
-            let circleColor = 'gray'; // افتراضي: لم يصل بعد
+            let circleColor = '#9e9e9e'; // افتراضي: لم يصل بعد (رمادي)
             
             if (departureDateStr === todayStr) {
-                circleColor = 'red'; // مغادر اليوم
+                circleColor = '#dc3545'; // مغادر اليوم (أحمر)
             } else if (arrivalDateStr === todayStr) {
-                circleColor = 'yellow'; // واصل اليوم
+                circleColor = '#ffc107'; // واصل اليوم (أصفر)
             } else if (arrivalDateStr < todayStr && departureDateStr > todayStr) {
-                circleColor = 'green'; // مقيم (جاري)
+                circleColor = '#28a745'; // مقيم حالياً (أخضر)
             }
-            // else رمادي (لم يصل بعد) - وهو الافتراضي
 
             // نوع الحجز
             let typeClass = '';
@@ -827,9 +826,23 @@ async function loadAllReservations() {
             `;
 
             // إصلاح الحدث: استخدم pointerdown بدلاً من click لتوافق المتصفحات
-            headerDiv.addEventListener('pointerdown', e => {
+            headerDiv.addEventListener('click', e => {
                 e.preventDefault();
-                accordionDiv.classList.toggle('active');
+                
+                // إغلاق جميع القوائم الأخرى
+                document.querySelectorAll('.reservation-accordion-header').forEach(h => {
+                    h.classList.remove('active');
+                });
+                document.querySelectorAll('.reservation-accordion-content').forEach(c => {
+                    c.classList.remove('active');
+                });
+                
+                // فتح القائمة الحالية
+                const isActive = contentDiv.classList.contains('active');
+                if (!isActive) {
+                    headerDiv.classList.add('active');
+                    contentDiv.classList.add('active');
+                }
             });
 
             accordionDiv.appendChild(headerDiv);
