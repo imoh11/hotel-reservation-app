@@ -406,13 +406,12 @@ p[id$="_validation_new"] {
 }
 
 .reservation-number, .reservation-guest {
-    font-size: 0.45rem; /* تصغير الخط */
+    font-size: 0.75rem; /* تصغير الخط */
 }
 
 .reservation-type {
-    font-size: 0.45rem; /* تصغير خط حالة الحجز */
+    font-size: 0.65rem; /* تصغير خط حالة الحجز */
 }
-
 .reservation-type {
     padding: 4px 10px;
     border-radius: 4px;
@@ -437,7 +436,7 @@ p[id$="_validation_new"] {
 
 .reservation-guest {
     color: var(--gray);
-    font-size: 0.875rem;  /* ✅ توحيد مع باقي الموقع */
+    font-size: 0.75rem;  /* ✅ توحيد مع باقي الموقع */
 }
 
 .reservation-details {
@@ -464,8 +463,8 @@ p[id$="_validation_new"] {
 .details-content {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
+    gap: 10px;
+    margin-bottom: 15px;
 }
 
 .detail-item {
