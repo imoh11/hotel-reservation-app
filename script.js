@@ -170,14 +170,14 @@ async function loadConfig() {
  */
 function getDefaultConfig() {
     return {
-        hotel_name: "فندق الضيافة",
-        hotel_phone: "0501234567",
-        guest_capacity: "14",
-        vip_capacity: "4",
-        royal_capacity: "2",
-        guest_name_ar: "جناح ضيافة",
-        vip_name_ar: "جناح VIP",
-        royal_name_ar: "جناح ملكي",
+        hotel_name: "جاري التحميل",
+        hotel_phone: "0000000000",
+        guest_capacity: "0",
+        vip_capacity: "0",
+        royal_capacity: "0",
+        guest_name_ar: "جناح ",
+        vip_name_ar: "جناح ",
+        royal_name_ar: "جناح ",
         msg_confirmed: "مرحباً {name}، \n\nتم تأكيد حجزك بنجاح!",
         msg_waiting: "شكراً {name}، \n\nحجزك قيد الانتظار",
         msg_cancelled: "عزيزي {name}، \n\nتم إلغاء حجزك"
