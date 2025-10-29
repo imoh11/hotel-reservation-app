@@ -695,7 +695,7 @@ let allReservations = [];
 let currentEditingReservation = null;
 
 /**
- * تحميل الحجوزات القادمة فقط من Airtable
+ * تحميل الحجوزات القائمة (التي لم تغادر بعد)
  */
 async function loadAllReservations() {
     const loadingDiv = document.getElementById('loadingReservations');
@@ -717,32 +717,23 @@ async function loadAllReservations() {
         
         const data = await response.json();
         
-        // ✅ فلترة الحجوزات القادمة فقط (تاريخ الوصول >= اليوم)
+        // ✅ فلترة الحجوزات القائمة (حسب المغادرة)
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
-allReservations = data.records.filter(reservation => {
-    const guestDeparture = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE];
-    const vipDeparture = reservation.fields[FIELD_NAMES.VIP_DEPARTURE];
-    const royalDeparture = reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
-    // ✅ إضافة اليوم بجانب التاريخ
-let dayName = '';
-if (arrivalDate && arrivalDate !== 'غير محدد') {
-  const dateObj = new Date(arrivalDate);
-  const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-  dayName = days[dateObj.getDay()];
-}
-    // اختيار أول تاريخ مغادرة متاح
-    const departureDate = guestDeparture || vipDeparture || royalDeparture;
-    
-    if (!departureDate) return false; // لا توجد تواريخ
-    
-    const departure = new Date(departureDate);
-    return departure >= today; // إبقاء الحجوزات التي لم تغادر بعد
-});
-
+        allReservations = data.records.filter(reservation => {
+            const guestDeparture = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE];
+            const vipDeparture = reservation.fields[FIELD_NAMES.VIP_DEPARTURE];
+            const royalDeparture = reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
+            
+            const departureDate = guestDeparture || vipDeparture || royalDeparture;
+            if (!departureDate) return false;
+            
+            const departure = new Date(departureDate);
+            return departure >= today;
+        });
         
-        // ترتيب حسب تاريخ الوصول (الأقرب أولاً)
+        // ✅ ترتيب الحجوزات حسب تاريخ الوصول (الأقرب أولًا)
         allReservations.sort((a, b) => {
             const aDate = new Date(a.fields[FIELD_NAMES.GUEST_ARRIVAL] || a.fields[FIELD_NAMES.VIP_ARRIVAL] || a.fields[FIELD_NAMES.ROYAL_ARRIVAL]);
             const bDate = new Date(b.fields[FIELD_NAMES.GUEST_ARRIVAL] || b.fields[FIELD_NAMES.VIP_ARRIVAL] || b.fields[FIELD_NAMES.ROYAL_ARRIVAL]);
@@ -752,45 +743,47 @@ if (arrivalDate && arrivalDate !== 'غير محدد') {
         loadingDiv.style.display = 'none';
         
         if (allReservations.length === 0) {
-            listDiv.innerHTML = '<p class="info-message-block">لا توجد حجوزات قادمة.</p>';
+            listDiv.innerHTML = '<p class="info-message-block">لا توجد حجوزات حالية.</p>';
             return;
         }
         
         allReservations.forEach(reservation => {
-            // ✅ قراءة البيانات
             const resType = reservation.fields[FIELD_NAMES.RES_TYPE] || 'غير محدد';
             const guestName = reservation.fields[FIELD_NAMES.GUEST_NAME] || 'غير محدد';
             
-            // ✅ استبدال رقم الحجز بتاريخ الوصول
             const guestArrival = reservation.fields[FIELD_NAMES.GUEST_ARRIVAL];
             const vipArrival = reservation.fields[FIELD_NAMES.VIP_ARRIVAL];
             const royalArrival = reservation.fields[FIELD_NAMES.ROYAL_ARRIVAL];
             const arrivalDate = guestArrival || vipArrival || royalArrival || 'غير محدد';
-            
+
+            // ✅ إضافة اليوم بجانب التاريخ
+            let dayName = '';
+            if (arrivalDate && arrivalDate !== 'غير محدد') {
+                const dateObj = new Date(arrivalDate);
+                const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+                dayName = days[dateObj.getDay()];
+            }
+
             let typeClass = '';
             if (resType === 'مؤكد') typeClass = 'confirmed';
             else if (resType === 'قيد الانتظار') typeClass = 'waiting';
             else if (resType === 'ملغي') typeClass = 'cancelled';
             
-            // ✅ إنشاء قائمة منسدلة (accordion)
             const accordionDiv = document.createElement('div');
             accordionDiv.className = 'reservation-accordion';
             
-            // العنوان (قابل للنقر)
             const headerDiv = document.createElement('div');
             headerDiv.className = 'reservation-accordion-header';
-           headerDiv.innerHTML = `
-    <div class="reservation-item-info">
-        <span class="reservation-number">${arrivalDate} <small class="day-name">(${dayName})</small></span>
-        <span class="reservation-type ${typeClass}">${resType}</span>
-        <span class="reservation-guest">${guestName}</span>
-    </div>
-    <div class="reservation-actions">
-        <span class="accordion-arrow">▼</span>
-    </div>
-`;
-
-            
+            headerDiv.innerHTML = `
+                <div class="reservation-item-info">
+                    <span class="reservation-number">${arrivalDate} <small class="day-name">(${dayName})</small></span>
+                    <span class="reservation-type ${typeClass}">${resType}</span>
+                    <span class="reservation-guest">${guestName}</span>
+                </div>
+                <div class="reservation-actions">
+                    <span class="accordion-arrow">▼</span>
+                </div>
+            `;            
             // التفاصيل (مخفية بشكل افتراضي)
             const contentDiv = document.createElement('div');
             contentDiv.className = 'reservation-accordion-content';
