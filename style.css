@@ -1050,3 +1050,23 @@ p[id$="_validation_new"] {
 
 
 
+
+
+
+
+.day-name {
+  color: #777;
+  font-size: 0.85em;
+  margin-right: 4px;
+}
+
+#notes_edit { 
+    /* 1. يحدد الارتفاع الأولي ليتطابق بصرياً مع الحقول المجاورة */
+    min-height: 200px; 
+    
+    /* 2. يسمح للمستخدم بتغيير حجم الحقل عمودياً فقط */
+    resize: vertical; 
+}
+
+
+
