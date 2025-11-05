@@ -802,6 +802,27 @@ allReservations = data.records.filter(reservation => {
             const royalDeparture = fields[FIELD_NAMES.ROYAL_DEPARTURE] || '';
             const notes = fields[FIELD_NAMES.NOTES] || '';
             
+            // ✅ دالة لحساب لون الدائرة حسب التواريخ
+            const getStatusColor = (arrival, departure) => {
+                if (!arrival || !departure) return '#9e9e9e'; // رمادي
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const todayStr = today.toISOString().split('T')[0];
+                
+                const arrivalStr = arrival.slice(0, 10);
+                const departureStr = departure.slice(0, 10);
+                
+                if (departureStr === todayStr) {
+                    return '#dc3545'; // مغادر اليوم (أحمر)
+                } else if (arrivalStr === todayStr) {
+                    return '#ffc107'; // واصل اليوم (أصفر)
+                } else if (arrivalStr < todayStr && departureStr > todayStr) {
+                    return '#28a745'; // مقيم حالياً (أخضر)
+                }
+                return '#9e9e9e'; // لم يصل بعد (رمادي)
+            };
+            
             let detailsHTML = '<div class="reservation-details-grid">';
             detailsHTML += `<div class="detail-row"><span class="detail-label">رقم الحجز:</span><span class="detail-value">${resNumber}</span></div>`;
             detailsHTML += `<div class="detail-row"><span class="detail-label">رقم الجوال:</span><span class="detail-value">${phone}</span></div>`;
@@ -809,13 +830,16 @@ allReservations = data.records.filter(reservation => {
             detailsHTML += `<div class="detail-row"><span class="detail-label">المبلغ:</span><span class="detail-value">${amount}</span></div>`;
             
             if (guestCount) {
-                detailsHTML += `<div class="detail-row"><span class="detail-label">جناح ضيافة:</span><span class="detail-value">${guestCount} غرف (${arrivalDate} ← ${guestDeparture})</span></div>`;
+                const guestColor = getStatusColor(arrivalDate, guestDeparture);
+                detailsHTML += `<div class="detail-row"><span class="detail-label"><span class="status-dot" style="background-color:${guestColor}"></span> جناح ضيافة:</span><span class="detail-value">${guestCount} غرف (${arrivalDate} ← ${guestDeparture})</span></div>`;
             }
             if (vipCount) {
-                detailsHTML += `<div class="detail-row"><span class="detail-label">جناح VIP:</span><span class="detail-value">${vipCount} غرف (${vipArrival} ← ${vipDeparture})</span></div>`;
+                const vipColor = getStatusColor(vipArrival, vipDeparture);
+                detailsHTML += `<div class="detail-row"><span class="detail-label"><span class="status-dot" style="background-color:${vipColor}"></span> جناح VIP:</span><span class="detail-value">${vipCount} غرف (${vipArrival} ← ${vipDeparture})</span></div>`;
             }
             if (royalCount) {
-                detailsHTML += `<div class="detail-row"><span class="detail-label">جناح ملكي:</span><span class="detail-value">${royalCount} غرف (${royalArrival} ← ${royalDeparture})</span></div>`;
+                const royalColor = getStatusColor(royalArrival, royalDeparture);
+                detailsHTML += `<div class="detail-row"><span class="detail-label"><span class="status-dot" style="background-color:${royalColor}"></span> جناح ملكي:</span><span class="detail-value">${royalCount} غرف (${royalArrival} ← ${royalDeparture})</span></div>`;
             }
             if (notes) {
                 detailsHTML += `<div class="detail-row full-width"><span class="detail-label">ملاحظات:</span><span class="detail-value">${notes}</span></div>`;
