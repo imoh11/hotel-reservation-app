@@ -773,8 +773,18 @@ allReservations = data.records.filter(reservation => {
             // العنوان (قابل للنقر)
             const headerDiv = document.createElement('div');
             headerDiv.className = 'reservation-accordion-header';
+            
+            // ✅ تحديد لون الحالة
+            const guestDeparture = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE];
+            const vipDeparture = reservation.fields[FIELD_NAMES.VIP_DEPARTURE];
+            const royalDeparture = reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
+            
+            const departureDate = guestDeparture || vipDeparture || royalDeparture;
+            const statusColor = getStatusColor(arrivalDate, departureDate);
+            
             headerDiv.innerHTML = `
                 <div class="reservation-item-info">
+                    <span class="status-circle" style="background-color: ${statusColor};"></span>
                     <span class="reservation-number">${arrivalDate}</span>
                     <span class="reservation-type ${typeClass}">${resType}</span>
                     <span class="reservation-guest">${guestName}</span>
@@ -902,6 +912,9 @@ allReservations = data.records.filter(reservation => {
                 }
             }, 100);
         });
+        
+        // ✅ إخفاء رسالة التحميل بعد انتهاء الحلقة
+        document.getElementById('loadingReservations').classList.add('hidden');
         
     } catch (error) {
         console.error('Error loading reservations:', error);
