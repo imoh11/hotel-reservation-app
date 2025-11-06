@@ -11,9 +11,61 @@ const AIRTABLE_CONFIG_URL = `https://api.airtable.com/v0/${BASE_ID}/${CONFIG_TAB
 // ✅ متغير عام لحفظ الإعدادات
 let APP_CONFIG = {};
 
+//// =================================================================
+// 12. تهيئة التطبيق
 // =================================================================
-// 2. FIELD NAMES & IDS
+
+/**
+ * حساب لون الحالة بناءً على تواريخ الوصول والمغادرة
+ * @param {string} arrivalDateStr - تاريخ الوصول (YYYY-MM-DD)
+ * @param {string} departureDateStr - تاريخ المغادرة (YYYY-MM-DD)
+ * @returns {string} رمز اللون السداسي (#RRGGBB)
+ */
+function getStatusColor(arrivalDateStr, departureDateStr) {
+    // ⚪ لم يصل بعد (إذا لم تتوفر التواريخ)
+    if (!arrivalDateStr || !departureDateStr) {
+        return '#9e9e9e'; 
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // تحويل التواريخ إلى كائنات Date مع التأكد من أنها تبدأ من منتصف الليل (لتجنب مشاكل التوقيت)
+    const arrivalDate = new Date(arrivalDateStr);
+    arrivalDate.setHours(0, 0, 0, 0);
+    
+    const departureDate = new Date(departureDateStr);
+    departureDate.setHours(0, 0, 0, 0);
+
+    // الحالة 1: واصل اليوم (🟡)
+    if (arrivalDate.getTime() === today.getTime()) {
+        return '#ffc107'; // 🟡 واصل اليوم (أصفر)
+    }
+
+    // الحالة 2: مغادر اليوم (🔴)
+    if (departureDate.getTime() === today.getTime()) {
+        return '#dc3545'; // 🔴 مغادر اليوم (أحمر)
+    }
+
+    // الحالة 3: مقيم حالياً (🟢)
+    // إذا كان تاريخ الوصول قبل اليوم أو يساويه، وتاريخ المغادرة بعد اليوم
+    if (arrivalDate < today && departureDate > today) {
+        return '#28a745'; // 🟢 مقيم حالياً (أخضر)
+    }
+
+    // الحالة 4: لم يصل بعد (⚪)
+    // إذا كان تاريخ الوصول بعد اليوم
+    if (arrivalDate > today) {
+        return '#9e9e9e'; // ⚪ لم يصل بعد (رمادي)
+    }
+    
+    // حالة احتياطية (قد تكون مغادرة سابقة أو حالة غير محددة)
+    return '#9e9e9e'; 
+}
+
 // =================================================================
+// 12. تهيئة التطبيق
+// ==================================================================
 
 // Field Names (for reading from Airtable)
 const FIELD_NAMES = {
@@ -805,31 +857,9 @@ allReservations = data.records.filter(reservation => {
             const royalCount = fields[FIELD_NAMES.ROYAL_COUNT] || '';
             const notes = fields[FIELD_NAMES.NOTES] || '';
             
-            // ✅ إعادة استخدام المتغيرات المعرفة في النطاق الخارجي
-            const guestDeparture = fields[FIELD_NAMES.GUEST_DEPARTURE] || '';
-            const vipDeparture = fields[FIELD_NAMES.VIP_DEPARTURE] || '';
-            const royalDeparture = fields[FIELD_NAMES.ROYAL_DEPARTURE] || '';
+
             
-            // ✅ دالة لحساب لون الدائرة حسب التواريخ
-            const getStatusColor = (arrival, departure) => {
-                if (!arrival || !departure) return '#9e9e9e'; // رمادي
-                
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const todayStr = today.toISOString().split('T')[0];
-                
-                const arrivalStr = arrival.slice(0, 10);
-                const departureStr = departure.slice(0, 10);
-                
-                if (departureStr === todayStr) {
-                    return '#dc3545'; // مغادر اليوم (أحمر)
-                } else if (arrivalStr === todayStr) {
-                    return '#ffc107'; // واصل اليوم (أصفر)
-                } else if (arrivalStr < todayStr && departureStr > todayStr) {
-                    return '#28a745'; // مقيم حالياً (أخضر)
-                }
-                return '#9e9e9e'; // لم يصل بعد (رمادي)
-            };
+
             
             let detailsHTML = '<div class="reservation-details-grid">';
             detailsHTML += `<div class="detail-row"><span class="detail-label">رقم الحجز:</span><span class="detail-value">${resNumber}</span></div>`;
