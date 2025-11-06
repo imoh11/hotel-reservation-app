@@ -1897,3 +1897,4 @@ function getStatusColor(arrivalDateStr, departureDateStr) {
     // حالة احتياطية (قد تكون مغادرة سابقة أو حالة غير محددة)
     return '#9e9e9e'; 
 }
+ 
