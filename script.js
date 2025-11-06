@@ -21,10 +21,10 @@ let APP_CONFIG = {};
  * @param {string} departureDateStr - تاريخ المغادرة (YYYY-MM-DD)
  * @returns {string} رمز اللون السداسي (#RRGGBB)
  */
-function getStatusColor(arrivalDateStr, departureDateStr) {
+function getStatusBadge(arrivalDateStr, departureDateStr) {
     // ⚪ لم يصل بعد (إذا لم تتوفر التواريخ)
     if (!arrivalDateStr || !departureDateStr) {
-        return '#9e9e9e'; 
+        return `<span class="status-badge status-default">لم يصل</span>`; 
     }
 
     const today = new Date();
@@ -39,28 +39,28 @@ function getStatusColor(arrivalDateStr, departureDateStr) {
 
     // الحالة 1: واصل اليوم (🟡)
     if (arrivalDate.getTime() === today.getTime()) {
-        return '#ffc107'; // 🟡 واصل اليوم (أصفر)
+        return `<span class="status-badge status-arrival">واصل</span>`; // 🟡 واصل اليوم (أصفر)
     }
 
     // الحالة 2: مغادر اليوم (🔴)
     if (departureDate.getTime() === today.getTime()) {
-        return '#dc3545'; // 🔴 مغادر اليوم (أحمر)
+        return `<span class="status-badge status-departure">مغادر</span>`; // 🔴 مغادر اليوم (أحمر)
     }
 
     // الحالة 3: مقيم حالياً (🟢)
     // إذا كان تاريخ الوصول قبل اليوم أو يساويه، وتاريخ المغادرة بعد اليوم
     if (arrivalDate < today && departureDate > today) {
-        return '#28a745'; // 🟢 مقيم حالياً (أخضر)
+        return `<span class="status-badge status-resident">مقيم</span>`; // 🟢 مقيم حالياً (أخضر)
     }
 
     // الحالة 4: لم يصل بعد (⚪)
     // إذا كان تاريخ الوصول بعد اليوم
     if (arrivalDate > today) {
-        return '#9e9e9e'; // ⚪ لم يصل بعد (رمادي)
+        return `<span class="status-badge status-default">قادم</span>`; // ⚪ لم يصل بعد (رمادي)
     }
     
     // حالة احتياطية (قد تكون مغادرة سابقة أو حالة غير محددة)
-    return '#9e9e9e'; 
+    return `<span class="status-badge status-default">غير محدد</span>`; 
 }
 
 // =================================================================
@@ -828,11 +828,11 @@ allReservations = data.records.filter(reservation => {
             
             // ✅ تحديد لون الحالة
             const departureDate = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE] || reservation.fields[FIELD_NAMES.VIP_DEPARTURE] || reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
-            const statusColor = getStatusColor(arrivalDate, departureDate);
+            const statusBadge = getStatusBadge(arrivalDate, departureDate);
             
             headerDiv.innerHTML = `
                 <div class="reservation-item-info">
-                    <span class="status-circle" style="background-color: ${statusColor};"></span>
+                    ${statusBadge}
                     <span class="reservation-number">${arrivalDate}</span>
                     <span class="reservation-type ${typeClass}">${resType}</span>
                     <span class="reservation-guest">${guestName}</span>
@@ -873,16 +873,16 @@ allReservations = data.records.filter(reservation => {
             detailsHTML += `<div class="detail-row"><span class="detail-label">المبلغ:</span><span class="detail-value">${amount}</span></div>`;
             
             if (guestCount) {
-                const guestColor = getStatusColor(arrivalDate, guestDeparture);
-                detailsHTML += `<div class="detail-row"><span class="detail-label"><span class="status-dot" style="background-color:${guestColor}"></span> جناح ضيافة:</span><span class="detail-value">${guestCount} غرف (${arrivalDate} ← ${guestDeparture})</span></div>`;
+                const guestBadge = getStatusBadge(arrivalDate, guestDeparture);
+                detailsHTML += `<div class="detail-row"><span class="detail-label">${guestBadge} جناح ضيافة:</span><span class="detail-value">${guestCount} غرف (${arrivalDate} ← ${guestDeparture})</span></div>`;
             }
             if (vipCount) {
-                const vipColor = getStatusColor(vipArrival, vipDeparture);
-                detailsHTML += `<div class="detail-row"><span class="detail-label"><span class="status-dot" style="background-color:${vipColor}"></span> جناح VIP:</span><span class="detail-value">${vipCount} غرف (${vipArrival} ← ${vipDeparture})</span></div>`;
+                const vipBadge = getStatusBadge(vipArrival, vipDeparture);
+                detailsHTML += `<div class="detail-row"><span class="detail-label">${vipBadge} جناح VIP:</span><span class="detail-value">${vipCount} غرف (${vipArrival} ← ${vipDeparture})</span></div>`;
             }
             if (royalCount) {
-                const royalColor = getStatusColor(royalArrival, royalDeparture);
-                detailsHTML += `<div class="detail-row"><span class="detail-label"><span class="status-dot" style="background-color:${royalColor}"></span> جناح ملكي:</span><span class="detail-value">${royalCount} غرف (${royalArrival} ← ${royalDeparture})</span></div>`;
+                const royalBadge = getStatusBadge(royalArrival, royalDeparture);
+                detailsHTML += `<div class="detail-row"><span class="detail-label">${royalBadge} جناح ملكي:</span><span class="detail-value">${royalCount} غرف (${royalArrival} ← ${royalDeparture})</span></div>`;
             }
             if (notes) {
                 detailsHTML += `<div class="detail-row full-width"><span class="detail-label">ملاحظات:</span><span class="detail-value">${notes}</span></div>`;
@@ -1906,10 +1906,10 @@ function applyOccupancyFilter() {
  * @param {string} departureDateStr - تاريخ المغادرة (YYYY-MM-DD)
  * @returns {string} رمز اللون السداسي (#RRGGBB)
  */
-function getStatusColor(arrivalDateStr, departureDateStr) {
+function getStatusBadge(arrivalDateStr, departureDateStr) {
     // ⚪ لم يصل بعد (إذا لم تتوفر التواريخ)
     if (!arrivalDateStr || !departureDateStr) {
-        return '#9e9e9e'; 
+        return `<span class="status-badge status-default">لم يصل</span>`; 
     }
 
     const today = new Date();
@@ -1924,26 +1924,26 @@ function getStatusColor(arrivalDateStr, departureDateStr) {
 
     // الحالة 1: واصل اليوم (🟡)
     if (arrivalDate.getTime() === today.getTime()) {
-        return '#ffc107'; // 🟡 واصل اليوم (أصفر)
+        return `<span class="status-badge status-arrival">واصل</span>`; // 🟡 واصل اليوم (أصفر)
     }
 
     // الحالة 2: مغادر اليوم (🔴)
     if (departureDate.getTime() === today.getTime()) {
-        return '#dc3545'; // 🔴 مغادر اليوم (أحمر)
+        return `<span class="status-badge status-departure">مغادر</span>`; // 🔴 مغادر اليوم (أحمر)
     }
 
     // الحالة 3: مقيم حالياً (🟢)
     // إذا كان تاريخ الوصول قبل اليوم أو يساويه، وتاريخ المغادرة بعد اليوم
     if (arrivalDate < today && departureDate > today) {
-        return '#28a745'; // 🟢 مقيم حالياً (أخضر)
+        return `<span class="status-badge status-resident">مقيم</span>`; // 🟢 مقيم حالياً (أخضر)
     }
 
     // الحالة 4: لم يصل بعد (⚪)
     // إذا كان تاريخ الوصول بعد اليوم
     if (arrivalDate > today) {
-        return '#9e9e9e'; // ⚪ لم يصل بعد (رمادي)
+        return `<span class="status-badge status-default">قادم</span>`; // ⚪ لم يصل بعد (رمادي)
     }
     
     // حالة احتياطية (قد تكون مغادرة سابقة أو حالة غير محددة)
-    return '#9e9e9e'; 
+    return `<span class="status-badge status-default">غير محدد</span>`; 
 }
