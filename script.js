@@ -775,11 +775,7 @@ allReservations = data.records.filter(reservation => {
             headerDiv.className = 'reservation-accordion-header';
             
             // ✅ تحديد لون الحالة
-            const guestDeparture = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE];
-            const vipDeparture = reservation.fields[FIELD_NAMES.VIP_DEPARTURE];
-            const royalDeparture = reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
-            
-            const departureDate = guestDeparture || vipDeparture || royalDeparture;
+            const departureDate = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE] || reservation.fields[FIELD_NAMES.VIP_DEPARTURE] || reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
             const statusColor = getStatusColor(arrivalDate, departureDate);
             
             headerDiv.innerHTML = `
@@ -805,12 +801,14 @@ allReservations = data.records.filter(reservation => {
             const counter = fields[FIELD_NAMES.COUNTER] || 'غير محدد';
             const amount = fields[FIELD_NAMES.AMOUNT] || 'غير محدد';
             const guestCount = fields[FIELD_NAMES.GUEST_COUNT] || '';
-            const guestDeparture = fields[FIELD_NAMES.GUEST_DEPARTURE] || '';
             const vipCount = fields[FIELD_NAMES.VIP_COUNT] || '';
-            const vipDeparture = fields[FIELD_NAMES.VIP_DEPARTURE] || '';
             const royalCount = fields[FIELD_NAMES.ROYAL_COUNT] || '';
-            const royalDeparture = fields[FIELD_NAMES.ROYAL_DEPARTURE] || '';
             const notes = fields[FIELD_NAMES.NOTES] || '';
+            
+            // ✅ إعادة استخدام المتغيرات المعرفة في النطاق الخارجي
+            const guestDeparture = fields[FIELD_NAMES.GUEST_DEPARTURE] || '';
+            const vipDeparture = fields[FIELD_NAMES.VIP_DEPARTURE] || '';
+            const royalDeparture = fields[FIELD_NAMES.ROYAL_DEPARTURE] || '';
             
             // ✅ دالة لحساب لون الدائرة حسب التواريخ
             const getStatusColor = (arrival, departure) => {
