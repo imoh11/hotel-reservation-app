@@ -759,7 +759,12 @@ allReservations = data.records.filter(reservation => {
             const guestArrival = reservation.fields[FIELD_NAMES.GUEST_ARRIVAL];
             const vipArrival = reservation.fields[FIELD_NAMES.VIP_ARRIVAL];
             const royalArrival = reservation.fields[FIELD_NAMES.ROYAL_ARRIVAL];
+            // تحديد تاريخ الوصول والمغادرة الرئيسي للحجز
             const arrivalDate = guestArrival || vipArrival || royalArrival || 'غير محدد';
+            const departureDate = guestDeparture || vipDeparture || royalDeparture || 'غير محدد';
+            
+            // حساب لون الحالة
+            const statusColor = getStatusColor(arrivalDate, departureDate);
             
             let typeClass = '';
             if (resType === 'مؤكد') typeClass = 'confirmed';
@@ -775,6 +780,7 @@ allReservations = data.records.filter(reservation => {
             headerDiv.className = 'reservation-accordion-header';
             headerDiv.innerHTML = `
                 <div class="reservation-item-info">
+                    <span class="status-circle" style="background-color: ${statusColor};"></span>
                     <span class="reservation-number">${arrivalDate}</span>
                     <span class="reservation-type ${typeClass}">${resType}</span>
                     <span class="reservation-guest">${guestName}</span>
@@ -998,23 +1004,13 @@ function openEditForm_OLD_DELETED(reservation) {
         { label: 'رقم الجوال', value: fields[FIELD_NAMES.PHONE] },
         { label: 'الكونتر', value: fields[FIELD_NAMES.COUNTER] },
         { label: 'المبلغ', value: fields[FIELD_NAMES.AMOUNT] },
-        // تفاصيل الأجنحة مع الدوائر الملونة
-        {
-            label: `<span class="status-circle" style="background-color: ${getStatusColor(fields[FIELD_NAMES.GUEST_ARRIVAL], fields[FIELD_NAMES.GUEST_DEPARTURE])};"></span> جناح ضيافة - عدد الغرف`,
-            value: fields[FIELD_NAMES.GUEST_COUNT]
-        },
+        { label: 'جناح ضيافة - عدد الغرف', value: fields[FIELD_NAMES.GUEST_COUNT] },
         { label: 'جناح ضيافة - الوصول', value: fields[FIELD_NAMES.GUEST_ARRIVAL] },
         { label: 'جناح ضيافة - المغادرة', value: fields[FIELD_NAMES.GUEST_DEPARTURE] },
-        {
-            label: `<span class="status-circle" style="background-color: ${getStatusColor(fields[FIELD_NAMES.VIP_ARRIVAL], fields[FIELD_NAMES.VIP_DEPARTURE])};"></span> جناح VIP - عدد الغرف`,
-            value: fields[FIELD_NAMES.VIP_COUNT]
-        },
+        { label: 'جناح VIP - عدد الغرف', value: fields[FIELD_NAMES.VIP_COUNT] },
         { label: 'جناح VIP - الوصول', value: fields[FIELD_NAMES.VIP_ARRIVAL] },
         { label: 'جناح VIP - المغادرة', value: fields[FIELD_NAMES.VIP_DEPARTURE] },
-        {
-            label: `<span class="status-circle" style="background-color: ${getStatusColor(fields[FIELD_NAMES.ROYAL_ARRIVAL], fields[FIELD_NAMES.ROYAL_DEPARTURE])};"></span> جناح ملكي - عدد الغرف`,
-            value: fields[FIELD_NAMES.ROYAL_COUNT]
-        },
+        { label: 'جناح ملكي - عدد الغرف', value: fields[FIELD_NAMES.ROYAL_COUNT] },
         { label: 'جناح ملكي - الوصول', value: fields[FIELD_NAMES.ROYAL_ARRIVAL] },
         { label: 'جناح ملكي - المغادرة', value: fields[FIELD_NAMES.ROYAL_DEPARTURE] },
         { label: 'ملاحظات', value: fields[FIELD_NAMES.NOTES] }
@@ -1888,7 +1884,7 @@ function getStatusColor(arrivalDateStr, departureDateStr) {
 
     // الحالة 3: مقيم حالياً (🟢)
     // إذا كان تاريخ الوصول قبل اليوم أو يساويه، وتاريخ المغادرة بعد اليوم
-    if (arrivalDate < today && departureDate > today) {
+    if (arrivalDate <= today && departureDate > today) {
         return '#28a745'; // 🟢 مقيم حالياً (أخضر)
     }
 
