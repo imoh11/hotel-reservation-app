@@ -654,13 +654,12 @@ allReservations = data.records.filter(reservation => {
             const guestArrival = reservation.fields[FIELD_NAMES.GUEST_ARRIVAL];
             const vipArrival = reservation.fields[FIELD_NAMES.VIP_ARRIVAL];
             const royalArrival = reservation.fields[FIELD_NAMES.ROYAL_ARRIVAL];
-            const guestDeparture = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE];
-            const vipDeparture = reservation.fields[FIELD_NAMES.VIP_DEPARTURE];
-            const royalDeparture = reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
+            // ❌ تم حذف التعريفات المكررة هنا
             
             // تحديد تاريخ الوصول والمغادرة الرئيسي للحجز
             const arrivalDate = guestArrival || vipArrival || royalArrival || 'غير محدد';
-            const departureDate = guestDeparture || vipDeparture || royalDeparture || 'غير محدد';
+            // ❌ تم حذف التعريفات المكررة هنا
+            const departureDate = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE] || reservation.fields[FIELD_NAMES.VIP_DEPARTURE] || reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE] || 'غير محدد';
             
             // حساب لون الحالة
             const statusColor = getStatusColor(arrivalDate, departureDate);
