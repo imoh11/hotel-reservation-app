@@ -622,1030 +622,1328 @@ async function saveNewReservation() {
         }
 
         const savedRecord = await response.json();
-        const newResNumber = savedRecord.fields[FIELD_NAMES.RES_NUMBER];
-        
-        let message;
-        if (resType === 'مؤكد') {
-            message = APP_CONFIG.msg_confirmed;
-        } else {
-            message = APP_CONFIG.msg_waiting;
-        }
-        
-        message = message.replace('{name}', guestName);
-        message += `\n\nرقم الحجز: ${newResNumber}`;
+        const newResId = savedRecord.id;
 
+        const successMessage = `✅ تم حفظ الحجز بنجاح`;
+        showStatus(successMessage, 'success', statusDivId);
 
-        showStatus(`✅ تم حفظ الحجز بنجاح. رقم الحجز: ${newResNumber}`, 'success', statusDivId);
-        
-        // إعادة تعيين النموذج
         document.getElementById('newReservationForm').reset();
-        document.getElementById('currentDate_new').value = new Date().toISOString().substring(0, 10);
-        document.querySelector('#newReservationForm button[type="submit"]').disabled = true;
 
-        // نسخ الرسالة إلى الحافظة (لأجهزة الجوال)
-        navigator.clipboard.writeText(message).then(() => {
-            showStatus(`✅ تم حفظ الحجز ونسخ رسالة التأكيد إلى الحافظة. رقم الحجز: ${newResNumber}`, 'success', statusDivId);
-        }).catch(err => {
-            console.error('فشل نسخ الرسالة:', err);
-            showStatus(`✅ تم حفظ الحجز بنجاح. رقم الحجز: ${newResNumber}. (فشل نسخ الرسالة تلقائياً)`, 'success', statusDivId);
+        document.querySelectorAll('span[id$="_summary_new"]').forEach(span => span.textContent = '');
+        document.querySelectorAll('p[id$="_validation_new"]').forEach(p => {
+             p.classList.add('hidden');
+             p.textContent = '';
         });
 
     } catch (error) {
-        console.error('❌ خطأ في حفظ الحجز:', error);
-        showStatus(`❌ فشل حفظ الحجز. السبب: ${error.message}`, 'error', statusDivId, false);
+        console.error('Error saving reservation:', error);
+        showStatus(`❌ فشل حفظ الحجز. (خطأ: ${error.message || 'غير معروف'}).`, 'error', statusDivId);
     }
 }
 
 
 // ===============================================
-// 6. وظيفة تحديث/إلغاء حجز (PATCH)
+// 6. وظيفة حفظ وإرسال عبر WhatsApp
 // ===============================================
 
-async function updateReservation(recordId, action) {
-    const statusDivId = 'editReservationForm';
-    const form = document.getElementById('editReservationForm');
-
-    // تحديد الحقول المراد إرسالها بناءً على الإجراء
-    let data = {};
-    let fieldsToReset = [];
-    let showResetMessage = false;
-    let newResType = form.elements['type_edit'].value;
+/**
+ * حفظ الحجز وإرسال ملخص عبر WhatsApp Web
+ */
+async function saveAndSendWhatsApp() {
+    const statusDivId = 'newReservation';
     
-    if (action === 'update' || action === 'updateAndSms') {
-        const getEditSuiteValue = (key, type) => {
-            const element = form.elements[`${key}${type}_edit`];
-            if (!element) return undefined;
-
-            if (type.includes('Count')) {
-                const val = parseInt(element.value);
-                return isNaN(val) ? undefined : val;
-            }
-            return element.value.trim() === '' ? undefined : element.value;
-        };
-
-        let amountValue = form.elements['amount_edit'].value.replace(/[^0-9.]/g, '');
-        const amount = (amountValue.trim() !== '' && !isNaN(parseFloat(amountValue))) ? parseFloat(amountValue) : undefined;
-
-        data = {
-            [FIELD_IDS.RES_TYPE]: newResType,
-            [FIELD_IDS.COUNTER]: form.elements['counter_edit'].value,
-            [FIELD_IDS.SOURCE]: form.elements['source_edit'].value,
-            [FIELD_IDS.GUEST_NAME]: form.elements['guestName_edit'].value,
-            [FIELD_IDS.PHONE]: form.elements['phone_edit'].value,
-            [FIELD_IDS.AMOUNT]: amount,
-            [FIELD_IDS.TRANSFERER_NAME]: form.elements['transfererName_edit'].value || undefined,
-            [FIELD_IDS.TRANSFER_DATE]: form.elements['currentDate_edit'].value || undefined,
-            [FIELD_IDS.NOTES]: form.elements['notes_edit'].value || undefined,
-            
-            // بيانات الأجنحة
-            [FIELD_IDS.GUEST_COUNT]: getEditSuiteValue('guest', 'SuiteCount'),
-            [FIELD_IDS.GUEST_ARRIVAL]: getEditSuiteValue('guest', 'Arrival'),
-            [FIELD_IDS.GUEST_DEPARTURE]: getEditSuiteValue('guest', 'Departure'),
-            [FIELD_IDS.VIP_COUNT]: getEditSuiteValue('vip', 'SuiteCount'),
-            [FIELD_IDS.VIP_ARRIVAL]: getEditSuiteValue('vip', 'Arrival'),
-            [FIELD_IDS.VIP_DEPARTURE]: getEditSuiteValue('vip', 'Departure'),
-            [FIELD_IDS.ROYAL_COUNT]: getEditSuiteValue('royal', 'SuiteCount'),
-            [FIELD_IDS.ROYAL_ARRIVAL]: getEditSuiteValue('royal', 'Arrival'),
-            [FIELD_IDS.ROYAL_DEPARTURE]: getEditSuiteValue('royal', 'Departure'),
-        };
-
-        // مسح الحقول الفارغة أو غير المعرفة (لأنه PATCH)
-        Object.keys(data).forEach(key => {
-            const value = data[key];
-            if (value === null || value === undefined || (typeof value === 'string' && value.trim() === '')) {
-                delete data[key];
-            } else if (key.includes('COUNT') && data[key] === 0) {
-                // التأكد من إرسال القيمة صفر في حال تم إلغاء الغرف
-                data[key] = 0;
-            }
-        });
-
-        const totalReserved = (data[FIELD_IDS.GUEST_COUNT] || 0) + (data[FIELD_IDS.VIP_COUNT] || 0) + (data[FIELD_IDS.ROYAL_COUNT] || 0);
-        if (totalReserved === 0 && newResType !== 'ملغي') {
-            showStatus('الرجاء تحديد جناح واحد على الأقل أو تعيين حالة الحجز إلى "ملغي".', 'error', statusDivId);
-            return;
-        }
-
-        // فحص التوفر النهائي قبل الإرسال للتعديل
-        let allAvailable = true;
-        for (const suiteKey of Object.keys(SUITE_CONFIG)) {
-            const count = data[SUITE_CONFIG[suiteKey].count];
-            const arrival = data[SUITE_CONFIG[suiteKey].arrival];
-            const departure = data[SUITE_CONFIG[suiteKey].departure];
-            
-            if (count && arrival && departure) {
-                const availableCount = await getAvailableCount(suiteKey, arrival, departure, recordId); // إرسال recordId
-                
-                if (availableCount === -2) {
-                    showStatus(`❌ فشل التحقق النهائي من توفر ${SUITE_CONFIG[suiteKey].nameAr}. يرجى التحقق من المفاتيح.`, 'error', statusDivId);
-                    return;
-                }
-                if (count > availableCount) {
-                    showStatus(`❌ فشل التعديل! ${SUITE_CONFIG[suiteKey].nameAr}: العدد المطلوب (${count}) يتجاوز المتاح (${availableCount}) في الفترة المحددة.`, 'error', statusDivId);
-                    allAvailable = false;
-                    break;
-                }
-            }
-        }
-
-        if (!allAvailable) {
-            return;
-        }
-
-
-    } else if (action === 'cancel') {
-        newResType = 'ملغي';
-        data[FIELD_IDS.RES_TYPE] = 'ملغي';
-        
-        // مسح جميع تفاصيل الأجنحة عند الإلغاء لزيادة التوفر
-        for (const suiteKey of Object.keys(SUITE_CONFIG)) {
-            data[SUITE_CONFIG[suiteKey].count] = 0;
-            data[SUITE_CONFIG[suiteKey].arrival] = null;
-            data[SUITE_CONFIG[suiteKey].departure] = null;
-        }
-        
-        showResetMessage = true;
-
-    } else {
-        showStatus('إجراء غير صالح.', 'error', statusDivId);
+    // أولاً: حفظ الحجز
+    const guestName = document.getElementById('guestName_new').value;
+    const phone = document.getElementById('phone_new').value;
+    const resType = document.getElementById('type_new').value;
+    
+    if (!guestName || !phone || !resType) {
+        showStatus('الرجاء إدخال اسم النزيل، رقم الجوال، ونوع الحجز.', 'error', statusDivId);
         return;
     }
+    
+    // جمع بيانات التواريخ من جميع الأجنحة
+    const getSuiteValue = (key, type) => {
+        const element = document.getElementById(`${key}${type}_new`);
+        if (!element) return undefined;
+        if (type.includes('Count') || type.includes('Days')) {
+            const val = parseInt(element.value);
+            return isNaN(val) ? undefined : val;
+        }
+        return element.value.trim() === '' ? undefined : element.value;
+    };
+    
+   const today = new Date();
+today.setHours(0, 0, 0, 0);
 
+allReservations = data.records.filter(reservation => {
+    const guestArrival = reservation.fields[FIELD_NAMES.GUEST_ARRIVAL];
+    const vipArrival = reservation.fields[FIELD_NAMES.VIP_ARRIVAL];
+    const royalArrival = reservation.fields[FIELD_NAMES.ROYAL_ARRIVAL];
+
+    // اختيار أول تاريخ متاح (تاريخ الوصول)
+    const arrivalDate = guestArrival || vipArrival || royalArrival;
+
+    if (!arrivalDate) return false; 
+    
+    const arrival = new Date(arrivalDate);
+    return arrival >= today; // ❌ شرط الوصول
+});
+    
+    // توليد رقم الحجز
+    const resNumber = generateResNumber();
+    
+    // ✅ إعداد رسالة WhatsApp من القوالب في Airtable
+    let messageTemplate = '';
+    
+    if (resType === 'مؤكد') {
+        messageTemplate = APP_CONFIG.msg_confirmed || 'ضيفنا العزيز: {name}\nتم تأكيد حجزك';
+    } else if (resType === 'قيد الانتظار') {
+        messageTemplate = APP_CONFIG.msg_waiting || 'ضيفنا العزيز: {name}\nحجزك قيد الانتظار';
+    } else if (resType === 'ملغي') {
+        messageTemplate = APP_CONFIG.msg_cancelled || 'ضيفنا العزيز: {name}\nتم إلغاء حجزك';
+    } else {
+        messageTemplate = APP_CONFIG.msg_confirmed || 'ضيفنا العزيز: {name}\nتم حجزك';
+    }
+    
+    // ✅ حساب عدد الضيوف والمبلغ
+    const guestCount = (getSuiteValue('guest', 'Count') || 0) + (getSuiteValue('vip', 'Count') || 0) + (getSuiteValue('royal', 'Count') || 0);
+    const amount = getSuiteValue('amount', '') || 'غير محدد';
+    
+    // ✅ استبدال المتغيرات
+    const message = messageTemplate
+        .replace(/{name}/g, guestName)
+        .replace(/{hotel}/g, APP_CONFIG.hotel_name || 'الفندق')
+        .replace(/{resNumber}/g, resNumber)
+        .replace(/{phone}/g, phone)
+        .replace(/{guestCount}/g, guestCount)
+        .replace(/{arrival}/g, arrivalDate)
+        .replace(/{departure}/g, departureDate)
+        .replace(/{amount}/g, amount);
+    
+    // ✅ تنظيف وتحويل رقم الجوال
+    let cleanPhone = phone.replace(/\D/g, ''); // إزالة المسافات والرموز
+    
+    // إذا كان الرقم يبدأ بـ 05، حوله إلى 966
+    if (cleanPhone.startsWith('05')) {
+        cleanPhone = '966' + cleanPhone.substring(1); // إزالة 0 وإضافة 966
+    }
+    
+    // ✅ فتح WhatsApp باستخدام wa.me
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+    
+    // فتح في نافذة جديدة
+    window.open(whatsappUrl, '_blank');
+    
+    // حفظ الحجز في Airtable
+    await saveNewReservation();
+}
+
+// ===============================================
+// 7. وظائف تعديل وإلغاء الحجز
+// ===============================================
+
+let allReservations = [];
+let currentEditingReservation = null;
+
+/**
+ * تحميل الحجوزات القادمة فقط من Airtable
+ */
+async function loadAllReservations() {
+    const loadingDiv = document.getElementById('loadingReservations');
+    const listDiv = document.getElementById('reservationsList');
+    
     try {
-        const actionText = action === 'cancel' ? 'إلغاء الحجز' : 'تحديث الحجز';
-        showStatus(`جاري ${actionText}... ⏳`, 'info', statusDivId, false);
+        loadingDiv.style.display = 'block';
+        listDiv.innerHTML = '';
+        
+        const response = await fetch(`${AIRTABLE_API_URL}`, {
+            headers: {
+                'Authorization': `Bearer ${AIRTABLE_API_KEY}`
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`فشل تحميل الحجوزات: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // ✅ فلترة الحجوزات القادمة فقط (تاريخ الوصول >= اليوم)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+allReservations = data.records.filter(reservation => {
+    const guestDeparture = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE];
+    const vipDeparture = reservation.fields[FIELD_NAMES.VIP_DEPARTURE];
+    const royalDeparture = reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
+    
+    // اختيار أول تاريخ مغادرة متاح
+    const departureDate = guestDeparture || vipDeparture || royalDeparture;
+    
+    if (!departureDate) return false; // لا توجد تواريخ
+    
+    const departure = new Date(departureDate);
+    return departure >= today; // إبقاء الحجوزات التي لم تغادر بعد
+});
 
-        const response = await fetch(`${AIRTABLE_API_URL}/${recordId}`, {
+        
+        // ترتيب حسب تاريخ الوصول (الأقرب أولاً)
+        allReservations.sort((a, b) => {
+            const aDate = new Date(a.fields[FIELD_NAMES.GUEST_ARRIVAL] || a.fields[FIELD_NAMES.VIP_ARRIVAL] || a.fields[FIELD_NAMES.ROYAL_ARRIVAL]);
+            const bDate = new Date(b.fields[FIELD_NAMES.GUEST_ARRIVAL] || b.fields[FIELD_NAMES.VIP_ARRIVAL] || b.fields[FIELD_NAMES.ROYAL_ARRIVAL]);
+            return aDate - bDate;
+        });
+        
+        loadingDiv.style.display = 'none';
+        
+        if (allReservations.length === 0) {
+            listDiv.innerHTML = '<p class="info-message-block">لا توجد حجوزات قادمة.</p>';
+            return;
+        }
+        
+        allReservations.forEach(reservation => {
+            // ✅ قراءة البيانات
+            const resType = reservation.fields[FIELD_NAMES.RES_TYPE] || 'غير محدد';
+            const guestName = reservation.fields[FIELD_NAMES.GUEST_NAME] || 'غير محدد';
+            
+            // ✅ استبدال رقم الحجز بتاريخ الوصول
+            const guestArrival = reservation.fields[FIELD_NAMES.GUEST_ARRIVAL];
+            const vipArrival = reservation.fields[FIELD_NAMES.VIP_ARRIVAL];
+            const royalArrival = reservation.fields[FIELD_NAMES.ROYAL_ARRIVAL];
+            const arrivalDate = guestArrival || vipArrival || royalArrival || 'غير محدد';
+            
+            let typeClass = '';
+            if (resType === 'مؤكد') typeClass = 'confirmed';
+            else if (resType === 'قيد الانتظار') typeClass = 'waiting';
+            else if (resType === 'ملغي') typeClass = 'cancelled';
+            
+            // ✅ إنشاء قائمة منسدلة (accordion)
+            const accordionDiv = document.createElement('div');
+            accordionDiv.className = 'reservation-accordion';
+            
+            // العنوان (قابل للنقر)
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'reservation-accordion-header';
+            
+            // ✅ تحديد لون الحالة
+            const departureDate = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE] || reservation.fields[FIELD_NAMES.VIP_DEPARTURE] || reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
+            const statusColor = getStatusColor(arrivalDate, departureDate);
+            
+            headerDiv.innerHTML = `
+                <div class="reservation-item-info">
+                    <span class="status-circle" style="background-color: ${statusColor};"></span>
+                    <span class="reservation-number">${arrivalDate}</span>
+                    <span class="reservation-type ${typeClass}">${resType}</span>
+                    <span class="reservation-guest">${guestName}</span>
+                </div>
+                <div class="reservation-actions">
+                    <span class="accordion-arrow">▼</span>
+                </div>
+            `;
+            
+            // التفاصيل (مخفية بشكل افتراضي)
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'reservation-accordion-content';
+            
+            // بناء التفاصيل
+            const fields = reservation.fields;
+            const resNumber = fields[FIELD_NAMES.RES_NUMBER] || 'غير محدد';
+            const phone = fields[FIELD_NAMES.PHONE] || 'غير محدد';
+            const counter = fields[FIELD_NAMES.COUNTER] || 'غير محدد';
+            const amount = fields[FIELD_NAMES.AMOUNT] || 'غير محدد';
+            const guestCount = fields[FIELD_NAMES.GUEST_COUNT] || '';
+            const vipCount = fields[FIELD_NAMES.VIP_COUNT] || '';
+            const royalCount = fields[FIELD_NAMES.ROYAL_COUNT] || '';
+            const notes = fields[FIELD_NAMES.NOTES] || '';
+            
+            // ✅ تعريف متغيرات المغادرة لضمان توفرها في النطاق
+            const guestDeparture = fields[FIELD_NAMES.GUEST_DEPARTURE];
+            const vipDeparture = fields[FIELD_NAMES.VIP_DEPARTURE];
+            const royalDeparture = fields[FIELD_NAMES.ROYAL_DEPARTURE];
+            
+
+            
+
+            
+            let detailsHTML = '<div class="reservation-details-grid">';
+            detailsHTML += `<div class="detail-row"><span class="detail-label">رقم الحجز:</span><span class="detail-value">${resNumber}</span></div>`;
+            detailsHTML += `<div class="detail-row"><span class="detail-label">رقم الجوال:</span><span class="detail-value">${phone}</span></div>`;
+            detailsHTML += `<div class="detail-row"><span class="detail-label">الكونتر:</span><span class="detail-value">${counter}</span></div>`;
+            detailsHTML += `<div class="detail-row"><span class="detail-label">المبلغ:</span><span class="detail-value">${amount}</span></div>`;
+            
+            if (guestCount) {
+                const guestColor = getStatusColor(arrivalDate, guestDeparture);
+                detailsHTML += `<div class="detail-row"><span class="detail-label"><span class="status-dot" style="background-color:${guestColor}"></span> جناح ضيافة:</span><span class="detail-value">${guestCount} غرف (${arrivalDate} ← ${guestDeparture})</span></div>`;
+            }
+            if (vipCount) {
+                const vipColor = getStatusColor(vipArrival, vipDeparture);
+                detailsHTML += `<div class="detail-row"><span class="detail-label"><span class="status-dot" style="background-color:${vipColor}"></span> جناح VIP:</span><span class="detail-value">${vipCount} غرف (${vipArrival} ← ${vipDeparture})</span></div>`;
+            }
+            if (royalCount) {
+                const royalColor = getStatusColor(royalArrival, royalDeparture);
+                detailsHTML += `<div class="detail-row"><span class="detail-label"><span class="status-dot" style="background-color:${royalColor}"></span> جناح ملكي:</span><span class="detail-value">${royalCount} غرف (${royalArrival} ← ${royalDeparture})</span></div>`;
+            }
+            if (notes) {
+                detailsHTML += `<div class="detail-row full-width"><span class="detail-label">ملاحظات:</span><span class="detail-value">${notes}</span></div>`;
+            }
+            detailsHTML += '</div>';
+            detailsHTML += `
+                <div class="detail-actions">
+                    <button class="btn btn-primary edit-reservation-btn">تحرير الحجز</button>
+                    <button class="btn btn-success send-whatsapp-btn">إرسال</button>
+                </div>
+            `;
+            
+            contentDiv.innerHTML = detailsHTML;
+            
+            // تجميع العناصر
+            accordionDiv.appendChild(headerDiv);
+            accordionDiv.appendChild(contentDiv);
+            listDiv.appendChild(accordionDiv);
+            
+            // فتح/إغلاق التفاصيل عند النقر على العنوان
+            headerDiv.addEventListener('click', (e) => {
+                // تجاهل النقر على زر التحرير
+                if (e.target.closest('.edit-icon-btn')) return;
+                
+                const isActive = headerDiv.classList.contains('active');
+                
+                // إغلاق جميع القوائم الأخرى
+                document.querySelectorAll('.reservation-accordion-header').forEach(h => {
+                    h.classList.remove('active');
+                    const c = h.nextElementSibling;
+                    if (c) c.classList.remove('active');
+                });
+                
+                // فتح القائمة الحالية إذا لم تكن مفتوحة
+                if (!isActive) {
+                    headerDiv.classList.add('active');
+                    contentDiv.classList.add('active');
+                }
+            });
+            
+            // فتح نموذج التعديل عند النقر على زر التحرير
+            setTimeout(() => {
+                const editBtn = contentDiv.querySelector('.edit-reservation-btn');
+                const sendBtn = contentDiv.querySelector('.send-whatsapp-btn');
+                
+                if (editBtn) {
+                    editBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        currentEditingReservation = reservation;
+                        openEditForm();
+                    });
+                }
+                
+                if (sendBtn) {
+                    sendBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        // إرسال رسالة WhatsApp مباشرة بدون حفظ
+                        sendWhatsAppDirectly(reservation);
+                    });
+                }
+            }, 100);
+        });
+        
+        // ✅ إخفاء رسالة التحميل بعد انتهاء الحلقة
+        document.getElementById('loadingReservations').classList.add('hidden');
+        
+    } catch (error) {
+        console.error('Error loading reservations:', error);
+        loadingDiv.innerHTML = `<p class="error">❌ فشل تحميل الحجوزات: ${error.message}</p>`;
+    }
+}
+
+/**
+ * تم حذف showReservationDetails - التفاصيل الآن داخل accordion
+ */
+
+/**
+ * تم حذف closeReservationDetails - لم تعد مطلوبة
+ */
+
+/**
+ * إرسال رسالة WhatsApp مباشرة بدون حفظ
+ */
+function sendWhatsAppDirectly(reservation) {
+    const fields = reservation.fields;
+    
+    const resNumber = fields[FIELD_NAMES.RES_NUMBER] || 'غير محدد';
+    const resType = fields[FIELD_NAMES.RES_TYPE] || '';
+    const guestName = fields[FIELD_NAMES.GUEST_NAME] || 'غير محدد';
+    const phone = fields[FIELD_NAMES.PHONE] || '';
+    
+    // الحصول على أول تاريخ متاح
+    const guestArrival = fields[FIELD_NAMES.GUEST_ARRIVAL];
+    const vipArrival = fields[FIELD_NAMES.VIP_ARRIVAL];
+    const royalArrival = fields[FIELD_NAMES.ROYAL_ARRIVAL];
+    const arrivalDate = guestArrival || vipArrival || royalArrival || 'غير محدد';
+    
+    const guestDeparture = fields[FIELD_NAMES.GUEST_DEPARTURE];
+    const vipDeparture = fields[FIELD_NAMES.VIP_DEPARTURE];
+    const royalDeparture = fields[FIELD_NAMES.ROYAL_DEPARTURE];
+    const departureDate = guestDeparture || vipDeparture || royalDeparture || 'غير محدد';
+    
+    // ✅ بناء الرسالة من القوالب في Airtable
+    let messageTemplate = '';
+    if (resType === 'ملغي') {
+        messageTemplate = APP_CONFIG.msg_cancelled || 'ضيفنا العزيز: {name}\nتم إلغاء حجزك';
+    } else if (resType === 'قيد الانتظار') {
+        messageTemplate = APP_CONFIG.msg_waiting || 'ضيفنا العزيز: {name}\nحجزك قيد الانتظار';
+    } else {
+        messageTemplate = APP_CONFIG.msg_confirmed || 'ضيفنا العزيز: {name}\nتم تأكيد حجزك';
+    }
+    
+    // ✅ استبدال المتغيرات
+    const guestCount = (fields[FIELD_NAMES.GUEST_COUNT] || 0) + (fields[FIELD_NAMES.VIP_COUNT] || 0) + (fields[FIELD_NAMES.ROYAL_COUNT] || 0);
+    const amount = fields[FIELD_NAMES.AMOUNT] || 'غير محدد';
+    
+    const message = messageTemplate
+        .replace(/{name}/g, guestName)
+        .replace(/{hotel}/g, APP_CONFIG.hotel_name || 'الفندق')
+        .replace(/{resNumber}/g, resNumber)
+        .replace(/{phone}/g, phone)
+        .replace(/{guestCount}/g, guestCount)
+        .replace(/{arrival}/g, arrivalDate)
+        .replace(/{departure}/g, departureDate)
+        .replace(/{amount}/g, amount);
+    
+    // تحويل الرقم إلى الصيغة الدولية
+    let phoneNumber = phone.replace(/\s+/g, '');
+    if (phoneNumber.startsWith('05')) {
+        phoneNumber = '966' + phoneNumber.substring(1);
+    }
+    
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+/**
+ * فتح نموذج تعديل الحجز
+ */
+function openEditForm_OLD_DELETED(reservation) {
+    currentEditingReservation = reservation;
+    
+    const listContainer = document.querySelector('.reservations-list-container');
+    const detailsDiv = document.getElementById('reservationDetails');
+    const contentDiv = document.getElementById('detailsContent');
+    
+    listContainer.style.display = 'none';
+    detailsDiv.classList.remove('hidden');
+    
+    const fields = reservation.fields;
+    
+    let html = '<div class="details-content">';
+    
+    // ✅ قراءة البيانات باستخدام FIELD_NAMES
+    const fieldMappings = [
+        { label: 'رقم الحجز', value: fields[FIELD_NAMES.RES_NUMBER] },
+        { label: 'نوع الحجز', value: fields[FIELD_NAMES.RES_TYPE] },
+        { label: 'اسم النزيل', value: fields[FIELD_NAMES.GUEST_NAME] },
+        { label: 'رقم الجوال', value: fields[FIELD_NAMES.PHONE] },
+        { label: 'الكونتر', value: fields[FIELD_NAMES.COUNTER] },
+        { label: 'المبلغ', value: fields[FIELD_NAMES.AMOUNT] },
+        // تفاصيل الأجنحة مع الدوائر الملونة
+        {
+            label: `<span class="status-circle" style="background-color: ${getStatusColor(fields[FIELD_NAMES.GUEST_ARRIVAL], fields[FIELD_NAMES.GUEST_DEPARTURE])};"></span> جناح ضيافة - عدد الغرف`,
+            value: fields[FIELD_NAMES.GUEST_COUNT]
+        },
+        { label: 'جناح ضيافة - الوصول', value: fields[FIELD_NAMES.GUEST_ARRIVAL] },
+        { label: 'جناح ضيافة - المغادرة', value: fields[FIELD_NAMES.GUEST_DEPARTURE] },
+        {
+            label: `<span class="status-circle" style="background-color: ${getStatusColor(fields[FIELD_NAMES.VIP_ARRIVAL], fields[FIELD_NAMES.VIP_DEPARTURE])};"></span> جناح VIP - عدد الغرف`,
+            value: fields[FIELD_NAMES.VIP_COUNT]
+        },
+        { label: 'جناح VIP - الوصول', value: fields[FIELD_NAMES.VIP_ARRIVAL] },
+        { label: 'جناح VIP - المغادرة', value: fields[FIELD_NAMES.VIP_DEPARTURE] },
+        {
+            label: `<span class="status-circle" style="background-color: ${getStatusColor(fields[FIELD_NAMES.ROYAL_ARRIVAL], fields[FIELD_NAMES.ROYAL_DEPARTURE])};"></span> جناح ملكي - عدد الغرف`,
+            value: fields[FIELD_NAMES.ROYAL_COUNT]
+        },
+        { label: 'جناح ملكي - الوصول', value: fields[FIELD_NAMES.ROYAL_ARRIVAL] },
+        { label: 'جناح ملكي - المغادرة', value: fields[FIELD_NAMES.ROYAL_DEPARTURE] },
+        { label: 'ملاحظات', value: fields[FIELD_NAMES.NOTES] }
+    ];
+    
+    fieldMappings.forEach(field => {
+        if (field.value !== undefined && field.value !== null && field.value !== '') {
+            html += `
+                <div class="detail-item">
+                    <div class="detail-label">${field.label}</div>
+                    <div class="detail-value">${field.value}</div>
+                </div>
+            `;
+        }
+    });
+    
+    html += '</div>';
+    contentDiv.innerHTML = html;
+}
+
+function closeReservationDetails_OLD_DELETED() {
+    const listContainer = document.querySelector('.reservations-list-container');
+    const detailsDiv = document.getElementById('reservationDetails');
+    
+    detailsDiv.classList.add('hidden');
+    listContainer.style.display = 'block';
+}
+
+/**
+ * فتح نموذج تعديل الحجز
+ */
+function openEditForm() {
+    if (!currentEditingReservation) return;
+    
+    // ✅ إخفاء قائمة الحجوزات وإظهار نموذج التعديل
+    const listContainer = document.querySelector('.reservations-list-container');
+    const editFormDiv = document.getElementById('editReservationForm');
+    const formContent = document.getElementById('editFormContent');
+    
+    if (listContainer) listContainer.style.display = 'none';
+    editFormDiv.classList.remove('hidden');
+    
+    const fields = currentEditingReservation.fields;
+    
+    // ✅ سجلات تصحيح
+    console.log('[DEBUG] Opening edit form for reservation:', currentEditingReservation.id);
+    console.log('[DEBUG] All fields:', fields);
+    console.log('[DEBUG] Available field names:', Object.keys(fields));
+    
+    // ✅ قراءة البيانات باستخدام FIELD_NAMES
+    const resType = fields[FIELD_NAMES.RES_TYPE] || '';
+    const guestName = fields[FIELD_NAMES.GUEST_NAME] || '';
+    const phone = fields[FIELD_NAMES.PHONE] || '';
+    const counter = fields[FIELD_NAMES.COUNTER] || '';
+    const amount = fields[FIELD_NAMES.AMOUNT] || '';
+    const notes = fields[FIELD_NAMES.NOTES] || '';
+    const guestCount = fields[FIELD_NAMES.GUEST_COUNT] || '';
+    const guestArrival = fields[FIELD_NAMES.GUEST_ARRIVAL] || '';
+    const guestDeparture = fields[FIELD_NAMES.GUEST_DEPARTURE] || '';
+    
+    console.log('[DEBUG] Extracted values:');
+    console.log('  - guestCount:', guestCount);
+    console.log('  - guestArrival:', guestArrival);
+    console.log('  - guestDeparture:', guestDeparture);
+    
+    formContent.innerHTML = `
+        <div class="form-row">
+            <div class="form-group">
+                <label>نوع الحجز</label>
+                <select id="edit_type" class="form-control">
+                    <option value="مؤكد" ${resType === 'مؤكد' ? 'selected' : ''}>مؤكد</option>
+                    <option value="قيد الانتظار" ${resType === 'قيد الانتظار' ? 'selected' : ''}>انتظار</option>
+                    <option value="ملغي" ${resType === 'ملغي' ? 'selected' : ''}>ملغي</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>اسم النزيل</label>
+                <input type="text" id="edit_guestName" class="form-control" value="${guestName}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>رقم الجوال</label>
+                <input type="tel" id="edit_phone" class="form-control" value="${phone}">
+            </div>
+            <div class="form-group">
+                <label>الكونتر</label>
+                <select id="edit_counter" class="form-control">
+                    <option value="A1" ${counter === 'A1' ? 'selected' : ''}>A1</option>
+                    <option value="A2" ${counter === 'A2' ? 'selected' : ''}>A2</option>
+                    <option value="A3" ${counter === 'A3' ? 'selected' : ''}>A3</option>
+                    <option value="A4" ${counter === 'A4' ? 'selected' : ''}>A4</option>
+                    <option value="A5" ${counter === 'A5' ? 'selected' : ''}>A5</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>المبلغ</label>
+                <input type="number" id="edit_amount" class="form-control" value="${amount}">
+            </div>
+            <div class="form-group">
+                <label>ملاحظات</label>
+                <textarea id="edit_notes" class="form-control" rows="2">${notes}</textarea>
+            </div>
+        </div>
+        
+        <h4 style="margin-top: 20px; margin-bottom: 10px; color: var(--primary);">تفاصيل الأجنحة</h4>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>جناح ضيافة - عدد الغرف</label>
+                <input type="number" id="edit_guestCount" class="form-control" value="${guestCount}">
+            </div>
+            <div class="form-group">
+                <label>تاريخ الوصول</label>
+                <input type="date" id="edit_guestArrival" class="form-control" value="${guestArrival}">
+            </div>
+            <div class="form-group">
+                <label>تاريخ المغادرة</label>
+                <input type="date" id="edit_guestDeparture" class="form-control" value="${guestDeparture}">
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * إغلاق نموذج التعديل
+ */
+function closeEditForm() {
+    // ✅ إخفاء نموذج التعديل وإظهار قائمة الحجوزات
+    const listContainer = document.querySelector('.reservations-list-container');
+    const editFormDiv = document.getElementById('editReservationForm');
+    
+    editFormDiv.classList.add('hidden');
+    if (listContainer) listContainer.style.display = 'block';
+}
+
+/**
+ * حفظ التعديلات
+ */
+async function saveReservationEdits() {
+    if (!currentEditingReservation) return;
+    
+    const statusDivId = 'editReservation';
+    
+    try {
+        showStatus('جاري حفظ التعديلات... ⏳', 'info', statusDivId, false);
+        
+        const updatedFields = {
+            [FIELD_IDS.RES_TYPE]: document.getElementById('edit_type').value,
+            [FIELD_IDS.GUEST_NAME]: document.getElementById('edit_guestName').value,
+            [FIELD_IDS.PHONE]: document.getElementById('edit_phone').value,
+            [FIELD_IDS.COUNTER]: document.getElementById('edit_counter').value,
+            [FIELD_IDS.AMOUNT]: parseFloat(document.getElementById('edit_amount').value) || undefined,
+            [FIELD_IDS.NOTES]: document.getElementById('edit_notes').value || undefined,
+            [FIELD_IDS.GUEST_COUNT]: parseInt(document.getElementById('edit_guestCount').value) || undefined,
+            [FIELD_IDS.GUEST_ARRIVAL]: document.getElementById('edit_guestArrival').value || undefined,
+            [FIELD_IDS.GUEST_DEPARTURE]: document.getElementById('edit_guestDeparture').value || undefined
+        };
+        
+        // ✅ التحقق من التوفر إذا تم تغيير التواريخ
+        const newArrival = updatedFields[FIELD_IDS.GUEST_ARRIVAL];
+        const newDeparture = updatedFields[FIELD_IDS.GUEST_DEPARTURE];
+        
+        // إذا تم تغيير التواريخ
+        if (newArrival && newDeparture) {
+            showStatus('جاري التحقق من التوفر... 🔍', 'info', statusDivId, false);
+            
+            // ✅ الحصول على نوع الجناح من الحجز الأصلي
+            let suiteKey = null;
+            const fields = currentEditingReservation.fields;
+            
+            // التحقق من أي جناح يحتوي على بيانات
+            if (fields[FIELD_NAMES.GUEST_COUNT] > 0 || fields[FIELD_NAMES.GUEST_ARRIVAL]) {
+                suiteKey = 'guest';
+            } else if (fields[FIELD_NAMES.VIP_COUNT] > 0 || fields[FIELD_NAMES.VIP_ARRIVAL]) {
+                suiteKey = 'vip';
+            } else if (fields[FIELD_NAMES.ROYAL_COUNT] > 0 || fields[FIELD_NAMES.ROYAL_ARRIVAL]) {
+                suiteKey = 'royal';
+            }
+            
+            if (!suiteKey) {
+                showStatus('❌ خطأ: لم يتم التعرف على نوع الجناح', 'error', statusDivId);
+                return;
+            }
+            
+            const requestedCount = updatedFields[FIELD_IDS.GUEST_COUNT] || updatedFields[FIELD_IDS.VIP_COUNT] || updatedFields[FIELD_IDS.ROYAL_COUNT] || 1;
+            
+            // ✅ استثناء الحجز الحالي من التحقق
+            const availableCount = await getAvailableCount(suiteKey, newArrival, newDeparture, currentEditingReservation.id);
+            
+            if (availableCount < requestedCount) {
+                showStatus(`❌ عذراً، لا يوجد غرف متاحة كافية. المتاح: ${availableCount} غرفة`, 'error', statusDivId);
+                return;
+            }
+        }
+        
+        Object.keys(updatedFields).forEach(key => {
+            if (updatedFields[key] === undefined) delete updatedFields[key];
+        });
+        
+        const response = await fetch(`${AIRTABLE_API_URL}/${currentEditingReservation.id}`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                fields: data
-            })
+            body: JSON.stringify({ fields: updatedFields })
         });
-
+        
         if (!response.ok) {
-            const errorData = await response.json();
-            const errorMessage = errorData.error ? errorData.error.type : 'غير معروف';
-            throw new Error(`Airtable API Error: ${response.status} - ${errorMessage}`);
-        }
-
-        const updatedRecord = await response.json();
-        const guestName = updatedRecord.fields[FIELD_NAMES.GUEST_NAME] || 'النزيل';
-        let message;
-        let smsText;
-
-        if (newResType === 'ملغي') {
-            smsText = APP_CONFIG.msg_cancelled.replace('{name}', guestName);
-            message = `✅ تم إلغاء الحجز بنجاح. حالة الحجز: ملغي.`;
-        } else if (newResType === 'مؤكد') {
-            smsText = APP_CONFIG.msg_confirmed.replace('{name}', guestName);
-            smsText += `\n\nرقم الحجز: ${updatedRecord.fields[FIELD_NAMES.RES_NUMBER]}`;
-            message = `✅ تم تحديث الحجز بنجاح. حالة الحجز: مؤكد.`;
-        } else {
-            smsText = APP_CONFIG.msg_waiting.replace('{name}', guestName);
-            smsText += `\n\nرقم الحجز: ${updatedRecord.fields[FIELD_NAMES.RES_NUMBER]}`;
-            message = `✅ تم تحديث الحجز بنجاح. حالة الحجز: ${newResType}.`;
-        }
-
-        if (action === 'updateAndSms' || action === 'cancel') {
-            navigator.clipboard.writeText(smsText).then(() => {
-                message += ` (تم نسخ رسالة ${newResType === 'ملغي' ? 'الإلغاء' : 'التأكيد/الانتظار'} إلى الحافظة)`;
-            }).catch(err => {
-                console.error('فشل نسخ الرسالة:', err);
-                message += ` (فشل نسخ الرسالة تلقائياً)`;
-            });
+            throw new Error(`فشل حفظ التعديلات: ${response.status}`);
         }
         
-        showStatus(message, 'success', statusDivId);
+        showStatus('✅ تم حفظ التعديلات بنجاح', 'success', statusDivId);
         
-        // إخفاء نموذج التعديل وتحديث القائمة
-        document.getElementById('editReservationForm').classList.add('hidden');
-        document.getElementById('searchReservation').value = '';
-        loadAllReservations(true); 
-
+        setTimeout(() => {
+            closeEditForm();
+            closeReservationDetails();
+            loadAllReservations();
+        }, 1500);
+        
     } catch (error) {
-        console.error('❌ خطأ في تحديث الحجز:', error);
-        showStatus(`❌ فشل ${actionText}. السبب: ${error.message}`, 'error', statusDivId, false);
+        console.error('Error saving edits:', error);
+        showStatus(`❌ فشل حفظ التعديلات: ${error.message}`, 'error', statusDivId);
     }
 }
 
-
-// ===============================================
-// 7. وظيفة تحميل جميع الحجوزات (READ)
-// ===============================================
-
-async function loadAllReservations(forceReload = false) {
-    const listContainer = document.getElementById('reservationsList');
-    const loadingMessage = document.getElementById('loadingReservations');
-    const searchInput = document.getElementById('searchReservation');
-    const tabId = 'editReservation';
-
-    // استخدام الـ Cache لتجنب طلبات متكررة
-    const CACHE_KEY = 'reservations_cache';
-    const CACHE_TIME_KEY = 'reservations_cache_time';
-    const CACHE_DURATION = 1 * 60 * 1000; // 1 دقيقة
-
-    loadingMessage.classList.remove('hidden');
-    listContainer.innerHTML = '';
-
-    let records;
-    let cachedData = localStorage.getItem(CACHE_KEY);
-    let cacheTime = localStorage.getItem(CACHE_TIME_KEY);
-    const now = Date.now();
-
-    if (cachedData && cacheTime && (now - parseInt(cacheTime)) < CACHE_DURATION && !forceReload) {
-        records = JSON.parse(cachedData);
-        console.log('✅ تحميل الحجوزات من cache');
+/**
+ * حفظ وإرسال عبر WhatsApp
+ */
+async function saveEditAndSendWhatsApp() {
+    if (!currentEditingReservation) return;
+    
+    const guestName = document.getElementById('edit_guestName').value;
+    const phone = document.getElementById('edit_phone').value;
+    const resType = document.getElementById('edit_type').value;
+    // ✅ قراءة رقم الحجز باستخدام FIELD_NAMES
+    const resNumber = currentEditingReservation.fields[FIELD_NAMES.RES_NUMBER];
+    
+    const guestArrival = document.getElementById('edit_guestArrival').value;
+    const guestDeparture = document.getElementById('edit_guestDeparture').value;
+    
+    if (!guestName || !phone || !resType) {
+        showStatus('الرجاء إدخال جميع البيانات المطلوبة.', 'error', 'editReservation');
+        return;
+    }
+    
+    // ✅ بناء الرسالة من القوالب في Airtable
+    let messageTemplate = '';
+    
+    if (resType === 'مؤكد') {
+        messageTemplate = APP_CONFIG.msg_confirmed || 'ضيفنا العزيز: {name}\nتم تأكيد حجزك';
+    } else if (resType === 'قيد الانتظار') {
+        messageTemplate = APP_CONFIG.msg_waiting || 'ضيفنا العزيز: {name}\nحجزك قيد الانتظار';
+    } else if (resType === 'ملغي') {
+        messageTemplate = APP_CONFIG.msg_cancelled || 'ضيفنا العزيز: {name}\nتم إلغاء حجزك';
     } else {
-        try {
-            console.log('🔄 تحميل الحجوزات من Airtable...');
-            // ✅ طلب جميع الحقول المطلوبة للعرض والفلترة
-            const fieldsQuery = Object.values(FIELD_NAMES).map(name => `fields[]=${name}`).join('&');
-            
-            const response = await fetch(`${AIRTABLE_API_URL}?${fieldsQuery}&maxRecords=500&sort%5B0%5D%5Bfield%5D=RES_NUMBER&sort%5B0%5D%5Bdirection%5D=desc`, {
-                headers: {
-                    'Authorization': `Bearer ${AIRTABLE_API_KEY}`
-                }
-            });
+        messageTemplate = APP_CONFIG.msg_confirmed || 'ضيفنا العزيز: {name}\nتم حجزك';
+    }
+    
+    // ✅ حساب عدد الضيوف والمبلغ
+    const fields = currentEditingReservation.fields;
+    const guestCount = (fields[FIELD_NAMES.GUEST_COUNT] || 0) + (fields[FIELD_NAMES.VIP_COUNT] || 0) + (fields[FIELD_NAMES.ROYAL_COUNT] || 0);
+    const amount = fields[FIELD_NAMES.AMOUNT] || 'غير محدد';
+    
+    // ✅ استبدال المتغيرات
+    const message = messageTemplate
+        .replace(/{name}/g, guestName)
+        .replace(/{hotel}/g, APP_CONFIG.hotel_name || 'الفندق')
+        .replace(/{resNumber}/g, resNumber)
+        .replace(/{phone}/g, phone)
+        .replace(/{guestCount}/g, guestCount)
+        .replace(/{arrival}/g, guestArrival)
+        .replace(/{departure}/g, guestDeparture)
+        .replace(/{amount}/g, amount);
+    
+    let cleanPhone = phone.replace(/\D/g, '');
+    if (cleanPhone.startsWith('05')) {
+        cleanPhone = '966' + cleanPhone.substring(1);
+    }
+    
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+    
+    await saveReservationEdits();
+}
 
-            if (!response.ok) {
-                throw new Error(`Airtable fetch failed with status: ${response.status}`);
+// ===============================================
+// 8. وظيفة تبديل التبويبات وتهيئة الأحداث
+// ===============================================
+
+function switchTab(tabName, button) {
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+        document.querySelectorAll('.status-message').forEach(msg => {
+            msg.classList.add('hidden');
+            msg.innerHTML = '';
+        });
+    });
+
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    document.getElementById(tabName).classList.add('active');
+    button.classList.add('active');
+}
+
+
+/**
+ * تحديث واجهة المستخدم من الإعدادات
+ */
+function updateUIFromConfig() {
+    // ✅ تحديث اسم الفندق
+    const hotelNameElement = document.getElementById('hotel-name');
+    if (hotelNameElement && APP_CONFIG.hotel_name) {
+        hotelNameElement.textContent = APP_CONFIG.hotel_name;
+    }
+    
+    // ✅ تحديث أسماء الأجنحة
+    document.querySelectorAll('[data-suite-name="guest"]').forEach(el => {
+        if (APP_CONFIG.guest_name_ar) {
+            el.textContent = APP_CONFIG.guest_name_ar;
+        }
+    });
+    
+    document.querySelectorAll('[data-suite-name="vip"]').forEach(el => {
+        if (APP_CONFIG.vip_name_ar) {
+            el.textContent = APP_CONFIG.vip_name_ar;
+        }
+    });
+    
+    document.querySelectorAll('[data-suite-name="royal"]').forEach(el => {
+        if (APP_CONFIG.royal_name_ar) {
+            el.textContent = APP_CONFIG.royal_name_ar;
+        }
+    });
+    
+    console.log('✅ تم تحديث واجهة المستخدم');
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    // ✅ تحميل الإعدادات أولاً
+    APP_CONFIG = await loadConfig();
+    console.log('✅ تم تحميل الإعدادات:', APP_CONFIG);
+    
+    // ✅ تحديث SUITE_CAPACITIES من الإعدادات
+    SUITE_CAPACITIES.guest = parseInt(APP_CONFIG.guest_capacity) || 14;
+    SUITE_CAPACITIES.vip = parseInt(APP_CONFIG.vip_capacity) || 4;
+    SUITE_CAPACITIES.royal = parseInt(APP_CONFIG.royal_capacity) || 2;
+    
+    // ✅ تحديث أسماء الأجنحة
+    SUITE_CONFIG.guest.nameAr = APP_CONFIG.guest_name_ar || 'جناح ضيافة';
+    SUITE_CONFIG.vip.nameAr = APP_CONFIG.vip_name_ar || 'جناح VIP';
+    SUITE_CONFIG.royal.nameAr = APP_CONFIG.royal_name_ar || 'جناح ملكي';
+    
+    // ✅ تحديث واجهة المستخدم
+    updateUIFromConfig();
+
+    document.getElementById('newReservationForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        saveNewReservation();
+    });
+    
+    // ✅ زر حفظ وإرسال تم حذفه من صفحة حجز جديد
+
+    const prefix = 'new'; 
+    ['guest', 'vip', 'royal'].forEach(suiteKey => {
+        const arrivalInput = document.getElementById(`${suiteKey}Arrival_${prefix}`);
+        const departureInput = document.getElementById(`${suiteKey}Departure_${prefix}`);
+        const countInput = document.getElementById(`${suiteKey}SuiteCount_${prefix}`);
+
+        if (arrivalInput) arrivalInput.addEventListener('change', () => {
+            calculateDaysPerSuite(prefix, suiteKey);
+        });
+        if (departureInput) departureInput.addEventListener('change', () => {
+            calculateDaysPerSuite(prefix, suiteKey);
+        });
+        if (countInput) countInput.addEventListener('input', () => {
+            updateSuiteSummary(prefix, suiteKey);
+            checkAndValidateAvailability(suiteKey, prefix); 
+        });
+    });
+
+    // ✅ سلوك accordion: فتح قائمة واحدة فقط
+    document.querySelectorAll('.collapsible-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const content = header.nextElementSibling;
+            const isCurrentlyActive = header.classList.contains('active');
+            
+            // إغلاق جميع القوائم الأخرى في نفس التبويب
+            const parentTab = header.closest('.tab-content');
+            if (parentTab) {
+                parentTab.querySelectorAll('.collapsible-header').forEach(h => {
+                    h.classList.remove('active');
+                    const c = h.nextElementSibling;
+                    if (c) c.classList.remove('active');
+                });
             }
-
-            const data = await response.json();
-            records = data.records;
             
-            // ✅ حفظ في localStorage
-            localStorage.setItem(CACHE_KEY, JSON.stringify(records));
-            localStorage.setItem(CACHE_TIME_KEY, now.toString());
-            
-        } catch (error) {
-            console.error('❌ خطأ في تحميل الحجوزات:', error);
-            loadingMessage.classList.add('error');
-            loadingMessage.textContent = '❌ فشل تحميل قائمة الحجوزات. يرجى التحقق من مفتاح الـ API.';
-            return;
-        }
-    }
-    
-    // إخفاء رسالة التحميل بعد جلب البيانات
-    loadingMessage.classList.add('hidden');
-    
-    // تصفية الحجوزات القديمة والمغادرة
-    const filteredRecords = records
-    .filter(record => {
-        const fields = record.fields;
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const guestDeparture = fields[FIELD_NAMES.GUEST_DEPARTURE];
-        const vipDeparture = fields[FIELD_NAMES.VIP_DEPARTURE];
-        const royalDeparture = fields[FIELD_NAMES.ROYAL_DEPARTURE];
-        
-        // اختيار أول تاريخ مغادرة متاح
-        const departureDate = guestDeparture || vipDeparture || royalDeparture;
-
-        if (fields[FIELD_NAMES.RES_TYPE] === 'ملغي') {
-            return false; // استثناء الملغاة نهائيا من القائمة الرئيسية
-        }
-        
-        if (!departureDate) return true; // إبقاء الحجوزات التي لا تحتوي على تواريخ (مثل حجوزات الإيرادات)
-        
-        return new Date(departureDate) >= today; // إبقاء الحجوزات التي لم تغادر بعد
-    })
-    // 💡 يمكن إضافة فلترة إضافية هنا (مثل فلترة نص البحث)
-    ;
-    
-    
-    if (filteredRecords.length === 0) {
-        listContainer.innerHTML = '<div class="empty-message">لا يوجد حجوزات نشطة أو قيد الانتظار حالياً.</div>';
-    } else {
-        renderReservationsList(filteredRecords, listContainer);
-    }
-
-    // تطبيق الفلترة على الإدخال الحالي إذا كان موجوداً
-    filterReservations(searchInput.value, filteredRecords);
-}
-
-/**
- * وظيفة تطبيق فلترة البحث على القائمة المعروضة
- */
-function filterReservations(searchText, allRecords) {
-    const listContainer = document.getElementById('reservationsList');
-    const normalizedSearchText = searchText.toLowerCase().trim();
-    
-    if (!allRecords || allRecords.length === 0) {
-         // إذا لم يكن هناك سجلات أصلاً، اخرج
-        return;
-    }
-    
-    if (normalizedSearchText === '') {
-        // إذا كان حقل البحث فارغاً، أظهر جميع السجلات المفلترة مسبقاً
-        renderReservationsList(allRecords, listContainer);
-        return;
-    }
-
-    const filtered = allRecords.filter(record => {
-        const fields = record.fields;
-        const resNumber = (fields[FIELD_NAMES.RES_NUMBER] || '').toString();
-        const guestName = (fields[FIELD_NAMES.GUEST_NAME] || '').toLowerCase();
-        const phone = (fields[FIELD_NAMES.PHONE] || '').toLowerCase();
-
-        return (
-            resNumber.includes(normalizedSearchText) ||
-            guestName.includes(normalizedSearchText) ||
-            phone.includes(normalizedSearchText)
-        );
-    });
-
-    if (filtered.length === 0) {
-        listContainer.innerHTML = '<div class="empty-message">لا توجد حجوزات تطابق معايير البحث.</div>';
-    } else {
-        renderReservationsList(filtered, listContainer);
-    }
-}
-
-
-/**
- * دالة مساعدة لإنشاء وعرض عناصر الحجوزات في القائمة
- */
-function renderReservationsList(records, listContainer) {
-    listContainer.innerHTML = ''; 
-    
-    records.forEach(record => {
-        const fields = record.fields;
-        const resType = fields[FIELD_NAMES.RES_TYPE] || 'مؤكد';
-        const resNumber = fields[FIELD_NAMES.RES_NUMBER] || 'N/A';
-        const guestName = fields[FIELD_NAMES.GUEST_NAME] || 'غير معروف';
-        const phone = fields[FIELD_NAMES.PHONE] || 'N/A';
-        
-        let typeClass = 'confirmed';
-        if (resType === 'ملغي') typeClass = 'cancelled';
-        if (resType === 'قيد الانتظار') typeClass = 'waiting';
-
-        const item = document.createElement('div');
-        item.className = 'reservation-item';
-        item.setAttribute('data-record-id', record.id);
-        item.setAttribute('data-res-number', resNumber);
-        
-        item.innerHTML = `
-            <div class="reservation-item-info">
-                <span class="reservation-number">#${resNumber}</span>
-                <span class="reservation-type ${typeClass}">${resType}</span>
-                <span class="reservation-guest">${guestName} (${phone})</span>
-            </div>
-            <i class="collapsible-icon" style="border-top-color: var(--dark);"></i>
-        `;
-        
-        listContainer.appendChild(item);
-        
-        // إضافة محتوى الـ accordion
-        const accordionContent = document.createElement('div');
-        accordionContent.className = 'reservation-accordion-content collapsible-content';
-        accordionContent.setAttribute('data-record-id', record.id);
-        accordionContent.innerHTML = `
-            <div class="reservation-details-wrapper">
-                ${renderReservationDetails(record)}
-                <div class="detail-actions">
-                    <button class="btn btn-primary btn-sm" onclick="showEditForm('${record.id}')">تعديل الحجز</button>
-                    <button class="btn btn-danger btn-sm" onclick="confirmCancel('${record.id}', '${resNumber}')">إلغاء الحجز</button>
-                </div>
-            </div>
-        `;
-        listContainer.appendChild(accordionContent);
-    });
-    
-    // إضافة مستمعي الأحداث لـ accordion
-    document.querySelectorAll('.reservation-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const content = this.nextElementSibling;
-            const icon = this.querySelector('.collapsible-icon');
-
-            // إغلاق أي محتوى مفتوح آخر
-            document.querySelectorAll('.reservation-item').forEach(otherItem => {
-                if (otherItem !== this) {
-                    otherItem.classList.remove('active');
-                    otherItem.querySelector('.collapsible-icon').style.transform = 'none';
-                    otherItem.nextElementSibling.classList.remove('active');
-                }
-            });
-
-            // فتح أو إغلاق المحتوى الحالي
-            this.classList.toggle('active');
-            content.classList.toggle('active');
-            if (content.classList.contains('active')) {
-                icon.style.transform = 'rotate(180deg)';
-            } else {
-                icon.style.transform = 'none';
+            // فتح القائمة الحالية إذا لم تكن مفتوحة
+            if (!isCurrentlyActive) {
+                header.classList.add('active');
+                content.classList.add('active');
             }
         });
     });
-}
 
-/**
- * دالة مساعدة لإنشاء محتوى تفاصيل الحجز (يُستخدم في العرض وفي نموذج التعديل)
- */
-function renderReservationDetails(record) {
-    const fields = record.fields;
-    const resNumber = fields[FIELD_NAMES.RES_NUMBER] || 'N/A';
-    const phone = fields[FIELD_NAMES.PHONE] || 'N/A';
-    const counter = fields[FIELD_NAMES.COUNTER] || 'N/A';
-    const amount = (fields[FIELD_NAMES.AMOUNT] !== undefined && fields[FIELD_NAMES.AMOUNT] !== null) ? `${fields[FIELD_NAMES.AMOUNT].toLocaleString()} ريال` : 'N/A';
-    const transfererName = fields[FIELD_NAMES.TRANSFERER_NAME] || 'N/A';
-    const transferDate = fields[FIELD_NAMES.TRANSFER_DATE] || 'N/A';
-    const notes = fields[FIELD_NAMES.NOTES] || 'لا توجد ملاحظات';
-    
-    // تحديد حقول العرض وتنسيقها مع الدائرة (التعديل من الطلب السابق)
-    let fieldMappings = [
-        { label: 'رقم الحجز:', value: resNumber },
-        { label: 'الاسم:', value: fields[FIELD_NAMES.GUEST_NAME] || 'N/A' },
-        { label: 'الحالة:', value: fields[FIELD_NAMES.RES_TYPE] || 'N/A' },
-        { label: 'رقم الجوال:', value: phone },
-        { label: 'الكونتر:', value: counter },
-        { label: 'المبلغ:', value: amount },
-        { label: 'المصدر:', value: fields[FIELD_NAMES.SOURCE] || 'N/A' },
-        { label: 'المحول:', value: transfererName },
-        { label: 'تاريخ التحويل:', value: transferDate },
-        // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-        // 🚨 التعديل المطلوب: نقل الدائرة إلى قبل تاريخ الوصول
-        { label: 'جناح ضيافة - عدد الغرف', value: fields[FIELD_NAMES.GUEST_COUNT] || '0' },
-        { label: `<span class="status-circle" style="background-color: ${getStatusColor(fields[FIELD_NAMES.GUEST_ARRIVAL], fields[FIELD_NAMES.GUEST_DEPARTURE])};"></span> جناح ضيافة - الوصول`, value: fields[FIELD_NAMES.GUEST_ARRIVAL] || 'N/A' }, // <-- MODIFIED GUEST ARRIVAL
-        { label: 'جناح ضيافة - المغادرة', value: fields[FIELD_NAMES.GUEST_DEPARTURE] || 'N/A' },
-        { label: 'جناح VIP - عدد الغرف', value: fields[FIELD_NAMES.VIP_COUNT] || '0' }, // <-- MODIFIED VIP COUNT (removed circle)
-        { label: `<span class="status-circle" style="background-color: ${getStatusColor(fields[FIELD_NAMES.VIP_ARRIVAL], fields[FIELD_NAMES.VIP_DEPARTURE])};"></span> جناح VIP - الوصول`, value: fields[FIELD_NAMES.VIP_ARRIVAL] || 'N/A' }, // <-- MODIFIED VIP ARRIVAL
-        { label: 'جناح VIP - المغادرة', value: fields[FIELD_NAMES.VIP_DEPARTURE] || 'N/A' },
-        { label: 'جناح ملكي - عدد الغرف', value: fields[FIELD_NAMES.ROYAL_COUNT] || '0' }, // <-- MODIFIED ROYAL COUNT (removed circle)
-        { label: `<span class="status-circle" style="background-color: ${getStatusColor(fields[FIELD_NAMES.ROYAL_ARRIVAL], fields[FIELD_NAMES.ROYAL_DEPARTURE])};"></span> جناح ملكي - الوصول`, value: fields[FIELD_NAMES.ROYAL_ARRIVAL] || 'N/A' }, // <-- MODIFIED ROYAL ARRIVAL
-        { label: 'جناح ملكي - المغادرة', value: fields[FIELD_NAMES.ROYAL_DEPARTURE] || 'N/A' },
-        { label: 'ملاحظات', value: notes }
-    ];
-    
-    // إزالة الصفوف التي لا تحتوي على معلومات أساسية (مثل 'N/A' في تواريخ الأجنحة)
-    const validMappings = fieldMappings.filter(mapping => {
-        // إذا كان رقم حجز أو اسم أو حالة أو هاتف، يجب أن يظهر
-        if (['رقم الحجز:', 'الاسم:', 'الحالة:', 'رقم الجوال:'].includes(mapping.label)) return true;
-        // إزالة تفاصيل الأجنحة إذا كان عدد الغرف صفر وتاريخ الوصول N/A
-        if (mapping.label.includes('عدد الغرف') && mapping.value === '0') {
-            const suiteType = mapping.label.split(' - ')[0];
-            const arrivalEntry = fieldMappings.find(f => f.label.includes(suiteType) && f.label.includes('الوصول'));
-            if (arrivalEntry && arrivalEntry.value === 'N/A') return false; 
-        }
-        // إظهار التواريخ إذا كانت غير N/A
-        if (mapping.label.includes('الوصول') && mapping.value === 'N/A') return false; 
-        if (mapping.label.includes('المغادرة') && mapping.value === 'N/A') return false; 
-        if (mapping.label.includes('المحول:') && mapping.value === 'N/A') return false; 
-        if (mapping.label.includes('تاريخ التحويل:') && mapping.value === 'N/A') return false; 
-        if (mapping.label.includes('المصدر:') && mapping.value === 'N/A') return false; 
-        if (mapping.label.includes('المبلغ:') && mapping.value === 'N/A') return false;
-        
-        return true;
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const tabName = button.getAttribute('data-tab');
+            switchTab(tabName, button);
+            
+            // ✅ تحميل الحجوزات عند فتح تبويب التعديل
+            if (tabName === 'editReservation') {
+                loadAllReservations();
+            }
+            if (tabName === 'query') {
+                loadOccupancyData();
+            }
+        });
     });
-
-    let html = '<div class="reservation-details-grid">';
     
-    validMappings.forEach(mapping => {
-        const isFullWidth = mapping.label === 'ملاحظات';
-        const notesValue = isFullWidth ? `<textarea readonly>${mapping.value}</textarea>` : mapping.value;
-        html += `
-            <div class="detail-row ${isFullWidth ? 'full-width' : ''}">
-                <div class="detail-label">${mapping.label}</div>
-                <div class="detail-value">${notesValue}</div>
-            </div>
-        `;
-    });
+    // ✅ أزرار تبويب التعديل
+    document.getElementById('closeDetailsBtn')?.addEventListener('click', closeReservationDetails);
+    document.getElementById('editReservationBtn')?.addEventListener('click', openEditForm);
+    document.getElementById('closeEditFormBtn')?.addEventListener('click', closeEditForm);
+    document.getElementById('saveEditBtn')?.addEventListener('click', saveReservationEdits);
+    
+    document.querySelector('.tab-button.active')?.click(); 
+    
+    // ✅ جميع القوائم مغلقة عند فتح الصفحة
+    
+    // ✅ أزرار صفحة الإشغال
+    const filterFromDate = document.getElementById('filterFromDate');
+    const filterToDate = document.getElementById('filterToDate');
+    const applyFilterBtn = document.getElementById('applyFilterBtn');
+    const filterTodayBtn = document.getElementById('filterTodayBtn');
+    const filterTomorrowBtn = document.getElementById('filterTomorrowBtn');
+    const filterWeekBtn = document.getElementById('filterWeekBtn');
+    const filterMonthBtn = document.getElementById('filterMonthBtn');
+    const filterAllBtn = document.getElementById('filterAllBtn');
+    
+    if (applyFilterBtn) {
+        applyFilterBtn.addEventListener('click', applyOccupancyFilter);
+    }
+    
+    if (filterTodayBtn) {
+        filterTodayBtn.addEventListener('click', () => setFilterShortcut('today'));
+    }
+    
+    if (filterTomorrowBtn) {
+        filterTomorrowBtn.addEventListener('click', () => setFilterShortcut('tomorrow'));
+    }
+    
+    if (filterWeekBtn) {
+        filterWeekBtn.addEventListener('click', () => setFilterShortcut('week'));
+    }
+    
+    if (filterMonthBtn) {
+        filterMonthBtn.addEventListener('click', () => setFilterShortcut('month'));
+    }
+    
+    if (filterAllBtn) {
+        filterAllBtn.addEventListener('click', () => setFilterShortcut('all'));
+    }
 
-    html += '</div>';
-    return html;
-}
+    // تم حذف الكود الذي كان يفتح القوائم تلقائياً
+
+});
+
+// ========================================
+// وظائف صفحة الإشغال
+// ========================================
+
+let occupancyData = [];
 
 /**
- * وظيفة عرض نموذج التعديل
+ * تحميل بيانات الإشغال لـ 50 يوم قادمة
  */
-function showEditForm(recordId) {
-    const form = document.getElementById('editReservationForm');
-    const records = JSON.parse(localStorage.getItem('reservations_cache') || '[]');
-    const record = records.find(r => r.id === recordId);
+async function loadOccupancyData() {
+    const loadingDiv = document.getElementById('loadingOccupancy');
+    const tableDiv = document.getElementById('occupancyTable');
     
-    if (!record) {
-        showStatus('❌ لم يتم العثور على بيانات الحجز للتعديل.', 'error', 'editReservationForm');
-        return;
-    }
-    
-    const fields = record.fields;
-
-    // ملء حقول النموذج بالبيانات الحالية
-    form.setAttribute('data-record-id', recordId);
-    form.elements['resNumber_edit'].value = fields[FIELD_NAMES.RES_NUMBER] || '';
-    form.elements['guestName_edit'].value = fields[FIELD_NAMES.GUEST_NAME] || '';
-    form.elements['phone_edit'].value = fields[FIELD_NAMES.PHONE] || '';
-    form.elements['counter_edit'].value = fields[FIELD_NAMES.COUNTER] || '';
-    form.elements['type_edit'].value = fields[FIELD_NAMES.RES_TYPE] || 'مؤكد';
-    form.elements['amount_edit'].value = fields[FIELD_NAMES.AMOUNT] || '';
-    form.elements['source_edit'].value = fields[FIELD_NAMES.SOURCE] || '';
-    form.elements['transfererName_edit'].value = fields[FIELD_NAMES.TRANSFERER_NAME] || '';
-    form.elements['currentDate_edit'].value = fields[FIELD_NAMES.TRANSFER_DATE] || '';
-    form.elements['notes_edit'].value = fields[FIELD_NAMES.NOTES] || '';
-
-    // ملء تفاصيل الأجنحة
-    form.elements['guestSuiteCount_edit'].value = fields[FIELD_NAMES.GUEST_COUNT] || '';
-    form.elements['guestArrival_edit'].value = fields[FIELD_NAMES.GUEST_ARRIVAL] || '';
-    form.elements['guestDeparture_edit'].value = fields[FIELD_NAMES.GUEST_DEPARTURE] || '';
-    form.elements['vipSuiteCount_edit'].value = fields[FIELD_NAMES.VIP_COUNT] || '';
-    form.elements['vipArrival_edit'].value = fields[FIELD_NAMES.VIP_ARRIVAL] || '';
-    form.elements['vipDeparture_edit'].value = fields[FIELD_NAMES.VIP_DEPARTURE] || '';
-    form.elements['royalSuiteCount_edit'].value = fields[FIELD_NAMES.ROYAL_COUNT] || '';
-    form.elements['royalArrival_edit'].value = fields[FIELD_NAMES.ROYAL_ARRIVAL] || '';
-    form.elements['royalDeparture_edit'].value = fields[FIELD_NAMES.ROYAL_DEPARTURE] || '';
-
-    // إظهار النموذج
-    form.classList.remove('hidden');
-    document.getElementById('editReservation').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    
-    // إخفاء أي رسالة حالة سابقة
-    showStatus('', 'info', 'editReservationForm', false);
-    
-    // تحديث ملخص الأجنحة
-    updateSuiteSummary('edit', 'guest');
-    updateSuiteSummary('edit', 'vip');
-    updateSuiteSummary('edit', 'royal');
-}
-
-
-/**
- * دالة تأكيد الإلغاء
- */
-function confirmCancel(recordId, resNumber) {
-    if (confirm(`هل أنت متأكد من إلغاء الحجز رقم: ${resNumber}؟`)) {
-        updateReservation(recordId, 'cancel');
-    }
-}
-
-// ===============================================
-// 8. وظيفة تحديث الإشغال (Occupancy)
-// ===============================================
-
-async function loadOccupancy(startDate = null, endDate = null) {
-    const tableBody = document.getElementById('occupancyTableBody');
-    const loadingMessage = document.getElementById('loadingOccupancy');
-    const summaryTotal = document.getElementById('totalSummary');
-    const summaryGuest = document.getElementById('guestSummary');
-    const summaryVip = document.getElementById('vipSummary');
-    const summaryRoyal = document.getElementById('royalSummary');
-    const table = document.getElementById('occupancyTable');
-    
-    loadingMessage.classList.remove('hidden');
-    table.classList.add('hidden');
-    tableBody.innerHTML = '';
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    // تحديد التواريخ الافتراضية إذا لم يتم تمريرها
-    if (!startDate) {
-        startDate = today.toISOString().substring(0, 10);
-    }
-    if (!endDate) {
-        // نهاية فترة 60 يوماً
-        const futureDate = new Date();
-        futureDate.setDate(today.getDate() + 59);
-        endDate = futureDate.toISOString().substring(0, 10);
-    }
-    
-    // تحديث حقول الفلترة
-    document.getElementById('occupancyStart').value = startDate;
-    document.getElementById('occupancyEnd').value = endDate;
-
-
-    // 1. جلب جميع الحجوزات النشطة التي تتداخل مع الفترة المطلوبة
-    let records;
     try {
-        console.log('🔄 جلب بيانات الإشغال...');
+        loadingDiv.classList.remove('hidden');
+        tableDiv.classList.add('hidden');
         
-        // جلب الحقول المطلوبة لجميع الأجنحة وحالة الحجز فقط
-        const fieldsQuery = [
-            FIELD_NAMES.RES_TYPE,
-            FIELD_NAMES.GUEST_COUNT, FIELD_NAMES.GUEST_ARRIVAL, FIELD_NAMES.GUEST_DEPARTURE,
-            FIELD_NAMES.VIP_COUNT, FIELD_NAMES.VIP_ARRIVAL, FIELD_NAMES.VIP_DEPARTURE,
-            FIELD_NAMES.ROYAL_COUNT, FIELD_NAMES.ROYAL_ARRIVAL, FIELD_NAMES.ROYAL_DEPARTURE
-        ].map(name => `fields[]=${name}`).join('&');
-        
-        // 🚨 المنطق المصحح لفلترة الإشغال: يجب أن نرى الحجوزات التي تبدأ قبل نهاية الفترة وتنتهي بعد بداية الفترة
-        const filterFormula = `AND(` +
-            `OR(` + 
-                `IS_BEFORE({GUEST_ARRIVAL}, '${endDate}'), IS_BEFORE({VIP_ARRIVAL}, '${endDate}'), IS_BEFORE({ROYAL_ARRIVAL}, '${endDate}')` +
-            `),` +
-            `OR(` + 
-                `IS_AFTER({GUEST_DEPARTURE}, '${startDate}'), IS_AFTER({VIP_DEPARTURE}, '${startDate}'), IS_AFTER({ROYAL_DEPARTURE}, '${startDate}')` +
-            `),` +
-            `{RES_TYPE} != 'ملغي'` + // استثناء الملغاة
-        `)`;
-        
-        const response = await fetch(`${AIRTABLE_API_URL}?${fieldsQuery}&filterByFormula=${encodeURIComponent(filterFormula)}`, {
+        // جلب جميع الحجوزات
+        const response = await fetch(AIRTABLE_API_URL, {
             headers: {
                 'Authorization': `Bearer ${AIRTABLE_API_KEY}`
             }
         });
-
+        
         if (!response.ok) {
-            throw new Error(`Airtable fetch failed with status: ${response.status}`);
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const data = await response.json();
-        records = data.records;
         
-    } catch (error) {
-        console.error('❌ خطأ في تحميل بيانات الإشغال:', error);
-        loadingMessage.classList.remove('hidden');
-        loadingMessage.textContent = '❌ فشل تحميل بيانات الإشغال. يرجى التحقق من المفاتيح.';
-        return;
-    }
-
-    // 2. معالجة البيانات وتجميع الإشغال اليومي
-    const occupancyData = {};
-    const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-    
-    let currentDate = new Date(startDate);
-    const end = new Date(endDate);
-    
-    // مجموع الغرف القصوى
-    const MAX_GUEST = parseInt(APP_CONFIG.guest_capacity) || SUITE_CAPACITIES.guest;
-    const MAX_VIP = parseInt(APP_CONFIG.vip_capacity) || SUITE_CAPACITIES.vip;
-    const MAX_ROYAL = parseInt(APP_CONFIG.royal_capacity) || SUITE_CAPACITIES.royal;
-    const MAX_TOTAL = MAX_GUEST + MAX_VIP + MAX_ROYAL;
-
-    let maxTotalOccupied = 0;
-    
-    while (currentDate <= end) {
-        const dateString = currentDate.toISOString().substring(0, 10);
-        const dayOfWeek = dayNames[currentDate.getDay()];
+        // إنشاء خريطة للإشغال لكل يوم
+        const occupancyMap = {};
         
-        let guestOccupied = 0;
-        let vipOccupied = 0;
-        let royalOccupied = 0;
-        
-        // تصفير الوقت عند منتصف الليل
-        currentDate.setHours(0, 0, 0, 0);
-
-        records.forEach(record => {
+        // معالجة كل حجز
+        data.records.forEach(record => {
             const fields = record.fields;
             
-            // تحقق من إشغال جناح الضيافة
-            guestOccupied += getOccupancyForSuite(fields, FIELD_NAMES.GUEST_ARRIVAL, FIELD_NAMES.GUEST_DEPARTURE, FIELD_NAMES.GUEST_COUNT, currentDate);
-            // تحقق من إشغال جناح VIP
-            vipOccupied += getOccupancyForSuite(fields, FIELD_NAMES.VIP_ARRIVAL, FIELD_NAMES.VIP_DEPARTURE, FIELD_NAMES.VIP_COUNT, currentDate);
-            // تحقق من إشغال الجناح الملكي
-            royalOccupied += getOccupancyForSuite(fields, FIELD_NAMES.ROYAL_ARRIVAL, FIELD_NAMES.ROYAL_DEPARTURE, FIELD_NAMES.ROYAL_COUNT, currentDate);
+            // جناح ضيافة
+            processReservation(occupancyMap, fields[FIELD_NAMES.GUEST_ARRIVAL], fields[FIELD_NAMES.GUEST_DEPARTURE], fields[FIELD_NAMES.GUEST_COUNT] || 0, 'guest');
+            
+            // جناح VIP
+            processReservation(occupancyMap, fields[FIELD_NAMES.VIP_ARRIVAL], fields[FIELD_NAMES.VIP_DEPARTURE], fields[FIELD_NAMES.VIP_COUNT] || 0, 'vip');
+            
+            // جناح ملكي
+            processReservation(occupancyMap, fields[FIELD_NAMES.ROYAL_ARRIVAL], fields[FIELD_NAMES.ROYAL_DEPARTURE], fields[FIELD_NAMES.ROYAL_COUNT] || 0, 'royal');
         });
         
-        const totalOccupied = guestOccupied + vipOccupied + royalOccupied;
-        maxTotalOccupied = Math.max(maxTotalOccupied, totalOccupied);
-
-        occupancyData[dateString] = {
-            day: dayOfWeek,
-            guest: Math.min(guestOccupied, MAX_GUEST),
-            vip: Math.min(vipOccupied, MAX_VIP),
-            royal: Math.min(royalOccupied, MAX_ROYAL),
-            total: Math.min(totalOccupied, MAX_TOTAL)
-        };
+        // إنشاء بيانات لـ 50 يوم
+        occupancyData = [];
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
         
-        // الانتقال إلى اليوم التالي
-        currentDate.setDate(currentDate.getDate() + 1);
+        for (let i = 0; i < 50; i++) {
+            const date = new Date(today);
+            date.setDate(date.getDate() + i);
+            // استخدام التوقيت المحلي بدلاً من UTC
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const dateStr = `${year}-${month}-${day}`;
+            
+            const dayData = occupancyMap[dateStr] || { guest: 0, vip: 0, royal: 0 };
+            
+            occupancyData.push({
+                date: dateStr,
+                dayName: getDayName(date),
+                guest: dayData.guest,
+                vip: dayData.vip,
+                royal: dayData.royal,
+                total: dayData.guest + dayData.vip + dayData.royal
+            });
+        }
+        
+        // عرض البيانات
+        renderOccupancyTable();
+        updateOccupancySummary();
+        
+        // فتح الصفحة على أسبوع افتراضياً
+        setFilterShortcut('week');
+        
+        loadingDiv.classList.add('hidden');
+        tableDiv.classList.remove('hidden');
+        
+    } catch (error) {
+        console.error('Error loading occupancy data:', error);
+        loadingDiv.innerHTML = `<p class="error">❌ فشل تحميل بيانات الإشغال: ${error.message}</p>`;
     }
-    
-    // 3. عرض البيانات في الجدول
-    renderOccupancyTable(occupancyData, MAX_GUEST, MAX_VIP, MAX_ROYAL, MAX_TOTAL);
-    
-    // 4. تحديث الملخص
-    updateOccupancySummary(occupancyData, MAX_GUEST, MAX_VIP, MAX_ROYAL, MAX_TOTAL, maxTotalOccupied);
-    
-    loadingMessage.classList.add('hidden');
-    table.classList.remove('hidden');
 }
 
+/**
+ * معالجة حجز واحد وإضافته للخريطة
+ */
+function processReservation(occupancyMap, arrivalDate, departureDate, count, suiteType) {
+    if (!arrivalDate || !departureDate || !count) return;
+    
+    const arrival = new Date(arrivalDate);
+    const departure = new Date(departureDate);
+    
+    // لكل يوم في الحجز
+    for (let d = new Date(arrival); d < departure; d.setDate(d.getDate() + 1)) {
+        const dateStr = d.toISOString().split('T')[0];
+        
+        if (!occupancyMap[dateStr]) {
+            occupancyMap[dateStr] = { guest: 0, vip: 0, royal: 0 };
+        }
+        
+        occupancyMap[dateStr][suiteType] += count;
+    }
+}
 
 /**
- * دالة مساعدة لحساب الإشغال ليوم واحد لجناح معين
+ * الحصول على اسم اليوم بالعربية
  */
-function getOccupancyForSuite(fields, arrivalField, departureField, countField, targetDate) {
-    const arrivalDateStr = fields[arrivalField];
-    const departureDateStr = fields[departureField];
-    const count = parseFloat(fields[countField]) || 0;
+function getDayName(date) {
+    const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+    return days[date.getDay()];
+}
+
+/**
+ * عرض جدول الإشغال
+ */
+function renderOccupancyTable(dataToRender = null) {
+    const data = dataToRender || occupancyData;
+    const tbody = document.getElementById('occupancyTableBody');
+    tbody.innerHTML = '';
     
-    if (count === 0 || !arrivalDateStr || !departureDateStr) {
-        return 0;
+    data.forEach(day => {
+        const row = document.createElement('tr');
+        row.dataset.date = day.date;
+        
+        // التاريخ
+        const dateCell = document.createElement('td');
+        dateCell.textContent = day.date;
+        row.appendChild(dateCell);
+        
+        // اليوم
+        const dayCell = document.createElement('td');
+        dayCell.textContent = day.dayName;
+        row.appendChild(dayCell);
+        
+        // ضيافة
+        const guestCell = document.createElement('td');
+        guestCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.guest, SUITE_CAPACITIES.guest)}">${day.guest}</span>`;
+        row.appendChild(guestCell);
+        
+        // VIP
+        const vipCell = document.createElement('td');
+        vipCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.vip, SUITE_CAPACITIES.vip)}">${day.vip}</span>`;
+        row.appendChild(vipCell);
+        
+        // ملكي
+        const royalCell = document.createElement('td');
+        royalCell.innerHTML = `<span class="occupancy-cell ${getOccupancyClass(day.royal, SUITE_CAPACITIES.royal)}">${day.royal}</span>`;
+        row.appendChild(royalCell);
+        
+        // الإجمالي
+        const totalCell = document.createElement('td');
+        totalCell.innerHTML = `<span class="total-cell">${day.total}</span>`;
+        row.appendChild(totalCell);
+        
+        tbody.appendChild(row);
+    });
+}
+
+/**
+ * الحصول على فئة الإشغال (للألوان)
+ */
+function getOccupancyClass(occupied, capacity) {
+    if (occupied === 0) return 'cell-empty'; // فارغ تماماً - أحمر
+    
+    const percentage = (occupied / capacity) * 100;
+    
+    // ✅ منطق معكوس: إشغال عالي = أخضر (جيد)
+    if (percentage >= 81) return 'cell-high';    // 81-100% = أخضر
+    if (percentage >= 51) return 'cell-medium';  // 51-80% = أصفر
+    return 'cell-low';                           // 1-50% = أحمر
+}
+
+/**
+ * تحديث ملخص الإشغال
+ */
+function updateOccupancySummary(dataToRender = null) {
+    const data = dataToRender || occupancyData;
+    const daysCount = data.length;
+    let guestTotal = 0;
+    let vipTotal = 0;
+    let royalTotal = 0;
+    
+    data.forEach(day => {
+        guestTotal += day.guest;
+        vipTotal += day.vip;
+        royalTotal += day.royal;
+    });
+    
+    const guestCapacity = 14 * daysCount;
+    const vipCapacity = 4 * daysCount;
+    const royalCapacity = 2 * daysCount;
+    
+    // حساب الإجمالي
+    const totalOccupied = guestTotal + vipTotal + royalTotal;
+    const totalCapacity = guestCapacity + vipCapacity + royalCapacity;
+    
+    // تمرير daysCount للدالة
+    updateSummaryCard('guestSummary', 'guestBar', guestTotal, guestCapacity, daysCount);
+    updateSummaryCard('vipSummary', 'vipBar', vipTotal, vipCapacity, daysCount);
+    updateSummaryCard('royalSummary', 'royalBar', royalTotal, royalCapacity, daysCount);
+    updateSummaryCard('totalSummary', 'totalBar', totalOccupied, totalCapacity, daysCount);
+}
+
+/**
+ * تحديث بطاقة ملخص واحدة
+ */
+function updateSummaryCard(summaryId, barId, occupied, capacity, daysCount) {
+    const summaryDiv = document.getElementById(summaryId);
+    const barDiv = document.getElementById(barId);
+    
+    const percentage = Math.round((occupied / capacity) * 100);
+    
+    // عرض مجموع الغرف-يوم (بدلاً من المتوسط)
+    summaryDiv.querySelector('.occupied').textContent = occupied;
+    summaryDiv.querySelector('.total').textContent = capacity;
+    
+    const percentageSpan = summaryDiv.querySelector('.percentage');
+    percentageSpan.textContent = `${percentage}%`;
+    
+    // ✅ الألوان الشرطية - منطق معكوس: إشغال عالي = أخضر (جيد)
+    percentageSpan.className = 'percentage';
+    barDiv.className = 'summary-bar-fill';
+    barDiv.style.width = `${percentage}%`;
+    
+    let barColor;
+    if (percentage === 0) {
+        percentageSpan.classList.add('occupancy-empty');
+        barColor = '#dc3545'; // فارغ = أحمر
+    } else if (percentage <= 50) {
+        percentageSpan.classList.add('occupancy-low');
+        barColor = '#dc3545'; // 1-50% = أحمر (إشغال منخفض)
+    } else if (percentage <= 80) {
+        percentageSpan.classList.add('occupancy-medium');
+        barColor = '#ffc107'; // 51-80% = أصفر (إشغال متوسط)
+    } else {
+        percentageSpan.classList.add('occupancy-high');
+        barColor = '#28a745'; // 81-100% = أخضر (إشغال عالي - جيد)
     }
     
+    barDiv.style.backgroundColor = barColor;
+}
+
+/**
+ * الحصول على سعة الغرف حسب نوع الجناح
+ */
+function getRoomCapacity(summaryId) {
+    switch(summaryId) {
+        case 'guestSummary': return 14;
+        case 'vipSummary': return 4;
+        case 'royalSummary': return 2;
+        default: return 1;
+    }
+}
+
+/**
+ * تعيين اختصار الفترة
+ */
+function setFilterShortcut(type) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const fromInput = document.getElementById('filterFromDate');
+    const toInput = document.getElementById('filterToDate');
+    
+    // إزالة active من جميع الأزرار
+    document.querySelectorAll('.filter-shortcuts .btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // إضافة active للزر المحدد
+    const buttonMap = {
+        'today': 'filterTodayBtn',
+        'tomorrow': 'filterTomorrowBtn',
+        'week': 'filterWeekBtn',
+        'month': 'filterMonthBtn',
+        'all': 'filterAllBtn'
+    };
+    const activeButton = document.getElementById(buttonMap[type]);
+    if (activeButton) {
+        activeButton.classList.add('active');
+    }
+    
+    // دالة لتحويل التاريخ إلى نص بالتوقيت المحلي
+    const formatLocalDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+    
+    switch(type) {
+        case 'today':
+            const todayStr = formatLocalDate(today);
+            fromInput.value = todayStr;
+            toInput.value = todayStr;
+            break;
+        case 'tomorrow':
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            const tomorrowStr = formatLocalDate(tomorrow);
+            fromInput.value = tomorrowStr;
+            toInput.value = tomorrowStr;
+            break;
+        case 'week':
+            const weekEnd = new Date(today);
+            weekEnd.setDate(today.getDate() + 6);
+            fromInput.value = formatLocalDate(today);
+            toInput.value = formatLocalDate(weekEnd);
+            break;
+        case 'month':
+            const monthEnd = new Date(today);
+            monthEnd.setDate(today.getDate() + 29);
+            fromInput.value = formatLocalDate(today);
+            toInput.value = formatLocalDate(monthEnd);
+            break;
+        case 'all':
+            const fiftyDaysEnd = new Date(today);
+            fiftyDaysEnd.setDate(today.getDate() + 49);
+            fromInput.value = formatLocalDate(today);
+            toInput.value = formatLocalDate(fiftyDaysEnd);
+            break;
+    }
+    
+    applyOccupancyFilter();
+}
+
+/**
+ * تطبيق الفلترة
+ */
+function applyOccupancyFilter() {
+    const fromDate = document.getElementById('filterFromDate').value;
+    const toDate = document.getElementById('filterToDate').value;
+    
+    // إذا كان كلاهما فارغ → عرض الكل
+    if (!fromDate && !toDate) {
+        renderOccupancyTable();
+        updateOccupancySummary();
+        return;
+    }
+    
+    // فلترة البيانات
+    let filteredData = occupancyData;
+    
+    if (fromDate && toDate) {
+        // فترة محددة
+        filteredData = occupancyData.filter(day => {
+            return day.date >= fromDate && day.date <= toDate;
+        });
+    } else if (fromDate) {
+        // من تاريخ فقط
+        filteredData = occupancyData.filter(day => day.date >= fromDate);
+    } else if (toDate) {
+        // إلى تاريخ فقط
+        filteredData = occupancyData.filter(day => day.date <= toDate);
+    }
+    
+    // عرض البيانات المفلترة
+    renderOccupancyTable(filteredData);
+    updateOccupancySummary(filteredData);
+}
+
+/**
+ * حساب لون الحالة بناءً على تواريخ الوصول والمغادرة
+ * @param {string} arrivalDateStr - تاريخ الوصول (YYYY-MM-DD)
+ * @param {string} departureDateStr - تاريخ المغادرة (YYYY-MM-DD)
+ * @returns {string} رمز اللون السداسي (#RRGGBB)
+ */
+function getStatusColor(arrivalDateStr, departureDateStr) {
+    // ⚪ لم يصل بعد (إذا لم تتوفر التواريخ)
+    if (!arrivalDateStr || !departureDateStr) {
+        return '#9e9e9e'; 
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // تحويل التواريخ إلى كائنات Date مع التأكد من أنها تبدأ من منتصف الليل (لتجنب مشاكل التوقيت)
     const arrivalDate = new Date(arrivalDateStr);
     arrivalDate.setHours(0, 0, 0, 0);
     
     const departureDate = new Date(departureDateStr);
     departureDate.setHours(0, 0, 0, 0);
 
-    // إذا كان اليوم المستهدف يقع بين أو يساوي تاريخ الوصول (شاملاً) وأقل من تاريخ المغادرة
-    // (حيث أن الحجز ينتهي في بداية يوم المغادرة، لذا يجب أن يكون الإشغال قبل يوم المغادرة)
-    if (targetDate >= arrivalDate && targetDate < departureDate) {
-        return count;
+    // الحالة 1: واصل اليوم (🟡)
+    if (arrivalDate.getTime() === today.getTime()) {
+        return '#ffc107'; // 🟡 واصل اليوم (أصفر)
+    }
+
+    // الحالة 2: مغادر اليوم (🔴)
+    if (departureDate.getTime() === today.getTime()) {
+        return '#dc3545'; // 🔴 مغادر اليوم (أحمر)
+    }
+
+    // الحالة 3: مقيم حالياً (🟢)
+    // إذا كان تاريخ الوصول قبل اليوم أو يساويه، وتاريخ المغادرة بعد اليوم
+    if (arrivalDate < today && departureDate > today) {
+        return '#28a745'; // 🟢 مقيم حالياً (أخضر)
+    }
+
+    // الحالة 4: لم يصل بعد (⚪)
+    // إذا كان تاريخ الوصول بعد اليوم
+    if (arrivalDate > today) {
+        return '#9e9e9e'; // ⚪ لم يصل بعد (رمادي)
     }
     
-    return 0;
+    // حالة احتياطية (قد تكون مغادرة سابقة أو حالة غير محددة)
+    return '#9e9e9e'; 
 }
-
-
-/**
- * دالة مساعدة لإنشاء الجدول
- */
-function renderOccupancyTable(data, maxGuest, maxVip, maxRoyal, maxTotal) {
-    const tableBody = document.getElementById('occupancyTableBody');
-    tableBody.innerHTML = '';
-    
-    // دالة لتحديد الفئة بناءً على نسبة الإشغال
-    const getOccupancyClass = (occupied, total) => {
-        if (total === 0) return 'occupancy-low'; // تجنب القسمة على صفر
-        const percentage = (occupied / total) * 100;
-        if (percentage <= 25) return 'occupancy-low';
-        if (percentage <= 50) return 'occupancy-low-medium';
-        if (percentage <= 75) return 'occupancy-medium';
-        if (percentage < 100) return 'occupancy-medium-high';
-        return 'occupancy-high';
-    };
-
-    // دالة لتنسيق الخلية
-    const formatCell = (occupied, total, isTotalRow = false) => {
-        const totalText = total === 0 ? '0' : total;
-        const occupiedText = occupied === 0 ? '0' : occupied;
-        const className = getOccupancyClass(occupied, total);
-        
-        // تمكين التحديد في حالة الإشغال الزائد
-        const statusText = occupied > total ? 'فائض' : `${occupiedText} / ${totalText}`;
-        const finalClass = occupied > total ? 'occupancy-low' : className; // استخدام اللون الأحمر للفائض
-
-        return `<td class="${isTotalRow ? 'occupancy-cell' : ''} ${finalClass}">${statusText}</td>`;
-    };
-
-
-    Object.keys(data).forEach(dateString => {
-        const rowData = data[dateString];
-        const row = document.createElement('tr');
-        
-        row.innerHTML = `
-            <td>${dateString}</td>
-            <td><span class="day-name">${rowData.day}</span></td>
-            ${formatCell(rowData.guest, maxGuest)}
-            ${formatCell(rowData.vip, maxVip)}
-            ${formatCell(rowData.royal, maxRoyal)}
-            ${formatCell(rowData.total, maxTotal, true)}
-        `;
-        
-        tableBody.appendChild(row);
-    });
-}
-
-/**
- * دالة مساعدة لتحديث ملخص الإشغال العلوي
- */
-function updateOccupancySummary(data, maxGuest, maxVip, maxRoyal, maxTotal, maxTotalOccupied) {
-    
-    // دالة حساب المتوسطات والحد الأقصى للإشغال
-    const calculateStats = (key, maxCapacity) => {
-        if (maxCapacity === 0) return { maxOccupied: 0, avgOccupied: 0 };
-        
-        const allOccupied = Object.values(data).map(d => d[key]);
-        const maxOccupied = Math.max(...allOccupied);
-        const sumOccupied = allOccupied.reduce((a, b) => a + b, 0);
-        const avgOccupied = sumOccupied / allOccupied.length;
-        
-        return { maxOccupied, avgOccupied };
-    };
-
-    const guestStats = calculateStats('guest', maxGuest);
-    const vipStats = calculateStats('vip', maxVip);
-    const royalStats = calculateStats('royal', maxRoyal);
-
-    // دالة لتنسيق شريط التقدم
-    const renderSummaryCard = (summaryElement, maxOccupied, maxCapacity, name) => {
-        if (maxCapacity === 0) {
-            summaryElement.querySelector('.summary-value').innerHTML = `<span class="occupied">0</span> / 0 <span class="percentage">0%</span>`;
-            summaryElement.querySelector('.summary-bar-fill').style.width = '0%';
-            summaryElement.querySelector('.summary-bar-fill').style.backgroundColor = 'var(--gray-light)';
-            return;
-        }
-
-        const percentage = Math.min(100, (maxOccupied / maxCapacity) * 100);
-        const barFill = summaryElement.querySelector('.summary-bar-fill');
-        
-        // تحديد لون الشريط
-        let color = '#28a745'; // أخضر
-        if (percentage >= 100) color = '#dc3545'; // أحمر
-        else if (percentage > 70) color = '#ffc107'; // أصفر
-        
-        summaryElement.querySelector('.summary-label').textContent = name;
-        summaryElement.querySelector('.summary-value').innerHTML = `
-            <span class="occupied">${maxOccupied}</span> / <span class="total">${maxCapacity}</span>
-            <span class="percentage" style="color: ${color};">${Math.round(percentage)}%</span>
-        `;
-        barFill.style.width = `${percentage}%`;
-        barFill.style.backgroundColor = color;
-    };
-    
-    // عرض الملخصات الفردية
-    renderSummaryCard(summaryGuest, guestStats.maxOccupied, maxGuest, APP_CONFIG.guest_name_ar || 'جناح ضيافة');
-    renderSummaryCard(summaryVip, vipStats.maxOccupied, maxVip, APP_CONFIG.vip_name_ar || 'جناح VIP');
-    renderSummaryCard(summaryRoyal, royalStats.maxOccupied, maxRoyal, APP_CONFIG.royal_name_ar || 'جناح ملكي');
-
-    // عرض الملخص الإجمالي (بناءً على الحد الأقصى في الفترة)
-    const totalPercentage = Math.min(100, (maxTotalOccupied / maxTotal) * 100);
-    const totalBarFill = document.getElementById('totalBar');
-    
-    let totalColor = '#28a745'; // أخضر
-    if (totalPercentage >= 100) totalColor = '#dc3545'; // أحمر
-    else if (totalPercentage > 70) totalColor = '#ffc107'; // أصفر
-    
-    summaryTotal.innerHTML = `
-        <span class="occupied">${maxTotalOccupied}</span> / <span class="total">${maxTotal}</span>
-        <span class="percentage" style="color: ${totalColor};">${Math.round(totalPercentage)}%</span>
-    `;
-    totalBarFill.style.width = `${totalPercentage}%`;
-    totalBarFill.style.backgroundColor = totalColor;
-}
-
-// ===============================================
-// 9. تهيئة الأحداث (Event Handlers)
-// ===============================================
-
-/**
- * دالة التبديل بين التبويبات
- */
-function switchTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.remove('active');
-    });
-    document.querySelectorAll('.tab-button').forEach(button => {
-        button.classList.remove('active');
-    });
-
-    document.getElementById(tabId).classList.add('active');
-    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
-    
-    // إجراء خاص بتبويب تعديل/إلغاء حجز
-    if (tabId === 'editReservation') {
-        loadAllReservations(); 
-        document.getElementById('editReservationForm').classList.add('hidden');
-        document.getElementById('searchReservation').value = '';
-    }
-    
-    // إجراء خاص بتبويب الإشغال
-    if (tabId === 'query') {
-        loadOccupancy();
-    }
-    
-    // إخفاء نموذج التعديل في جميع الأحوال ما عدا عند الحاجة
-    if (tabId !== 'editReservation') {
-        document.getElementById('editReservationForm').classList.add('hidden');
-    }
-}
-
-/**
- * دالة تهيئة المستمعين بعد تحميل الصفحة
- */
-function initializeEventListeners() {
-    
-    // تبديل التبويبات
-    document.querySelectorAll('.tab-button').forEach(button => {
-        button.addEventListener('click', (e) => switchTab(e.target.dataset.tab));
-    });
-
-    // تهيئة أقسام Collapsible
-    document.querySelectorAll('.collapsible-header').forEach(header => {
-        header.addEventListener('click', function() {
-            this.classList.toggle('active');
-            this.nextElementSibling.classList.toggle('active');
-        });
-    });
-
-    // تهيئة نموذج الحجز الجديد
-    const newForm = document.getElementById('newReservationForm');
-    newForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        saveNewReservation();
-    });
-    
-    // تهيئة نموذج التعديل
-    const editForm = document.getElementById('editReservationForm');
-    editForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const recordId = this.getAttribute('data-record-id');
-        if (recordId) {
-            updateReservation(recordId, 'update');
-        }
-    });
-    
-    // تهيئة أزرار الإجراءات في نموذج التعديل
-    document.getElementById('updateAndSmsBtn').addEventListener('click', function() {
-        const recordId = editForm.getAttribute('data-record-id');
-        if (recordId) {
-            updateReservation(recordId, 'updateAndSms');
-        }
-    });
-
-    // إلغاء نموذج التعديل
-    document.getElementById('cancelEditBtn').addEventListener('click', function() {
-        editForm.classList.add('hidden');
-        showStatus('', 'info', 'editReservationForm', false);
-    });
-
-    // تهيئة حقول التاريخ والعدد في نماذج الحجز
-    const suiteFields = ['guest', 'vip', 'royal'];
-    ['new', 'edit'].forEach(prefix => {
-        suiteFields.forEach(suiteKey => {
-            const arrivalInput = document.getElementById(`${suiteKey}Arrival_${prefix}`);
-            const departureInput = document.getElementById(`${suiteKey}Departure_${prefix}`);
-            const countInput = document.getElementById(`${suiteKey}SuiteCount_${prefix}`);
-            
-            if (arrivalInput) {
-                arrivalInput.addEventListener('change', () => calculateDaysPerSuite(prefix, suiteKey));
-            }
-            if (departureInput) {
-                departureInput.addEventListener('change', () => calculateDaysPerSuite(prefix, suiteKey));
-            }
-            if (countInput) {
-                countInput.addEventListener('input', () => {
-                    updateSuiteSummary(prefix, suiteKey);
-                    if (prefix === 'new') {
-                        // لا حاجة لإعادة الحساب، فقط التحقق
-                        checkAndValidateAvailability(suiteKey, prefix);
-                    }
-                });
-            }
-        });
-    });
-    
-    // تهيئة حقل بحث الحجوزات
-    const searchInput = document.getElementById('searchReservation');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            // جلب القائمة الكاملة المفلترة مسبقاً من الـ cache
-            const allRecords = JSON.parse(localStorage.getItem('reservations_cache') || '[]')
-                               .filter(record => record.fields[FIELD_NAMES.RES_TYPE] !== 'ملغي'); // استثناء الملغاة
-            filterReservations(e.target.value, allRecords);
-        });
-    }
-    
-    // تهيئة فلاتر الإشغال
-    document.getElementById('occupancyFilterForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const start = document.getElementById('occupancyStart').value;
-        const end = document.getElementById('occupancyEnd').value;
-        loadOccupancy(start, end);
-    });
-    
-    // أزرار الاختصار لفلترة الإشغال
-    document.getElementById('filter30Days').addEventListener('click', () => {
-        const today = new Date().toISOString().substring(0, 10);
-        const futureDate = new Date();
-        futureDate.setDate(futureDate.getDate() + 29);
-        const end = futureDate.toISOString().substring(0, 10);
-        loadOccupancy(today, end);
-    });
-    
-    document.getElementById('filter60Days').addEventListener('click', () => {
-        const today = new Date().toISOString().substring(0, 10);
-        const futureDate = new Date();
-        futureDate.setDate(futureDate.getDate() + 59);
-        const end = futureDate.toISOString().substring(0, 10);
-        loadOccupancy(today, end);
-    });
-    
-    // إظهار التاريخ الحالي في نموذج الحجز الجديد
-    document.getElementById('currentDate_new').value = new Date().toISOString().substring(0, 10);
-    
-    // تعطيل زر الحفظ الجديد حتى التحقق من التوفر
-    document.querySelector('#newReservationForm button[type="submit"]').disabled = true;
-
-}
-
-// ===============================================
-// 10. تشغيل التطبيق (Run)
-// ===============================================
-
-async function runApplication() {
-    // 1. تحميل الإعدادات أولاً
-    APP_CONFIG = await loadConfig();
-    
-    // 2. تحديث أسماء الفنادق والأجنحة من الإعدادات
-    document.getElementById('hotel-name').textContent = APP_CONFIG.hotel_name || 'نظام إدارة الحجوزات';
-
-    // 3. تهيئة مستمعي الأحداث
-    initializeEventListeners();
-
-    // 4. تحميل البيانات الأولية (تحميل الإشغال والتبديل إليه)
-    switchTab('query'); // البدء بتبويب الإشغال لعدم تأخير بدء التشغيل
-    
-    // 5. ضبط قيم الأجنحة القصوى من الإعدادات
-    SUITE_CAPACITIES.guest = parseInt(APP_CONFIG.guest_capacity) || SUITE_CAPACITIES.guest;
-    SUITE_CAPACITIES.vip = parseInt(APP_CONFIG.vip_capacity) || SUITE_CAPACITIES.vip;
-    SUITE_CAPACITIES.royal = parseInt(APP_CONFIG.royal_capacity) || SUITE_CAPACITIES.royal;
-}
-
-document.addEventListener('DOMContentLoaded', runApplication);
