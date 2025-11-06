@@ -1122,3 +1122,21 @@ p[id$="_validation_new"] {
     gap: 6px;
     flex-wrap: wrap; /* ✅ يضمن عدم اختفاءها على الشاشات الواسعة */
 }
+    .status-circle {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.2); /* ✅ اجعلها بارزة في اللابتوب */
+    box-shadow: 0 0 2px rgba(0,0,0,0.4);   /* ✅ لإبراز اللون على الخلفية */
+    flex-shrink: 0;
+}
+.reservation-item-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    overflow: visible; /* ✅ لمنع قصّ الدوائر */
+}
+
