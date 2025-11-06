@@ -828,11 +828,11 @@ allReservations = data.records.filter(reservation => {
             
             // ✅ تحديد لون الحالة
             const departureDate = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE] || reservation.fields[FIELD_NAMES.VIP_DEPARTURE] || reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
-            const statusBadge = getStatusBadge(arrivalDate, departureDate);
+            const statusColor = getStatusColor(arrivalDate, departureDate);
             
             headerDiv.innerHTML = `
                 <div class="reservation-item-info">
-                    ${statusBadge}
+                    <span class="status-circle" style="background-color: ${statusColor};"></span>
                     <span class="reservation-number">${arrivalDate}</span>
                     <span class="reservation-type ${typeClass}">${resType}</span>
                     <span class="reservation-guest">${guestName}</span>
@@ -873,16 +873,16 @@ allReservations = data.records.filter(reservation => {
             detailsHTML += `<div class="detail-row"><span class="detail-label">المبلغ:</span><span class="detail-value">${amount}</span></div>`;
             
             if (guestCount) {
-                const guestBadge = getStatusBadge(arrivalDate, guestDeparture);
-                detailsHTML += `<div class="detail-row"><span class="detail-label">${guestBadge} جناح ضيافة:</span><span class="detail-value">${guestCount} غرف (${arrivalDate} ← ${guestDeparture})</span></div>`;
+                const guestColor = getStatusColor(arrivalDate, guestDeparture);
+                detailsHTML += `<div class="detail-row"><span class="detail-label"><span class="status-dot" style="background-color:${guestColor}"></span> جناح ضيافة:</span><span class="detail-value">${guestCount} غرف (${arrivalDate} ← ${guestDeparture})</span></div>`;
             }
             if (vipCount) {
-                const vipBadge = getStatusBadge(vipArrival, vipDeparture);
-                detailsHTML += `<div class="detail-row"><span class="detail-label">${vipBadge} جناح VIP:</span><span class="detail-value">${vipCount} غرف (${vipArrival} ← ${vipDeparture})</span></div>`;
+                const vipColor = getStatusColor(vipArrival, vipDeparture);
+                detailsHTML += `<div class="detail-row"><span class="detail-label"><span class="status-dot" style="background-color:${vipColor}"></span> جناح VIP:</span><span class="detail-value">${vipCount} غرف (${vipArrival} ← ${vipDeparture})</span></div>`;
             }
             if (royalCount) {
-                const royalBadge = getStatusBadge(royalArrival, royalDeparture);
-                detailsHTML += `<div class="detail-row"><span class="detail-label">${royalBadge} جناح ملكي:</span><span class="detail-value">${royalCount} غرف (${royalArrival} ← ${royalDeparture})</span></div>`;
+                const royalColor = getStatusColor(royalArrival, royalDeparture);
+                detailsHTML += `<div class="detail-row"><span class="detail-label"><span class="status-dot" style="background-color:${royalColor}"></span> جناح ملكي:</span><span class="detail-value">${royalCount} غرف (${royalArrival} ← ${royalDeparture})</span></div>`;
             }
             if (notes) {
                 detailsHTML += `<div class="detail-row full-width"><span class="detail-label">ملاحظات:</span><span class="detail-value">${notes}</span></div>`;
