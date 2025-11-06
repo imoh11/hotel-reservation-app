@@ -830,28 +830,27 @@ allReservations = data.records.filter(reservation => {
             const departureDate = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE] || reservation.fields[FIELD_NAMES.VIP_DEPARTURE] || reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
             const statusColor = getStatusColor(arrivalDate, departureDate);
             
-           // حساب ألوان كل جناح على حدة (إن وجدت)
-const colors = [];
-if (reservation.fields[FIELD_NAMES.GUEST_ARRIVAL]) {
-    colors.push(getStatusColor(
-        reservation.fields[FIELD_NAMES.GUEST_ARRIVAL],
-        reservation.fields[FIELD_NAMES.GUEST_DEPARTURE]
-    ));
-}
-if (reservation.fields[FIELD_NAMES.VIP_ARRIVAL]) {
-    colors.push(getStatusColor(
-        reservation.fields[FIELD_NAMES.VIP_ARRIVAL],
-        reservation.fields[FIELD_NAMES.VIP_DEPARTURE]
-    ));
-}
-if (reservation.fields[FIELD_NAMES.ROYAL_ARRIVAL]) {
-    colors.push(getStatusColor(
-        reservation.fields[FIELD_NAMES.ROYAL_ARRIVAL],
-        reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE]
-    ));
+        // حساب التواريخ والألوان لكل جناح
+const suitesData = [
+    { arr: reservation.fields[FIELD_NAMES.GUEST_ARRIVAL], dep: reservation.fields[FIELD_NAMES.GUEST_DEPARTURE] },
+    { arr: reservation.fields[FIELD_NAMES.VIP_ARRIVAL], dep: reservation.fields[FIELD_NAMES.VIP_DEPARTURE] },
+    { arr: reservation.fields[FIELD_NAMES.ROYAL_ARRIVAL], dep: reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE] }
+].filter(s => s.arr && s.dep); // فقط الأجنحة التي بها تواريخ
+
+let colors = [];
+let dates = suitesData.map(s => `${s.arr}-${s.dep}`);
+
+// ✅ إن كانت جميع التواريخ متطابقة → دائرة واحدة فقط
+const allEqual = dates.length > 0 && dates.every(d => d === dates[0]);
+
+if (allEqual) {
+    const color = getStatusColor(suitesData[0].arr, suitesData[0].dep);
+    colors = [color];
+} else {
+    // تواريخ مختلفة → دائرة لكل جناح
+    colors = suitesData.map(s => getStatusColor(s.arr, s.dep));
 }
 
-// إنشاء عدة دوائر حسب عدد التواريخ المتعارضة
 const circlesHTML = colors.map(c => `<span class="status-circle" style="background-color:${c};"></span>`).join('');
 
 headerDiv.innerHTML = `
@@ -865,6 +864,7 @@ headerDiv.innerHTML = `
         <span class="accordion-arrow">▼</span>
     </div>
 `;
+
 
             
             // التفاصيل (مخفية بشكل افتراضي)
