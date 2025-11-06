@@ -344,31 +344,21 @@ body {
  
 #phone_new {
     direction: rtl; 
-    text-align: right; 
-}
-
-/* تنسيق رسائل التحقق من التوفر */
-p[id$="_validation_new"] {
     text-align: center;
-    margin: 10px auto;
-    max-width: 100%;
 }
 
-
-/* ===============================================
-   تنسيق قائمة الحجوزات وتفاصيلها
-   =============================================== */
-
-.reservations-list-container {
-    padding: 20px;
+/* ========================================
+   قائمة الحجوزات (تعديل / إلغاء)
+   ======================================== */
+#searchReservation {
+    margin-bottom: 20px;
 }
 
-.reservations-list-container h3 {
-    margin-bottom: 15px;
-    color: var(--primary);
+#reservationsList {
+    margin-top: 20px;
 }
 
-.loading-message {
+.empty-message {
     text-align: center;
     padding: 20px;
     color: var(--gray);
@@ -410,9 +400,6 @@ p[id$="_validation_new"] {
 }
 
 .reservation-type {
-    font-size: 0.65rem; /* تصغير خط حالة الحجز */
-}
-.reservation-type {
     padding: 4px 10px;
     border-radius: 4px;
     font-size: 0.75rem;
@@ -436,138 +423,17 @@ p[id$="_validation_new"] {
 
 .reservation-guest {
     color: var(--gray);
-    font-size: 0.75rem;  /* ✅ توحيد مع باقي الموقع */
+    font-size: 0.75rem; /* ✅ توحيد مع باقي الموقع */
 }
 
-.reservation-details {
-    padding: 20px;
-    background: #f9f9f9;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-}
-
-.details-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--gray-light);
-}
-
-.details-header h3 {
-    margin: 0;
-    color: var(--primary);
-}
-
-.details-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.detail-item {
-    padding: 10px;
-    background: #f8f9fa;
-    border-radius: var(--border-radius);
-}
-
-.detail-label {
-    font-size: 0.75rem;
-    color: var(--gray);
-    margin-bottom: 5px;
-}
-
-.detail-value {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--dark);
-}
-
-.edit-form {
-    padding: 20px;
-    background: #f9f9f9;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-}
-
-.edit-form label,
-.edit-form input,
-.edit-form select,
-.edit-form textarea,
-.edit-form h4 {
-    font-size: 0.875rem !important;  /* ✅ توحيد حجم الخط */
-}
-
-.edit-form h4 {
-    font-size: 0.95rem !important;  /* ✅ العناوين أكبر قليلاً */
-}
-
-.hidden {
-    display: none !important;
-}
-
-
-
-/* ===================================
-   Reservation Accordion Styles
-   =================================== */
-
-.reservation-accordion {
-    margin-bottom: 10px;
-    border: 1px solid #e0e0e0;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    background: #f5f5f5;
-}
-
-.reservation-accordion-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 12px;  /* ✅ تقليل الارتفاع أكثر */
-    cursor: pointer;
-    transition: var(--transition);
-    background: #f5f5f5;
-}
-
-.reservation-accordion-header:hover {
-    background: #e8e8e8;
-}
-
-.reservation-accordion-header.active {
-    background: #e0e0e0;
-    border-bottom: 1px solid #d0d0d0;
-}
-
-.reservation-actions {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-
-
-.accordion-arrow {
-    font-size: 0.8rem;
-    color: var(--gray);
-    transition: transform 0.3s ease;
-}
-
-.reservation-accordion-header.active .accordion-arrow {
-    transform: rotate(180deg);
-}
-
+/* تنسيق التفاصيل الموسعة داخل الـ Accordion */
 .reservation-accordion-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-    background: #f9f9f9;
+    background: #ffffff;
+    padding: 0;
 }
 
-.reservation-accordion-content.active {
-    max-height: 600px;  /* ✅ زيادة قليلة للمحتوى */
+.reservation-details-wrapper {
+    max-height: 600px; /* ✅ زيادة قليلة للمحتوى */
     padding: 15px;
 }
 
@@ -577,12 +443,12 @@ p[id$="_validation_new"] {
     border-top: 1px solid #f0f0f0;
     display: flex;
     justify-content: center;
-    gap: 10px;  /* ✅ مسافة بين الأزرار */
+    gap: 10px; /* ✅ مسافة بين الأزرار */
 }
 
 .detail-actions .btn {
-    min-width: 130px;  /* ✅ أصغر قليلاً */
-    font-size: 0.875rem;  /* ✅ توحيد حجم الخط */
+    min-width: 130px; /* ✅ أصغر قليلاً */
+    font-size: 0.875rem; /* ✅ توحيد حجم الخط */
 }
 
 .reservation-details-grid {
@@ -597,13 +463,12 @@ p[id$="_validation_new"] {
     gap: 10px;
     padding: 8px 10px;
     border-bottom: 1px solid #f0f0f0;
-}
+} 
 
 /* ✅ ألوان متناوبة لصفوف التفاصيل */
 .detail-row:nth-child(odd) {
     background: #ffffff;
 }
-
 .detail-row:nth-child(even) {
     background: #f8f9fa;
 }
@@ -619,153 +484,114 @@ p[id$="_validation_new"] {
 .detail-label {
     font-weight: 600;
     color: var(--gray);
-    font-size: 0.875rem;  /* ✅ توحيد مع باقي الموقع */
+    font-size: 0.875rem; /* ✅ توحيد مع باقي الموقع */
 }
 
 .detail-value {
-    color: var(--text);
-    font-size: 0.875rem;  /* ✅ توحيد مع باقي الموقع */
+    color: var(--dark); /* تعديل من var(--text) إلى var(--dark) */
+    font-size: 0.875rem; /* ✅ توحيد مع باقي الموقع */
 }
-
-
 
 /* ========================================
    صفحة الإشغال
-======================================== */
-
+   ======================================== */
 .occupancy-summary {
     margin-bottom: 30px;
-}
-
-.occupancy-summary h3 {
-    font-size: 0.95rem;
-    color: var(--primary);
-    margin-bottom: 15px;
-    font-weight: 600;
-}
-
-.summary-cards {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    background: #f9f9f9;
+    padding: 15px;
+    background: #ffffff;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
-    padding: 20px;
-}
-
-.summary-card {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    border: 1px solid #dee2e6;
-}
-
-/* بطاقة الإجمالي - عادية */
-.summary-card-total {
-    /* لا تأخذ عرض كامل */
-}
-
-.summary-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.summary-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-}
-
-.summary-label {
-    font-size: 0.875rem;
-    color: #495057;
-    font-weight: 600;
-    min-width: 150px;
-}
-
-.summary-value {
-    font-size: 0.875rem;
-    color: #212529;
     display: flex;
-    align-items: center;
-    gap: 8px;
-    flex: 1;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: space-between;
+}
+
+.summary-card {
+    flex: 1 1 200px; /* قاعدة مرنة */
+    padding: 10px;
+    border: 1px solid var(--gray-light);
+    border-radius: var(--border-radius);
 }
 
 .summary-card-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    margin-bottom: 10px;
-    gap: 15px;
-    direction: rtl;
+    margin-bottom: 8px;
+}
+
+.summary-label {
+    font-weight: 600;
+    color: var(--primary-dark);
+    font-size: 0.9rem;
+}
+
+.summary-value {
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 .summary-value .occupied {
-    font-size: 1.2rem;
     font-weight: 700;
-    color: #495057;
-}
-
-.summary-value .total {
-    color: #6c757d;
-}
-
-.summary-value .percentage {
-    font-weight: 700;
-    font-size: 0.85rem;
-    white-space: nowrap;
-    margin-left: 8px;
+    color: var(--primary);
 }
 
 .summary-bar {
-    height: 10px;
-    background: #e9ecef;
-    border-radius: 10px;
+    height: 8px;
+    background-color: var(--gray-light);
+    border-radius: 4px;
     overflow: hidden;
-    border: 1px solid #dee2e6;
 }
 
 .summary-bar-fill {
     height: 100%;
-    transition: width 0.5s ease, background-color 0.3s ease;
-    border-radius: 10px;
+    transition: width 0.5s ease;
 }
 
-/* ألوان حسب نسبة الإشغال - تدرج من أحمر إلى أخضر */
-.occupancy-empty {
-    background: #fff5f5;
-    color: #dc3545;
+.percentage {
+    font-weight: 600;
+    margin-right: 5px;
+}
+
+.occupancy-empty { color: #dc3545; }
+.occupancy-low { color: #fd7e14; }
+.occupancy-medium { color: #ffc107; }
+.occupancy-high { color: #28a745; }
+
+/* تنسيق خلايا الجدول للإشغال */
+.occupancy-cell {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    border: 1px solid transparent;
+}
+
+/* ألوان خلايا الإشغال */
+.occupancy-low { 
+    background: #f8d7da; 
+    color: #dc3545; 
     border-color: #dc3545;
 }
-
-.occupancy-low {
-    background: #fff5f5;
-    color: #dc3545;
-    border-color: #dc3545;
-}
-
-.occupancy-low-medium {
-    background: #fff4e6;
-    color: #fd7e14;
+.occupancy-low-medium { 
+    background: #fff4e6; 
+    color: #fd7e14; 
     border-color: #fd7e14;
 }
-
-.occupancy-medium {
-    background: #fffbeb;
-    color: #ffc107;
+.occupancy-medium { 
+    background: #fffbeb; 
+    color: #ffc107; 
     border-color: #ffc107;
 }
-
-.occupancy-medium-high {
-    background: #e6fffa;
-    color: #20c997;
+.occupancy-medium-high { 
+    background: #e6fffa; 
+    color: #20c997; 
     border-color: #20c997;
 }
-
-.occupancy-high {
-    background: #e6f7ed;
-    color: #28a745;
+.occupancy-high { 
+    background: #e6f7ed; 
+    color: #28a745; 
     border-color: #28a745;
 }
 
@@ -777,6 +603,7 @@ p[id$="_validation_new"] {
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
 }
+
 .filter-shortcuts {
     display: flex;
     gap: 8px;
@@ -811,228 +638,245 @@ p[id$="_validation_new"] {
 
 /* الجدول */
 .occupancy-table-container {
+    overflow-x: auto;
     background: #f9f9f9;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
-    overflow: hidden;
 }
 
 .occupancy-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.875rem;
+    text-align: right;
 }
 
-.occupancy-table thead {
-    background: var(--primary);
-    color: white;
+.occupancy-table th, .occupancy-table td {
+    padding: 10px 12px;
+    border: 1px solid #e0e0e0;
 }
 
 .occupancy-table th {
-    padding: 10px 12px;
-    text-align: center;
+    background-color: var(--primary);
+    color: white;
     font-weight: 600;
-    font-size: 0.875rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
 }
 
-.occupancy-table tbody tr {
-    border-bottom: 1px solid #f0f0f0;
-    transition: background-color 0.2s ease;
+.occupancy-table tr:nth-child(even) {
+    background-color: #f7f7f7;
 }
 
-/* ✅ ألوان متناوبة لصفوف جدول الإشغال */
-.occupancy-table tbody tr:nth-child(odd) {
+.occupancy-table tr:hover {
+    background-color: #eef;
+}
+
+
+/* تنسيقات النموذج المُعدل (edit form) */
+#editReservationForm {
+    max-width: 900px; /* توحيد العرض مع الـ container */
+    margin: 20px auto 0;
+    padding: 20px;
     background: #ffffff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
 }
 
-.occupancy-table tbody tr:nth-child(even) {
-    background: #f8f9fa;
-}
-
-.occupancy-table tbody tr:hover {
-    background: #e3f2fd !important;
-}
-
-.occupancy-table tbody tr.highlight {
-    background: #fff3cd !important;
-    animation: highlightFade 2s ease;
-}
-
-@keyframes highlightFade {
-    0% { background: #ffc107; }
-    100% { background: #fff3cd; }
-}
-
-.occupancy-table td {
-    padding: 8px 12px;
-    text-align: center;
-    font-size: 0.875rem;
-}
-
-.occupancy-table td:first-child {
-    font-weight: 600;
-    color: var(--dark);
-}
-
-.occupancy-table td:nth-child(2) {
-    color: var(--gray);
-    font-size: 0.8rem;
-}
-
-.occupancy-cell {
-    display: inline-block;
-    padding: 4px 10px;
+/* تنسيقات النموذج المصغر */
+.edit-form-mini {
+    padding: 15px;
+    border: 1px solid #ddd;
     border-radius: 4px;
-    font-weight: 600;
-    min-width: 35px;
+    margin-bottom: 15px;
+    background-color: #f9f9f9;
 }
 
-/* ✅ ألوان الخلايا - منطق معكوس */
-.cell-empty {
-    background: #f8d7da;  /* فارغ = أحمر (سيء) */
-    color: #721c24;
-}
-
-.cell-low {
-    background: #f8d7da;  /* 1-50% = أحمر (إشغال منخفض) */
-    color: #721c24;
-}
-
-.cell-medium {
-    background: #fff3cd;  /* 51-80% = أصفر (إشغال متوسط) */
-    color: #856404;
-}
-
-.cell-high {
-    background: #d4edda;  /* 81-100% = أخضر (إشغال عالي - جيد) */
-    color: #155724;
-}
-
-.occupancy-table .total-cell {
-    font-weight: 700;
+.edit-form-mini h4 {
+    margin-top: 0;
+    font-size: 0.95rem;
     color: var(--primary);
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
 }
 
-/* Responsive للجوال */
-@media (max-width: 768px) {
-    .occupancy-summary h3 {
-        font-size: 0.85rem;
+/* تعديلات للطباعة */
+@media print {
+    .header, .tabs, .tab-button, .button-group, #editReservationForm, #loadingReservations, .occupancy-filter {
+        display: none !important;
     }
-    
-    .summary-cards {
-        grid-template-columns: 1fr;
+    .container {
+        box-shadow: none;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        background: white;
     }
-    
-    .summary-card-total {
-        grid-column: 1;
+    body {
+        background: white;
+        padding: 0;
     }
-    
+    .tab-content.active {
+        display: block;
+        padding: 0;
+    }
+    #reservationsList {
+        margin-top: 0;
+    }
+    .reservation-item {
+        border: none;
+        background: none;
+        padding: 5px 0;
+    }
+    .reservation-accordion-content {
+        max-height: none !important;
+        overflow: visible !important;
+        padding: 0 !important;
+    }
+    .detail-actions {
+        display: none !important;
+    }
+    .reservation-details-wrapper {
+        max-height: none !important;
+        overflow: visible !important;
+        padding: 0;
+    }
+}
+
+/* تنسيقات للجوال (Mobile responsiveness) */
+@media (max-width: 600px) {
+    .container {
+        padding: 0;
+        box-shadow: none;
+        border-radius: 0;
+    }
+    body {
+        padding: 0;
+    }
+    .header {
+        padding: 15px 10px;
+    }
+    .tab-button {
+        padding: 10px 8px;
+        font-size: 0.75rem;
+    }
+    .tab-content {
+        padding: 10px;
+    }
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    .form-row .form-group {
+        min-width: 100%;
+    }
+    .button-group {
+        flex-direction: column;
+    }
+    .btn {
+        width: 100%;
+    }
     .summary-card {
-        padding: 12px;
+        flex: 1 1 100%;
+        margin-bottom: 10px;
     }
-    
     .summary-label {
         font-size: 0.8rem;
     }
-    
     .summary-value {
         font-size: 0.8rem;
     }
-    
     .summary-value .occupied {
         font-size: 0.95rem;
     }
-    
     .occupancy-filter {
         padding: 12px;
     }
-    
     .filter-inputs {
         flex-direction: column;
         align-items: stretch;
     }
-    
     .filter-inputs input {
         max-width: 93%;
     }
-    
     .filter-shortcuts {
         justify-content: center;
     }
-    
     .occupancy-table-container {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
-    
     .occupancy-table {
         font-size: 0.75rem;
         min-width: 100%;
     }
-    
     .occupancy-table th {
         padding: 8px 6px;
         font-size: 0.75rem;
         white-space: nowrap;
     }
-    
-    .occupancy-table td {
-        padding: 6px 4px;
-        font-size: 0.75rem;
-    }
-    
-    .occupancy-table td:first-child {
-        font-size: 0.7rem;
-        white-space: nowrap;
-    }
-    
-    .occupancy-table td:nth-child(2) {
-        font-size: 0.7rem;
-    }
-    
-    .occupancy-cell {
-        padding: 3px 6px;
-        font-size: 0.75rem;
-        min-width: 25px;
-    }
-/* =======================================================
-   تنسيق حقل الملاحظات (#notes_edit) 
-   ======================================================= */
-/* ✅ تنسيق الدائرة الصغيرة (حالة الحجز) */
-.status-dot {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    margin-left: 6px;
-    vertical-align: middle;
 }
 
-/* ✅ لتوضيح اليوم بجانب التاريخ */
-.day-name {
-    color: #777;
-    font-size: 0.9em;
-    margin-right: 4px;
+/* تنسيقات إضافية لنموذج التعديل */
+#editReservation {
+    padding-top: 0;
 }
-
-/* ✅ تحسين مظهر الصف */
-.reservation-item-info {
-    display: flex;
-    align-items: center;
+#editReservationForm {
+    margin: 0;
+    padding: 15px;
+}
+.detail-actions {
+    flex-wrap: wrap;
     gap: 8px;
 }
-
-/* ✅ عندما تكون القائمة مفتوحة */
-.reservation-accordion.active .reservation-accordion-header {
-    background-color: #f8f8f8;
+.detail-actions .btn {
+    flex: 1 1 100%;
+    min-width: auto;
 }
 
-.reservation-accordion-header {
-    cursor: pointer;
-    user-select: none;
-    transition: background-color 0.2s ease;
+#phone_edit {
+    direction: rtl;
+    text-align: center;
 }
 
+/* إصلاح مشكلة الـ iOS */
+input[type=date] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+.reservation-details-grid .detail-row {
+    grid-template-columns: 100px 1fr; /* تعديل عرض الـ label للجوال */
+}
+
+/* إخفاء شارة الحالة مؤقتاً عند تعديل النموذج */
+#editReservationForm .status-badge {
+    display: none !important;
+}
+
+/* تنسيقات للخطوط والمسافات في الـ accordion */
+.reservation-guest {
+    display: block; /* لجعل الاسم والرقم في سطرين */
+}
+.reservation-number {
+    display: block;
+}
+
+/* إضافات جديدة للنماذج */
+.input-with-icon {
+    position: relative;
+}
+.input-icon {
+    position: absolute;
+    left: 10px; /* لليمين في RTL */
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray);
+    pointer-events: none;
+}
+.input-with-icon input {
+    padding-left: 30px; /* مسافة للأيقونة */
+}
 
 
 .day-name {
@@ -1048,17 +892,6 @@ p[id$="_validation_new"] {
     /* 2. يسمح للمستخدم بتغيير حجم الحقل عمودياً فقط */
     resize: vertical; 
 }
-
-
-#notes_edit { 
-    /* 1. يحدد الارتفاع الأولي ليتطابق بصرياً مع الحقول المجاورة */
-    min-height: 200px; 
-    
-    /* 2. يسمح للمستخدم بتغيير حجم الحقل عمودياً فقط */
-    resize: vertical; 
-}
-
-
 
 
 /* ===============================================
@@ -1080,28 +913,29 @@ p[id$="_validation_new"] {
 .status-resident { /* مقيم حالياً (أخضر) */
     background-color: #d4edda;
     color: #155724;
-    border: 1px solid #c3e6cb;
 }
-
-.status-arrival { /* واصل اليوم (أصفر) */
+.status-arriving { /* واصل اليوم (أصفر) */
     background-color: #fff3cd;
     color: #856404;
-    border: 1px solid #ffeeba;
 }
-
-.status-departure { /* مغادر اليوم (أحمر) */
+.status-departing { /* مغادر اليوم (أحمر) */
     background-color: #f8d7da;
     color: #721c24;
-    border: 1px solid #f5c6cb;
 }
-
-.status-default { /* لم يصل بعد / قادم (رمادي) */
+.status-future { /* حجز مستقبلي (رمادي) */
     background-color: #e2e3e5;
     color: #383d41;
-    border: 1px solid #d6d8db;
 }
 
-.detail-label {
-    display: flex;
-    align-items: center;
+/* ===============================================
+   تنسيق دائرة الحالة (Status Circle) - لضمان الظهور على جميع الأجهزة
+   =============================================== */
+.status-circle {
+    display: inline-block;
+    width: 10px; /* تحديد الحجم */
+    height: 10px; /* تحديد الحجم */
+    border-radius: 50%; /* لجعلها دائرة */
+    margin-left: 8px; /* مسافة عن النص الذي يليها (لأنه في اليمين - RTL) */
+    vertical-align: middle; /* لمحاذاة أفضل مع النص */
+    flex-shrink: 0; /* لمنع الانكماش في بيئات العرض المرنة */
 }
