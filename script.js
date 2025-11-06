@@ -773,18 +773,8 @@ allReservations = data.records.filter(reservation => {
             // العنوان (قابل للنقر)
             const headerDiv = document.createElement('div');
             headerDiv.className = 'reservation-accordion-header';
-            
-            // ✅ تحديد لون الحالة
-            const guestDeparture = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE];
-            const vipDeparture = reservation.fields[FIELD_NAMES.VIP_DEPARTURE];
-            const royalDeparture = reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
-            
-            const departureDate = guestDeparture || vipDeparture || royalDeparture;
-            const statusColor = getStatusColor(arrivalDate, departureDate);
-            
             headerDiv.innerHTML = `
                 <div class="reservation-item-info">
-                    <span class="status-circle" style="background-color: ${statusColor};"></span>
                     <span class="reservation-number">${arrivalDate}</span>
                     <span class="reservation-type ${typeClass}">${resType}</span>
                     <span class="reservation-guest">${guestName}</span>
@@ -913,9 +903,6 @@ allReservations = data.records.filter(reservation => {
             }, 100);
         });
         
-        // ✅ إخفاء رسالة التحميل بعد انتهاء الحلقة
-        document.getElementById('loadingReservations').classList.add('hidden');
-        
     } catch (error) {
         console.error('Error loading reservations:', error);
         loadingDiv.innerHTML = `<p class="error">❌ فشل تحميل الحجوزات: ${error.message}</p>`;
@@ -1011,23 +998,13 @@ function openEditForm_OLD_DELETED(reservation) {
         { label: 'رقم الجوال', value: fields[FIELD_NAMES.PHONE] },
         { label: 'الكونتر', value: fields[FIELD_NAMES.COUNTER] },
         { label: 'المبلغ', value: fields[FIELD_NAMES.AMOUNT] },
-        // تفاصيل الأجنحة مع الدوائر الملونة
-        {
-            label: `<span class="status-circle" style="background-color: ${getStatusColor(fields[FIELD_NAMES.GUEST_ARRIVAL], fields[FIELD_NAMES.GUEST_DEPARTURE])};"></span> جناح ضيافة - عدد الغرف`,
-            value: fields[FIELD_NAMES.GUEST_COUNT]
-        },
+        { label: 'جناح ضيافة - عدد الغرف', value: fields[FIELD_NAMES.GUEST_COUNT] },
         { label: 'جناح ضيافة - الوصول', value: fields[FIELD_NAMES.GUEST_ARRIVAL] },
         { label: 'جناح ضيافة - المغادرة', value: fields[FIELD_NAMES.GUEST_DEPARTURE] },
-        {
-            label: `<span class="status-circle" style="background-color: ${getStatusColor(fields[FIELD_NAMES.VIP_ARRIVAL], fields[FIELD_NAMES.VIP_DEPARTURE])};"></span> جناح VIP - عدد الغرف`,
-            value: fields[FIELD_NAMES.VIP_COUNT]
-        },
+        { label: 'جناح VIP - عدد الغرف', value: fields[FIELD_NAMES.VIP_COUNT] },
         { label: 'جناح VIP - الوصول', value: fields[FIELD_NAMES.VIP_ARRIVAL] },
         { label: 'جناح VIP - المغادرة', value: fields[FIELD_NAMES.VIP_DEPARTURE] },
-        {
-            label: `<span class="status-circle" style="background-color: ${getStatusColor(fields[FIELD_NAMES.ROYAL_ARRIVAL], fields[FIELD_NAMES.ROYAL_DEPARTURE])};"></span> جناح ملكي - عدد الغرف`,
-            value: fields[FIELD_NAMES.ROYAL_COUNT]
-        },
+        { label: 'جناح ملكي - عدد الغرف', value: fields[FIELD_NAMES.ROYAL_COUNT] },
         { label: 'جناح ملكي - الوصول', value: fields[FIELD_NAMES.ROYAL_ARRIVAL] },
         { label: 'جناح ملكي - المغادرة', value: fields[FIELD_NAMES.ROYAL_DEPARTURE] },
         { label: 'ملاحظات', value: fields[FIELD_NAMES.NOTES] }
@@ -1865,52 +1842,4 @@ function applyOccupancyFilter() {
     // عرض البيانات المفلترة
     renderOccupancyTable(filteredData);
     updateOccupancySummary(filteredData);
-}
-
-/**
- * حساب لون الحالة بناءً على تواريخ الوصول والمغادرة
- * @param {string} arrivalDateStr - تاريخ الوصول (YYYY-MM-DD)
- * @param {string} departureDateStr - تاريخ المغادرة (YYYY-MM-DD)
- * @returns {string} رمز اللون السداسي (#RRGGBB)
- */
-function getStatusColor(arrivalDateStr, departureDateStr) {
-    // ⚪ لم يصل بعد (إذا لم تتوفر التواريخ)
-    if (!arrivalDateStr || !departureDateStr) {
-        return '#9e9e9e'; 
-    }
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    // تحويل التواريخ إلى كائنات Date مع التأكد من أنها تبدأ من منتصف الليل (لتجنب مشاكل التوقيت)
-    const arrivalDate = new Date(arrivalDateStr);
-    arrivalDate.setHours(0, 0, 0, 0);
-    
-    const departureDate = new Date(departureDateStr);
-    departureDate.setHours(0, 0, 0, 0);
-
-    // الحالة 1: واصل اليوم (🟡)
-    if (arrivalDate.getTime() === today.getTime()) {
-        return '#ffc107'; // 🟡 واصل اليوم (أصفر)
-    }
-
-    // الحالة 2: مغادر اليوم (🔴)
-    if (departureDate.getTime() === today.getTime()) {
-        return '#dc3545'; // 🔴 مغادر اليوم (أحمر)
-    }
-
-    // الحالة 3: مقيم حالياً (🟢)
-    // إذا كان تاريخ الوصول قبل اليوم أو يساويه، وتاريخ المغادرة بعد اليوم
-    if (arrivalDate < today && departureDate > today) {
-        return '#28a745'; // 🟢 مقيم حالياً (أخضر)
-    }
-
-    // الحالة 4: لم يصل بعد (⚪)
-    // إذا كان تاريخ الوصول بعد اليوم
-    if (arrivalDate > today) {
-        return '#9e9e9e'; // ⚪ لم يصل بعد (رمادي)
-    }
-    
-    // حالة احتياطية (قد تكون مغادرة سابقة أو حالة غير محددة)
-    return '#9e9e9e'; 
 }
