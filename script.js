@@ -857,6 +857,11 @@ allReservations = data.records.filter(reservation => {
             const royalCount = fields[FIELD_NAMES.ROYAL_COUNT] || '';
             const notes = fields[FIELD_NAMES.NOTES] || '';
             
+            // ✅ تعريف متغيرات المغادرة لضمان توفرها في النطاق
+            const guestDeparture = fields[FIELD_NAMES.GUEST_DEPARTURE];
+            const vipDeparture = fields[FIELD_NAMES.VIP_DEPARTURE];
+            const royalDeparture = fields[FIELD_NAMES.ROYAL_DEPARTURE];
+            
 
             
 
