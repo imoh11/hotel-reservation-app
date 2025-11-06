@@ -11,61 +11,9 @@ const AIRTABLE_CONFIG_URL = `https://api.airtable.com/v0/${BASE_ID}/${CONFIG_TAB
 // ✅ متغير عام لحفظ الإعدادات
 let APP_CONFIG = {};
 
-//// =================================================================
-// 12. تهيئة التطبيق
 // =================================================================
-
-/**
- * حساب لون الحالة بناءً على تواريخ الوصول والمغادرة
- * @param {string} arrivalDateStr - تاريخ الوصول (YYYY-MM-DD)
- * @param {string} departureDateStr - تاريخ المغادرة (YYYY-MM-DD)
- * @returns {string} رمز اللون السداسي (#RRGGBB)
- */
-function getStatusColor(arrivalDateStr, departureDateStr) {
-    // ⚪ لم يصل بعد (إذا لم تتوفر التواريخ)
-    if (!arrivalDateStr || !departureDateStr) {
-        return '#9e9e9e'; 
-    }
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    // تحويل التواريخ إلى كائنات Date مع التأكد من أنها تبدأ من منتصف الليل (لتجنب مشاكل التوقيت)
-    const arrivalDate = new Date(arrivalDateStr);
-    arrivalDate.setHours(0, 0, 0, 0);
-    
-    const departureDate = new Date(departureDateStr);
-    departureDate.setHours(0, 0, 0, 0);
-
-    // الحالة 1: واصل اليوم (🟡)
-    if (arrivalDate.getTime() === today.getTime()) {
-        return '#ffc107'; // 🟡 واصل اليوم (أصفر)
-    }
-
-    // الحالة 2: مغادر اليوم (🔴)
-    if (departureDate.getTime() === today.getTime()) {
-        return '#dc3545'; // 🔴 مغادر اليوم (أحمر)
-    }
-
-    // الحالة 3: مقيم حالياً (🟢)
-    // إذا كان تاريخ الوصول قبل اليوم أو يساويه، وتاريخ المغادرة بعد اليوم
-    if (arrivalDate < today && departureDate > today) {
-        return '#28a745'; // 🟢 مقيم حالياً (أخضر)
-    }
-
-    // الحالة 4: لم يصل بعد (⚪)
-    // إذا كان تاريخ الوصول بعد اليوم
-    if (arrivalDate > today) {
-        return '#9e9e9e'; // ⚪ لم يصل بعد (رمادي)
-    }
-    
-    // حالة احتياطية (قد تكون مغادرة سابقة أو حالة غير محددة)
-    return '#9e9e9e'; 
-}
-
+// 2. FIELD NAMES & IDS
 // =================================================================
-// 12. تهيئة التطبيق
-// ==================================================================
 
 // Field Names (for reading from Airtable)
 const FIELD_NAMES = {
@@ -825,13 +773,8 @@ allReservations = data.records.filter(reservation => {
             // العنوان (قابل للنقر)
             const headerDiv = document.createElement('div');
             headerDiv.className = 'reservation-accordion-header';
-            
-            // ✅ تحديد لون الحالة
-            const departureDate = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE] || reservation.fields[FIELD_NAMES.VIP_DEPARTURE] || reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
-             
             headerDiv.innerHTML = `
                 <div class="reservation-item-info">
-                    <span class="status-circle" style="background-color: ${statusColor};"></span>
                     <span class="reservation-number">${arrivalDate}</span>
                     <span class="reservation-type ${typeClass}">${resType}</span>
                     <span class="reservation-guest">${guestName}</span>
@@ -852,18 +795,33 @@ allReservations = data.records.filter(reservation => {
             const counter = fields[FIELD_NAMES.COUNTER] || 'غير محدد';
             const amount = fields[FIELD_NAMES.AMOUNT] || 'غير محدد';
             const guestCount = fields[FIELD_NAMES.GUEST_COUNT] || '';
+            const guestDeparture = fields[FIELD_NAMES.GUEST_DEPARTURE] || '';
             const vipCount = fields[FIELD_NAMES.VIP_COUNT] || '';
+            const vipDeparture = fields[FIELD_NAMES.VIP_DEPARTURE] || '';
             const royalCount = fields[FIELD_NAMES.ROYAL_COUNT] || '';
+            const royalDeparture = fields[FIELD_NAMES.ROYAL_DEPARTURE] || '';
             const notes = fields[FIELD_NAMES.NOTES] || '';
             
-            // ✅ تعريف متغيرات المغادرة لضمان توفرها في النطاق
-            const guestDeparture = fields[FIELD_NAMES.GUEST_DEPARTURE];
-            const vipDeparture = fields[FIELD_NAMES.VIP_DEPARTURE];
-            const royalDeparture = fields[FIELD_NAMES.ROYAL_DEPARTURE];
-            
-
-            
-
+            // ✅ دالة لحساب لون الدائرة حسب التواريخ
+            const getStatusColor = (arrival, departure) => {
+                if (!arrival || !departure) return '#9e9e9e'; // رمادي
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const todayStr = today.toISOString().split('T')[0];
+                
+                const arrivalStr = arrival.slice(0, 10);
+                const departureStr = departure.slice(0, 10);
+                
+                if (departureStr === todayStr) {
+                    return '#dc3545'; // مغادر اليوم (أحمر)
+                } else if (arrivalStr === todayStr) {
+                    return '#ffc107'; // واصل اليوم (أصفر)
+                } else if (arrivalStr < todayStr && departureStr > todayStr) {
+                    return '#28a745'; // مقيم حالياً (أخضر)
+                }
+                return '#9e9e9e'; // لم يصل بعد (رمادي)
+            };
             
             let detailsHTML = '<div class="reservation-details-grid">';
             detailsHTML += `<div class="detail-row"><span class="detail-label">رقم الحجز:</span><span class="detail-value">${resNumber}</span></div>`;
@@ -872,7 +830,7 @@ allReservations = data.records.filter(reservation => {
             detailsHTML += `<div class="detail-row"><span class="detail-label">المبلغ:</span><span class="detail-value">${amount}</span></div>`;
             
             if (guestCount) {
-                
+                const guestColor = getStatusColor(arrivalDate, guestDeparture);
                 detailsHTML += `<div class="detail-row"><span class="detail-label"><span class="status-dot" style="background-color:${guestColor}"></span> جناح ضيافة:</span><span class="detail-value">${guestCount} غرف (${arrivalDate} ← ${guestDeparture})</span></div>`;
             }
             if (vipCount) {
@@ -944,9 +902,6 @@ allReservations = data.records.filter(reservation => {
                 }
             }, 100);
         });
-        
-        // ✅ إخفاء رسالة التحميل بعد انتهاء الحلقة
-        document.getElementById('loadingReservations').classList.add('hidden');
         
     } catch (error) {
         console.error('Error loading reservations:', error);
