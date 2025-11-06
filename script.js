@@ -773,6 +773,7 @@ allReservations = data.records.filter(reservation => {
             // العنوان (قابل للنقر)
             const headerDiv = document.createElement('div');
             headerDiv.className = 'reservation-accordion-header';
+            
             // ✅ تحديد لون الحالة
             const guestDeparture = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE];
             const vipDeparture = reservation.fields[FIELD_NAMES.VIP_DEPARTURE];
