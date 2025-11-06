@@ -830,17 +830,42 @@ allReservations = data.records.filter(reservation => {
             const departureDate = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE] || reservation.fields[FIELD_NAMES.VIP_DEPARTURE] || reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
             const statusColor = getStatusColor(arrivalDate, departureDate);
             
-            headerDiv.innerHTML = `
-                <div class="reservation-item-info">
-                    <span class="status-circle" style="background-color: ${statusColor};"></span>
-                    <span class="reservation-number">${arrivalDate}</span>
-                    <span class="reservation-type ${typeClass}">${resType}</span>
-                    <span class="reservation-guest">${guestName}</span>
-                </div>
-                <div class="reservation-actions">
-                    <span class="accordion-arrow">▼</span>
-                </div>
-            `;
+           // حساب ألوان كل جناح على حدة (إن وجدت)
+const colors = [];
+if (reservation.fields[FIELD_NAMES.GUEST_ARRIVAL]) {
+    colors.push(getStatusColor(
+        reservation.fields[FIELD_NAMES.GUEST_ARRIVAL],
+        reservation.fields[FIELD_NAMES.GUEST_DEPARTURE]
+    ));
+}
+if (reservation.fields[FIELD_NAMES.VIP_ARRIVAL]) {
+    colors.push(getStatusColor(
+        reservation.fields[FIELD_NAMES.VIP_ARRIVAL],
+        reservation.fields[FIELD_NAMES.VIP_DEPARTURE]
+    ));
+}
+if (reservation.fields[FIELD_NAMES.ROYAL_ARRIVAL]) {
+    colors.push(getStatusColor(
+        reservation.fields[FIELD_NAMES.ROYAL_ARRIVAL],
+        reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE]
+    ));
+}
+
+// إنشاء عدة دوائر حسب عدد التواريخ المتعارضة
+const circlesHTML = colors.map(c => `<span class="status-circle" style="background-color:${c};"></span>`).join('');
+
+headerDiv.innerHTML = `
+    <div class="reservation-item-info">
+        ${circlesHTML}
+        <span class="reservation-number">${arrivalDate}</span>
+        <span class="reservation-type ${typeClass}">${resType}</span>
+        <span class="reservation-guest">${guestName}</span>
+    </div>
+    <div class="reservation-actions">
+        <span class="accordion-arrow">▼</span>
+    </div>
+`;
+
             
             // التفاصيل (مخفية بشكل افتراضي)
             const contentDiv = document.createElement('div');
