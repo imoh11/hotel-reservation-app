@@ -21,10 +21,10 @@ let APP_CONFIG = {};
  * @param {string} departureDateStr - تاريخ المغادرة (YYYY-MM-DD)
  * @returns {string} رمز اللون السداسي (#RRGGBB)
  */
-function getStatusBadge(arrivalDateStr, departureDateStr) {
+function getStatusColor(arrivalDateStr, departureDateStr) {
     // ⚪ لم يصل بعد (إذا لم تتوفر التواريخ)
     if (!arrivalDateStr || !departureDateStr) {
-        return `<span class="status-badge status-default">لم يصل</span>`; 
+        return '#9e9e9e'; 
     }
 
     const today = new Date();
@@ -39,28 +39,28 @@ function getStatusBadge(arrivalDateStr, departureDateStr) {
 
     // الحالة 1: واصل اليوم (🟡)
     if (arrivalDate.getTime() === today.getTime()) {
-        return `<span class="status-badge status-arrival">واصل</span>`; // 🟡 واصل اليوم (أصفر)
+        return '#ffc107'; // 🟡 واصل اليوم (أصفر)
     }
 
     // الحالة 2: مغادر اليوم (🔴)
     if (departureDate.getTime() === today.getTime()) {
-        return `<span class="status-badge status-departure">مغادر</span>`; // 🔴 مغادر اليوم (أحمر)
+        return '#dc3545'; // 🔴 مغادر اليوم (أحمر)
     }
 
     // الحالة 3: مقيم حالياً (🟢)
     // إذا كان تاريخ الوصول قبل اليوم أو يساويه، وتاريخ المغادرة بعد اليوم
     if (arrivalDate < today && departureDate > today) {
-        return `<span class="status-badge status-resident">مقيم</span>`; // 🟢 مقيم حالياً (أخضر)
+        return '#28a745'; // 🟢 مقيم حالياً (أخضر)
     }
 
     // الحالة 4: لم يصل بعد (⚪)
     // إذا كان تاريخ الوصول بعد اليوم
     if (arrivalDate > today) {
-        return `<span class="status-badge status-default">قادم</span>`; // ⚪ لم يصل بعد (رمادي)
+        return '#9e9e9e'; // ⚪ لم يصل بعد (رمادي)
     }
     
     // حالة احتياطية (قد تكون مغادرة سابقة أو حالة غير محددة)
-    return `<span class="status-badge status-default">غير محدد</span>`; 
+    return '#9e9e9e'; 
 }
 
 // =================================================================
@@ -1906,10 +1906,10 @@ function applyOccupancyFilter() {
  * @param {string} departureDateStr - تاريخ المغادرة (YYYY-MM-DD)
  * @returns {string} رمز اللون السداسي (#RRGGBB)
  */
-function getStatusBadge(arrivalDateStr, departureDateStr) {
+function getStatusColor(arrivalDateStr, departureDateStr) {
     // ⚪ لم يصل بعد (إذا لم تتوفر التواريخ)
     if (!arrivalDateStr || !departureDateStr) {
-        return `<span class="status-badge status-default">لم يصل</span>`; 
+        return '#9e9e9e'; 
     }
 
     const today = new Date();
@@ -1924,26 +1924,26 @@ function getStatusBadge(arrivalDateStr, departureDateStr) {
 
     // الحالة 1: واصل اليوم (🟡)
     if (arrivalDate.getTime() === today.getTime()) {
-        return `<span class="status-badge status-arrival">واصل</span>`; // 🟡 واصل اليوم (أصفر)
+        return '#ffc107'; // 🟡 واصل اليوم (أصفر)
     }
 
     // الحالة 2: مغادر اليوم (🔴)
     if (departureDate.getTime() === today.getTime()) {
-        return `<span class="status-badge status-departure">مغادر</span>`; // 🔴 مغادر اليوم (أحمر)
+        return '#dc3545'; // 🔴 مغادر اليوم (أحمر)
     }
 
     // الحالة 3: مقيم حالياً (🟢)
     // إذا كان تاريخ الوصول قبل اليوم أو يساويه، وتاريخ المغادرة بعد اليوم
     if (arrivalDate < today && departureDate > today) {
-        return `<span class="status-badge status-resident">مقيم</span>`; // 🟢 مقيم حالياً (أخضر)
+        return '#28a745'; // 🟢 مقيم حالياً (أخضر)
     }
 
     // الحالة 4: لم يصل بعد (⚪)
     // إذا كان تاريخ الوصول بعد اليوم
     if (arrivalDate > today) {
-        return `<span class="status-badge status-default">قادم</span>`; // ⚪ لم يصل بعد (رمادي)
+        return '#9e9e9e'; // ⚪ لم يصل بعد (رمادي)
     }
     
     // حالة احتياطية (قد تكون مغادرة سابقة أو حالة غير محددة)
-    return `<span class="status-badge status-default">غير محدد</span>`; 
+    return '#9e9e9e'; 
 }
