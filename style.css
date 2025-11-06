@@ -1105,3 +1105,20 @@ p[id$="_validation_new"] {
     display: flex;
     align-items: center;
 }
+
+.status-circle {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 4px;
+    border: 1px solid #fff;
+    box-shadow: 0 0 1px rgba(0,0,0,0.2);
+}
+
+.reservation-item-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap; /* ✅ يضمن عدم اختفاءها على الشاشات الواسعة */
+}
