@@ -1184,19 +1184,26 @@ p[id$="_validation_new"] {
     z-index: 1000 !important;
 }
 
-/* ✅ إصلاح خاص للعناصر الأب */
-.reservation-item-info,
-.detail-label {
-    font-size: 14px !important;
-    line-height: normal !important;
+/* حل نووي للدوائر */
+.status-circle::before,
+.status-dot::before {
+    content: '' !important;
+    display: inline-block !important;
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 50% !important;
+    background-color: inherit !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
 }
 
-.reservation-item-info .status-circle {
-    order: 1 !important;
-    margin-right: 10px !important;
-}
-
-.detail-label .status-dot {
-    margin-left: 8px !important;
-    margin-right: 8px !important;
+.status-circle,
+.status-dot {
+    position: relative !important;
+    width: 16px !important;
+    height: 16px !important;
+    display: inline-block !important;
+    visibility: visible !important;
 }
