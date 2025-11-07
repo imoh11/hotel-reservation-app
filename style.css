@@ -1139,31 +1139,11 @@ p[id$="_validation_new"] {
     flex-wrap: wrap;
     overflow: visible; /* ✅ لمنع قصّ الدوائر */
 }
-.status-circle {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9rem;
-    color: white;
-    margin-left: 5px;
-    box-shadow: 0 0 3px rgba(0,0,0,0.3);
-    border: 1px solid rgba(0,0,0,0.2);
-    flex-shrink: 0;
-    transition: transform 0.2s ease;
-}
-
-.status-circle:hover {
-    transform: scale(1.15);
-}
-
 .reservation-item-info {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
     overflow: visible;
+    mix-blend-mode: normal; /* ✅ يمنع بهتان اللون في الشاشات العالية التباين */
 }
-
