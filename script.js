@@ -1231,45 +1231,42 @@ function closeEditForm() {
  */
 async function saveReservationEdits() {
     if (!currentEditingReservation) return;
-    
+
     const statusDivId = 'editReservation';
-    
+
     try {
         showStatus('جاري حفظ التعديلات... ⏳', 'info', statusDivId, false);
-        
+
         const updatedFields = {
-            [FIELD_IDS.RES_TYPE]: document.getElementById('edit_type').value,
-            [FIELD_IDS.GUEST_NAME]: document.getElementById('edit_guestName').value,
-            [FIELD_IDS.PHONE]: document.getElementById('edit_phone').value,
-            [FIELD_IDS.COUNTER]: document.getElementById('edit_counter').value,
-            [FIELD_IDS.AMOUNT]: parseFloat(document.getElementById('edit_amount').value) || undefined,
-            [FIELD_IDS.NOTES]: document.getElementById('edit_notes').value || undefined,
-            [FIELD_IDS.GUEST_COUNT]: parseInt(document.getElementById('edit_guestCount').value) || undefined,
-            [FIELD_IDS.GUEST_ARRIVAL]: document.getElementById('edit_guestArrival').value || undefined,
-            [FIELD_IDS.GUEST_DEPARTURE]: document.getElementById('edit_guestDeparture').value || undefined
+            // ... (باقي الحقول)
+            [FIELD_IDS.RES_TYPE]: document.getElementById('edit_type').value, // <-- هذا هو حقل الحالة الجديد
+            // ... (باقي الحقول)
         };
         
-        // ✅ التحقق من التوفر إذا تم تغيير التواريخ
+        // 1. تحديد الحالة الجديدة
+        const newReservationType = updatedFields[FIELD_IDS.RES_TYPE];
+
+        // 2. تحديد التواريخ الجديدة
         const newArrival = updatedFields[FIELD_IDS.GUEST_ARRIVAL];
         const newDeparture = updatedFields[FIELD_IDS.GUEST_DEPARTURE];
-        
-        // إذا تم تغيير التواريخ
-        if (newArrival && newDeparture) {
+
+        // ✅ التحقق من التوفر إذا تم تغيير التواريخ وكانت الحالة الجديدة 'مؤكد'
+        // نُفترض أن 'مؤكد' هي الحالة الوحيدة التي تتطلب التحقق من التوفر.
+        const requiresAvailabilityCheck = newReservationType === 'مؤكد'; // عدّل القيمة حسب التسمية الدقيقة لديك
+
+        // إذا تم تغيير التواريخ AND (AND) كانت الحالة الجديدة تتطلب غرفة (مؤكد)
+        if (newArrival && newDeparture && requiresAvailabilityCheck) {
+            
             showStatus('جاري التحقق من التوفر... 🔍', 'info', statusDivId, false);
+            
+            // ... (بقية منطق تحديد الجناح واستدعاء getAvailableCount) ...
             
             // ✅ الحصول على نوع الجناح من الحجز الأصلي
             let suiteKey = null;
             const fields = currentEditingReservation.fields;
             
-            // التحقق من أي جناح يحتوي على بيانات
-            if (fields[FIELD_NAMES.GUEST_COUNT] > 0 || fields[FIELD_NAMES.GUEST_ARRIVAL]) {
-                suiteKey = 'guest';
-            } else if (fields[FIELD_NAMES.VIP_COUNT] > 0 || fields[FIELD_NAMES.VIP_ARRIVAL]) {
-                suiteKey = 'vip';
-            } else if (fields[FIELD_NAMES.ROYAL_COUNT] > 0 || fields[FIELD_NAMES.ROYAL_ARRIVAL]) {
-                suiteKey = 'royal';
-            }
-            
+            // ... (منطق تحديد suiteKey) ...
+
             if (!suiteKey) {
                 showStatus('❌ خطأ: لم يتم التعرف على نوع الجناح', 'error', statusDivId);
                 return;
