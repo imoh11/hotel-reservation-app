@@ -166,102 +166,57 @@ const SUITE_CONFIG = {
 /**
  * تحميل الإعدادات من جدول Config
  */
-async function saveReservationEdits() {
-    if (!currentEditingReservation) return;
-    
-    const statusDivId = 'editReservation';
-    
+async function loadConfig() {
     try {
-        showStatus('جاري حفظ التعديلات... ⏳', 'info', statusDivId, false);
+        // ✅ محاولة قراءة من localStorage أولاً (أسرع)
+        const cachedConfig = localStorage.getItem('app_config');
+        const cacheTime = localStorage.getItem('app_config_time');
+        const now = Date.now();
         
-        const updatedFields = {
-            [FIELD_IDS.RES_TYPE]: document.getElementById('edit_type').value, // **قيمة الحالة الجديدة**
-            [FIELD_IDS.GUEST_NAME]: document.getElementById('edit_guestName').value,
-            [FIELD_IDS.PHONE]: document.getElementById('edit_phone').value,
-            [FIELD_IDS.COUNTER]: document.getElementById('edit_counter').value,
-            [FIELD_IDS.AMOUNT]: parseFloat(document.getElementById('edit_amount').value) || undefined,
-            [FIELD_IDS.NOTES]: document.getElementById('edit_notes').value || undefined,
-            [FIELD_IDS.GUEST_COUNT]: parseInt(document.getElementById('edit_guestCount').value) || undefined,
-            [FIELD_IDS.GUEST_ARRIVAL]: document.getElementById('edit_guestArrival').value || undefined,
-            [FIELD_IDS.GUEST_DEPARTURE]: document.getElementById('edit_guestDeparture').value || undefined
-        };
-        
-        // 🆕 تحديد الحالة الجديدة
-        const newReservationType = updatedFields[FIELD_IDS.RES_TYPE];
-
-        // ✅ تحديد التواريخ الجديدة
-        const newArrival = updatedFields[FIELD_IDS.GUEST_ARRIVAL];
-        const newDeparture = updatedFields[FIELD_IDS.GUEST_DEPARTURE];
-        
-        // 🔑 الشرط المعدل: التحقق من التوفر يتم فقط إذا
-        // 1. تم تغيير التواريخ (موجودة).
-        // 2. كانت الحالة الجديدة هي 'مؤكد'.
-        if (newArrival && newDeparture && newReservationType === 'مؤكد') {
-            
-            showStatus('جاري التحقق من التوفر... 🔍', 'info', statusDivId, false);
-            
-            // ✅ الحصول على نوع الجناح من الحجز الأصلي
-            let suiteKey = null;
-            const fields = currentEditingReservation.fields;
-            
-            // التحقق من أي جناح يحتوي على بيانات
-            if (fields[FIELD_NAMES.GUEST_COUNT] > 0 || fields[FIELD_NAMES.GUEST_ARRIVAL]) {
-                suiteKey = 'guest';
-            } else if (fields[FIELD_NAMES.VIP_COUNT] > 0 || fields[FIELD_NAMES.VIP_ARRIVAL]) {
-                suiteKey = 'vip';
-            } else if (fields[FIELD_NAMES.ROYAL_COUNT] > 0 || fields[FIELD_NAMES.ROYAL_ARRIVAL]) {
-                suiteKey = 'royal';
-            }
-            
-            if (!suiteKey) {
-                showStatus('❌ خطأ: لم يتم التعرف على نوع الجناح', 'error', statusDivId);
-                return;
-            }
-            
-            // ⚠️ ملاحظة: يجب التأكد من استخدام COUNT الصحيح هنا (GUEST/VIP/ROYAL)
-            // بما أننا لا نعرف دلالة كل حقل، سنفترض أننا نستخدم GUEST_COUNT في هذه الحالة.
-            const requestedCount = updatedFields[FIELD_IDS.GUEST_COUNT] || 1;
-            
-            // ✅ استثناء الحجز الحالي من التحقق
-            const availableCount = await getAvailableCount(suiteKey, newArrival, newDeparture, currentEditingReservation.id);
-            
-            if (availableCount < requestedCount) {
-                showStatus(`❌ عذراً، لا يوجد غرف متاحة كافية. المتاح: ${availableCount} غرفة`, 'error', statusDivId);
-                return;
-            }
+        // إذا كان ال cache أحدث من 5 دقائق، استخدمه
+        if (cachedConfig && cacheTime && (now - parseInt(cacheTime)) < 5 * 60 * 1000) {
+            console.log('✅ تحميل الإعدادات من cache');
+            return JSON.parse(cachedConfig);
         }
         
-        // 🧹 التنظيف وإرسال البيانات
-        Object.keys(updatedFields).forEach(key => {
-            if (updatedFields[key] === undefined) delete updatedFields[key];
-        });
+        console.log('🔄 تحميل الإعدادات من Airtable...');
         
-        const response = await fetch(`${AIRTABLE_API_URL}/${currentEditingReservation.id}`, {
-            method: 'PATCH',
+        const response = await fetch(AIRTABLE_CONFIG_URL, {
             headers: {
-                'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ fields: updatedFields })
+                'Authorization': `Bearer ${AIRTABLE_API_KEY}`
+            }
         });
         
         if (!response.ok) {
-            throw new Error(`فشل حفظ التعديلات: ${response.status}`);
+            throw new Error(`فشل تحميل الإعدادات: ${response.status}`);
         }
         
-        showStatus('✅ تم حفظ التعديلات بنجاح', 'success', statusDivId);
+        const data = await response.json();
+        const config = {};
         
-        setTimeout(() => {
-            closeEditForm();
-            closeReservationDetails();
-            loadAllReservations();
-        }, 1500);
+        // ✅ تحويل الصفوف إلى object
+        data.records.forEach(record => {
+            const key = record.fields['Setting Key'];
+            const value = record.fields['Setting Value'];
+            if (key && value !== undefined) {
+                config[key] = value;
+            }
+        });
+        
+        // ✅ حفظ في localStorage
+        localStorage.setItem('app_config', JSON.stringify(config));
+        localStorage.setItem('app_config_time', now.toString());
+        
+        console.log('✅ تم تحميل الإعدادات بنجاح:', config);
+        return config;
         
     } catch (error) {
-        console.error('Error saving edits:', error);
-        showStatus(`❌ فشل حفظ التعديلات: ${error.message}`, 'error', statusDivId);
+        console.error('❌ فشل تحميل الإعدادات:', error);
+        // ✅ إرجاع قيم افتراضية
+        return getDefaultConfig();
     }
 }
+
 /**
  * إرجاع قيم افتراضية في حال فشل تحميل الإعدادات
  */
@@ -1276,42 +1231,45 @@ function closeEditForm() {
  */
 async function saveReservationEdits() {
     if (!currentEditingReservation) return;
-
+    
     const statusDivId = 'editReservation';
-
+    
     try {
         showStatus('جاري حفظ التعديلات... ⏳', 'info', statusDivId, false);
-
+        
         const updatedFields = {
-            // ... (باقي الحقول)
-            [FIELD_IDS.RES_TYPE]: document.getElementById('edit_type').value, // <-- هذا هو حقل الحالة الجديد
-            // ... (باقي الحقول)
+            [FIELD_IDS.RES_TYPE]: document.getElementById('edit_type').value,
+            [FIELD_IDS.GUEST_NAME]: document.getElementById('edit_guestName').value,
+            [FIELD_IDS.PHONE]: document.getElementById('edit_phone').value,
+            [FIELD_IDS.COUNTER]: document.getElementById('edit_counter').value,
+            [FIELD_IDS.AMOUNT]: parseFloat(document.getElementById('edit_amount').value) || undefined,
+            [FIELD_IDS.NOTES]: document.getElementById('edit_notes').value || undefined,
+            [FIELD_IDS.GUEST_COUNT]: parseInt(document.getElementById('edit_guestCount').value) || undefined,
+            [FIELD_IDS.GUEST_ARRIVAL]: document.getElementById('edit_guestArrival').value || undefined,
+            [FIELD_IDS.GUEST_DEPARTURE]: document.getElementById('edit_guestDeparture').value || undefined
         };
         
-        // 1. تحديد الحالة الجديدة
-        const newReservationType = updatedFields[FIELD_IDS.RES_TYPE];
-
-        // 2. تحديد التواريخ الجديدة
+        // ✅ التحقق من التوفر إذا تم تغيير التواريخ
         const newArrival = updatedFields[FIELD_IDS.GUEST_ARRIVAL];
         const newDeparture = updatedFields[FIELD_IDS.GUEST_DEPARTURE];
-
-        // ✅ التحقق من التوفر إذا تم تغيير التواريخ وكانت الحالة الجديدة 'مؤكد'
-        // نُفترض أن 'مؤكد' هي الحالة الوحيدة التي تتطلب التحقق من التوفر.
-        const requiresAvailabilityCheck = newReservationType === 'مؤكد'; // عدّل القيمة حسب التسمية الدقيقة لديك
-
-        // إذا تم تغيير التواريخ AND (AND) كانت الحالة الجديدة تتطلب غرفة (مؤكد)
-        if (newArrival && newDeparture && requiresAvailabilityCheck) {
-            
+        
+        // إذا تم تغيير التواريخ
+        if (newArrival && newDeparture) {
             showStatus('جاري التحقق من التوفر... 🔍', 'info', statusDivId, false);
-            
-            // ... (بقية منطق تحديد الجناح واستدعاء getAvailableCount) ...
             
             // ✅ الحصول على نوع الجناح من الحجز الأصلي
             let suiteKey = null;
             const fields = currentEditingReservation.fields;
             
-            // ... (منطق تحديد suiteKey) ...
-
+            // التحقق من أي جناح يحتوي على بيانات
+            if (fields[FIELD_NAMES.GUEST_COUNT] > 0 || fields[FIELD_NAMES.GUEST_ARRIVAL]) {
+                suiteKey = 'guest';
+            } else if (fields[FIELD_NAMES.VIP_COUNT] > 0 || fields[FIELD_NAMES.VIP_ARRIVAL]) {
+                suiteKey = 'vip';
+            } else if (fields[FIELD_NAMES.ROYAL_COUNT] > 0 || fields[FIELD_NAMES.ROYAL_ARRIVAL]) {
+                suiteKey = 'royal';
+            }
+            
             if (!suiteKey) {
                 showStatus('❌ خطأ: لم يتم التعرف على نوع الجناح', 'error', statusDivId);
                 return;
