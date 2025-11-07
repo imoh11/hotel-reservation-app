@@ -1148,3 +1148,30 @@ p[id$="_validation_new"] {
     isolation: isolate; /* ✅ يجعل الطبقات مرئية فوق الخلفية */
 }
 
+/* ضع هذا في نهاية style.css - بدون حذف أي شيء */
+
+/* إصلاح محاذاة الدوائر الملونة */
+.reservation-item-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex-wrap: nowrap !important;
+    overflow: visible !important;
+    min-width: 0 !important;
+}
+
+.status-circle {
+    display: inline-block !important;
+    width: 12px !important;
+    height: 12px !important;
+    border-radius: 50% !important;
+    flex-shrink: 0 !important;
+    order: -1 !important;
+    margin-left: 0 !important;
+    margin-right: 8px !important;
+}
+
+.reservation-number {
+    min-width: 90px !important;
+    flex-shrink: 0 !important;
+}
