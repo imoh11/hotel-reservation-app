@@ -1136,3 +1136,24 @@ p[id$="_validation_new"] {
     overflow: visible;
     isolation: isolate; /* ✅ يجعل الطبقات مرئية فوق الخلفية */
 }
+    /* إصلاح عرض الدوائر في اللابتوب */
+.status-circle {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 4px;
+    flex-shrink: 0;
+    vertical-align: middle;
+
+    /* ✅ حل مشاكل الظهور */
+    background-color: var(--circle-color, #000) !important;
+    opacity: 1 !important;
+    mix-blend-mode: normal !important;
+    filter: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    position: relative !important;
+    z-index: 5 !important;
+}
+
