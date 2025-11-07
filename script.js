@@ -1289,7 +1289,7 @@ async function saveReservationEdits() {
           return;
         }
       }
-    }
+    
 
     Object.keys(updatedFields).forEach(key => {
       if (updatedFields[key] === undefined) delete updatedFields[key];
