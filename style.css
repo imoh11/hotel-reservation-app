@@ -1148,3 +1148,19 @@ p[id$="_validation_new"] {
     isolation: isolate; /* ✅ يجعل الطبقات مرئية فوق الخلفية */
 }
     
+.reservation-item-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex-wrap: nowrap !important;
+    overflow: visible !important;
+    min-width: 0 !important;
+}
+
+.status-circle {
+    display: inline-block !important;
+    flex-shrink: 0 !important;
+    order: -1 !important;
+    margin-left: 0 !important;
+    margin-right: 5px !important;
+}
