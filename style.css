@@ -1147,32 +1147,29 @@ p[id$="_validation_new"] {
     overflow: visible;
     isolation: isolate; /* ✅ يجعل الطبقات مرئية فوق الخلفية */
 }
-    
-/* إصلاح محاذاة عناصر الحجز */
+/* تحسين توزيع المساحة */
+.reservation-accordion-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 8px 12px !important;
+    min-height: 40px !important;
+}
+
 .reservation-item-info {
     display: flex !important;
     align-items: center !important;
-    gap: 8px !important;
-    flex-wrap: nowrap !important;
-    min-width: 0 !important; /* يسمح بالتقلص */
-    overflow: visible !important; /* يمنع إخفاء المحتوى */
+    gap: 10px !important;
+    flex: 1 !important;
+    min-width: 0 !important; /* مهم للتقلص */
 }
 
-.reservation-number {
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    min-width: 80px !important; /* مساحة ثابتة للتاريخ */
-    flex-shrink: 0 !important; /* لا يتقلص */
-}
-
-.status-circle {
+/* تأكد من ظهور الدوائر */
+.reservation-item-info .status-circle {
     display: inline-block !important;
-    width: 12px !important;
-    height: 12px !important;
-    border-radius: 50% !important;
-    margin-left: 8px !important;
-    flex-shrink: 0 !important; /* مهم: لا يتقلص */
-    position: relative !important;
-    z-index: 10 !important;
-}
+    visibility: visible !important;
+    opacity: 1 !important;
+    flex-shrink: 0 !important;
+    order: -1 !important; /* تجعل الدائرة في البداية */
+}    
