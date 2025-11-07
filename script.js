@@ -1218,109 +1218,112 @@ function openEditForm() {
  * حفظ التعديلات
  */
 async function saveReservationEdits() {
-  if (!currentEditingReservation) return;
+    if (!currentEditingReservation) return;
+    
+    const statusDivId = 'editReservation';
+    
+    try {
+        showStatus('جاري حفظ التعديلات... ⏳', 'info', statusDivId, false);
+        
+        const updatedFields = {
+            [FIELD_IDS.RES_TYPE]: document.getElementById('edit_type').value,
+            [FIELD_IDS.GUEST_NAME]: document.getElementById('edit_guestName').value,
+            [FIELD_IDS.PHONE]: document.getElementById('edit_phone').value,
+            [FIELD_IDS.COUNTER]: document.getElementById('edit_counter').value,
+            [FIELD_IDS.AMOUNT]: parseFloat(document.getElementById('edit_amount').value) || undefined,
+            [FIELD_IDS.NOTES]: document.getElementById('edit_notes').value || undefined,
+            [FIELD_IDS.GUEST_COUNT]: parseInt(document.getElementById('edit_guestCount').value) || undefined,
+            [FIELD_IDS.GUEST_ARRIVAL]: document.getElementById('edit_guestArrival').value || undefined,
+            [FIELD_IDS.GUEST_DEPARTURE]: document.getElementById('edit_guestDeparture').value || undefined
+        };
 
-  const statusDivId = 'editReservation';
+        // ✅ التحقق فقط إذا تغيّر نوع الحجز من انتظار/ملغي إلى مؤكد
+        const oldType = currentEditingReservation.fields[FIELD_NAMES.RES_TYPE];
+        const newType = updatedFields[FIELD_IDS.RES_TYPE];
+        const isConfirmingNow = 
+            (oldType === "قيد الانتظار" || oldType === "ملغي") && newType === "مؤكد";
 
-  try {
-    showStatus('جاري حفظ التعديلات... ⏳', 'info', statusDivId, false);
+        if (isConfirmingNow) {
+            const newArrival = updatedFields[FIELD_IDS.GUEST_ARRIVAL];
+            const newDeparture = updatedFields[FIELD_IDS.GUEST_DEPARTURE];
 
-    const updatedFields = {
-      [FIELD_IDS.RES_TYPE]: document.getElementById('edit_type').value,
-      [FIELD_IDS.GUEST_NAME]: document.getElementById('edit_guestName').value,
-      [FIELD_IDS.PHONE]: document.getElementById('edit_phone').value,
-      [FIELD_IDS.COUNTER]: document.getElementById('edit_counter').value,
-      [FIELD_IDS.AMOUNT]: parseFloat(document.getElementById('edit_amount').value) || undefined,
-      [FIELD_IDS.NOTES]: document.getElementById('edit_notes').value || undefined,
-      [FIELD_IDS.GUEST_COUNT]: parseInt(document.getElementById('edit_guestCount').value) || undefined,
-      [FIELD_IDS.GUEST_ARRIVAL]: document.getElementById('edit_guestArrival').value || undefined,
-      [FIELD_IDS.GUEST_DEPARTURE]: document.getElementById('edit_guestDeparture').value || undefined
-    };
+            if (newArrival && newDeparture) {
+                showStatus('🔍 جاري التحقق من التوفر 🔍', 'info', statusDivId, false);
 
-    // ✅ التحقق فقط إذا تغيّر نوع الحجز من انتظار/ملغي إلى مؤكد
-    const oldType = currentEditingReservation.fields[FIELD_NAMES.RES_TYPE];
-    const newType = updatedFields[FIELD_IDS.RES_TYPE];
-    const isConfirmingNow =
-      (oldType === "قيد الانتظار" || oldType === "ملغي") &&
-      newType === "مؤكد";
+                let suiteKey = null;
+                const fields = currentEditingReservation.fields;
 
-    if (isConfirmingNow) {
-      const newArrival = updatedFields[FIELD_IDS.GUEST_ARRIVAL];
-      const newDeparture = updatedFields[FIELD_IDS.GUEST_DEPARTURE];
+                if (fields[FIELD_NAMES.GUEST_COUNT] > 0 || fields[FIELD_NAMES.GUEST_ARRIVAL]) {
+                    suiteKey = 'guest';
+                } else if (fields[FIELD_NAMES.VIP_COUNT] > 0 || fields[FIELD_NAMES.VIP_ARRIVAL]) {
+                    suiteKey = 'vip';
+                } else if (fields[FIELD_NAMES.ROYAL_COUNT] > 0 || fields[FIELD_NAMES.ROYAL_ARRIVAL]) {
+                    suiteKey = 'royal';
+                }
 
-      if (newArrival && newDeparture) {
-        showStatus('🔍 جاري التحقق من التوفر 🔍', 'info', statusDivId, false);
+                if (!suiteKey) {
+                    showStatus('❌ خطأ: لم يتم التعرف على نوع الجناح', 'error', statusDivId);
+                    return;
+                }
 
-        let suiteKey = null;
-        const fields = currentEditingReservation.fields;
+                const requestedCount =
+                    updatedFields[FIELD_IDS.GUEST_COUNT] ||
+                    updatedFields[FIELD_IDS.VIP_COUNT] ||
+                    updatedFields[FIELD_IDS.ROYAL_COUNT] ||
+                    1;
 
-        if (fields[FIELD_NAMES.GUEST_COUNT] > 0 || fields[FIELD_NAMES.GUEST_ARRIVAL]) {
-          suiteKey = 'guest';
-        } else if (fields[FIELD_NAMES.VIP_COUNT] > 0 || fields[FIELD_NAMES.VIP_ARRIVAL]) {
-          suiteKey = 'vip';
-        } else if (fields[FIELD_NAMES.ROYAL_COUNT] > 0 || fields[FIELD_NAMES.ROYAL_ARRIVAL]) {
-          suiteKey = 'royal';
+                // ✅ استثناء الحجز الحالي من التحقق
+                const availableCount = await getAvailableCount(
+                    suiteKey,
+                    newArrival,
+                    newDeparture,
+                    currentEditingReservation.id
+                );
+
+                if (availableCount < requestedCount) {
+                    showStatus(
+                        `❌ عذراً، لا يوجد غرف متاحة كافية. المتاح: ${availableCount} غرفة`,
+                        'error',
+                        statusDivId
+                    );
+                    return;
+                }
+            }
         }
 
-        if (!suiteKey) {
-          showStatus('❌ خطأ: لم يتم التعرف على نوع الجناح', 'error', statusDivId);
-          return;
+        // ✅ تنظيف الحقول من undefined
+        Object.keys(updatedFields).forEach(key => {
+            if (updatedFields[key] === undefined) delete updatedFields[key];
+        });
+
+        // ✅ إرسال التحديث إلى Airtable
+        const response = await fetch(`${AIRTABLE_API_URL}/${currentEditingReservation.id}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ fields: updatedFields })
+        });
+
+        if (!response.ok) {
+            throw new Error(`فشل حفظ التعديلات: ${response.status}`);
         }
 
-        const requestedCount =
-          updatedFields[FIELD_IDS.GUEST_COUNT] ||
-          updatedFields[FIELD_IDS.VIP_COUNT] ||
-          updatedFields[FIELD_IDS.ROYAL_COUNT] ||
-          1;
+        showStatus('✅ تم حفظ التعديلات بنجاح', 'success', statusDivId);
 
-        const availableCount = await getAvailableCount(
-          suiteKey,
-          newArrival,
-          newDeparture,
-          currentEditingReservation.id
-        );
+        setTimeout(() => {
+            closeEditForm();
+            closeReservationDetails();
+            loadAllReservations();
+        }, 1500);
 
-        if (availableCount < requestedCount) {
-          showStatus(
-            `❌ عذراً، لا يوجد غرف متاحة كافية. المتاح: ${availableCount} غرفة`,
-            'error',
-            statusDivId
-          );
-          return;
-        }
-      }
+    } catch (error) {
+        console.error('Error saving edits:', error);
+        showStatus(`❌ فشل حفظ التعديلات: ${error.message}`, 'error', statusDivId);
     }
-
-    Object.keys(updatedFields).forEach(key => {
-      if (updatedFields[key] === undefined) delete updatedFields[key];
-    });
-
-    const response = await fetch(`${AIRTABLE_API_URL}/${currentEditingReservation.id}`, {
-      method: 'PATCH',
-      headers: {
-        'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ fields: updatedFields })
-    });
-
-    if (!response.ok) {
-      throw new Error(`فشل حفظ التعديلات: ${response.status}`);
-    }
-
-    showStatus('✅ تم حفظ التعديلات بنجاح', 'success', statusDivId);
-
-    setTimeout(() => {
-      closeEditForm();
-      closeReservationDetails();
-      loadAllReservations();
-    }, 1500);
-
-  } catch (error) {
-    console.error('Error saving edits:', error);
-    showStatus(`❌ فشل حفظ التعديلات: ${error.message}`, 'error', statusDivId);
-  }
 }
+
 
 
 
