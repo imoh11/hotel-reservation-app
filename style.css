@@ -1106,26 +1106,30 @@ p[id$="_validation_new"] {
     align-items: center;
 }
 
-/* 🔧 إصلاح اختفاء الدوائر في اللابتوب */
 .status-circle {
     width: 8px;
     height: 8px;
     border-radius: 50%;
     display: inline-block;
     margin-left: 4px;
+    background-color: var(--circle-color, #000);
     flex-shrink: 0;
     vertical-align: middle;
 
-    /* ✅ الحل الذكي */
-    background-clip: content-box !important;  /* يرسم اللون داخل الحدود فقط */
-    padding: 1px;                             /* يُجبر المتصفح على رسمها فعليًا */
-    outline: 1px solid transparent;           /* يمنع الإخفاء على الخلفيات الرمادية */
-    mix-blend-mode: normal !important;        /* يعطل الدمج مع الخلفية */
-    isolation: isolate !important;            /* يعزل اللون عن الخلفية */
-    opacity: 1 !important;                    /* لا شفافية إطلاقًا */
-    transform: translateZ(0);                 /* يجبر GPU على رسم العنصر */
-    will-change: transform;                   /* تحسين عرض اللون */
+    /* ✅ إنشاء طبقة مستقلة */
+    position: relative;
+    z-index: 10;
+    isolation: isolate;
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
+
+    /* ⚙️ تثبيت اللون وعدم دمجه */
+    mix-blend-mode: normal;
+    opacity: 1;
+    box-shadow: none;
+    border: none;
 }
+
 
 
 .reservation-item-info {
