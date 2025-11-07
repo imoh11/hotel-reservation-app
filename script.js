@@ -830,7 +830,7 @@ allReservations = data.records.filter(reservation => {
             const departureDate = reservation.fields[FIELD_NAMES.GUEST_DEPARTURE] || reservation.fields[FIELD_NAMES.VIP_DEPARTURE] || reservation.fields[FIELD_NAMES.ROYAL_DEPARTURE];
             const statusColor = getStatusColor(arrivalDate, departureDate);
             
-        // حساب التواريخ والألوان لكل جناح
+// حساب التواريخ والألوان لكل جناح
 const suitesData = [
     { arr: reservation.fields[FIELD_NAMES.GUEST_ARRIVAL], dep: reservation.fields[FIELD_NAMES.GUEST_DEPARTURE] },
     { arr: reservation.fields[FIELD_NAMES.VIP_ARRIVAL], dep: reservation.fields[FIELD_NAMES.VIP_DEPARTURE] },
@@ -838,33 +838,20 @@ const suitesData = [
 ].filter(s => s.arr && s.dep);
 
 let colors = [];
-let emojis = [];
 let dates = suitesData.map(s => `${s.arr}-${s.dep}`);
 
-// ✅ إذا كانت التواريخ متطابقة → دائرة واحدة فقط
+// ✅ إذا كانت كل التواريخ متطابقة → دائرة واحدة
 const allEqual = dates.length > 0 && dates.every(d => d === dates[0]);
 
-const getEmoji = (color) => {
-    if (color === '#28a745') return '🟢'; // مقيم حالياً
-    if (color === '#dc3545') return '🔴'; // مغادر اليوم
-    if (color === '#ffc107') return '🟡'; // واصل اليوم
-    return '⚪'; // لم يصل بعد أو غير محدد
-};
-
 if (allEqual && suitesData.length > 0) {
-    const color = getStatusColor(suitesData[0].arr, suitesData[0].dep);
-    colors = [color];
-    emojis = [getEmoji(color)];
+    colors = [getStatusColor(suitesData[0].arr, suitesData[0].dep)];
 } else {
-    // تواريخ مختلفة → عدة دوائر
+    // تواريخ مختلفة → دائرة لكل جناح
     colors = suitesData.map(s => getStatusColor(s.arr, s.dep));
-    emojis = colors.map(c => getEmoji(c));
 }
 
-// ✅ HTML الدوائر مع الرموز
-const circlesHTML = colors.map((c, i) => `
-    <span class="status-circle" style="background:${c};">${emojis[i]}</span>
-`).join('');
+// ✅ HTML للدوائر الملونة فقط
+const circlesHTML = colors.map(c => `<span class="status-circle" style="background-color:${c};"></span>`).join('');
 
 headerDiv.innerHTML = `
     <div class="reservation-item-info">
@@ -877,6 +864,7 @@ headerDiv.innerHTML = `
         <span class="accordion-arrow">▼</span>
     </div>
 `;
+
 
 
 
