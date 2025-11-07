@@ -166,57 +166,102 @@ const SUITE_CONFIG = {
 /**
  * تحميل الإعدادات من جدول Config
  */
-async function loadConfig() {
+async function saveReservationEdits() {
+    if (!currentEditingReservation) return;
+    
+    const statusDivId = 'editReservation';
+    
     try {
-        // ✅ محاولة قراءة من localStorage أولاً (أسرع)
-        const cachedConfig = localStorage.getItem('app_config');
-        const cacheTime = localStorage.getItem('app_config_time');
-        const now = Date.now();
+        showStatus('جاري حفظ التعديلات... ⏳', 'info', statusDivId, false);
         
-        // إذا كان ال cache أحدث من 5 دقائق، استخدمه
-        if (cachedConfig && cacheTime && (now - parseInt(cacheTime)) < 5 * 60 * 1000) {
-            console.log('✅ تحميل الإعدادات من cache');
-            return JSON.parse(cachedConfig);
+        const updatedFields = {
+            [FIELD_IDS.RES_TYPE]: document.getElementById('edit_type').value, // **قيمة الحالة الجديدة**
+            [FIELD_IDS.GUEST_NAME]: document.getElementById('edit_guestName').value,
+            [FIELD_IDS.PHONE]: document.getElementById('edit_phone').value,
+            [FIELD_IDS.COUNTER]: document.getElementById('edit_counter').value,
+            [FIELD_IDS.AMOUNT]: parseFloat(document.getElementById('edit_amount').value) || undefined,
+            [FIELD_IDS.NOTES]: document.getElementById('edit_notes').value || undefined,
+            [FIELD_IDS.GUEST_COUNT]: parseInt(document.getElementById('edit_guestCount').value) || undefined,
+            [FIELD_IDS.GUEST_ARRIVAL]: document.getElementById('edit_guestArrival').value || undefined,
+            [FIELD_IDS.GUEST_DEPARTURE]: document.getElementById('edit_guestDeparture').value || undefined
+        };
+        
+        // 🆕 تحديد الحالة الجديدة
+        const newReservationType = updatedFields[FIELD_IDS.RES_TYPE];
+
+        // ✅ تحديد التواريخ الجديدة
+        const newArrival = updatedFields[FIELD_IDS.GUEST_ARRIVAL];
+        const newDeparture = updatedFields[FIELD_IDS.GUEST_DEPARTURE];
+        
+        // 🔑 الشرط المعدل: التحقق من التوفر يتم فقط إذا
+        // 1. تم تغيير التواريخ (موجودة).
+        // 2. كانت الحالة الجديدة هي 'مؤكد'.
+        if (newArrival && newDeparture && newReservationType === 'مؤكد') {
+            
+            showStatus('جاري التحقق من التوفر... 🔍', 'info', statusDivId, false);
+            
+            // ✅ الحصول على نوع الجناح من الحجز الأصلي
+            let suiteKey = null;
+            const fields = currentEditingReservation.fields;
+            
+            // التحقق من أي جناح يحتوي على بيانات
+            if (fields[FIELD_NAMES.GUEST_COUNT] > 0 || fields[FIELD_NAMES.GUEST_ARRIVAL]) {
+                suiteKey = 'guest';
+            } else if (fields[FIELD_NAMES.VIP_COUNT] > 0 || fields[FIELD_NAMES.VIP_ARRIVAL]) {
+                suiteKey = 'vip';
+            } else if (fields[FIELD_NAMES.ROYAL_COUNT] > 0 || fields[FIELD_NAMES.ROYAL_ARRIVAL]) {
+                suiteKey = 'royal';
+            }
+            
+            if (!suiteKey) {
+                showStatus('❌ خطأ: لم يتم التعرف على نوع الجناح', 'error', statusDivId);
+                return;
+            }
+            
+            // ⚠️ ملاحظة: يجب التأكد من استخدام COUNT الصحيح هنا (GUEST/VIP/ROYAL)
+            // بما أننا لا نعرف دلالة كل حقل، سنفترض أننا نستخدم GUEST_COUNT في هذه الحالة.
+            const requestedCount = updatedFields[FIELD_IDS.GUEST_COUNT] || 1;
+            
+            // ✅ استثناء الحجز الحالي من التحقق
+            const availableCount = await getAvailableCount(suiteKey, newArrival, newDeparture, currentEditingReservation.id);
+            
+            if (availableCount < requestedCount) {
+                showStatus(`❌ عذراً، لا يوجد غرف متاحة كافية. المتاح: ${availableCount} غرفة`, 'error', statusDivId);
+                return;
+            }
         }
         
-        console.log('🔄 تحميل الإعدادات من Airtable...');
+        // 🧹 التنظيف وإرسال البيانات
+        Object.keys(updatedFields).forEach(key => {
+            if (updatedFields[key] === undefined) delete updatedFields[key];
+        });
         
-        const response = await fetch(AIRTABLE_CONFIG_URL, {
+        const response = await fetch(`${AIRTABLE_API_URL}/${currentEditingReservation.id}`, {
+            method: 'PATCH',
             headers: {
-                'Authorization': `Bearer ${AIRTABLE_API_KEY}`
-            }
+                'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ fields: updatedFields })
         });
         
         if (!response.ok) {
-            throw new Error(`فشل تحميل الإعدادات: ${response.status}`);
+            throw new Error(`فشل حفظ التعديلات: ${response.status}`);
         }
         
-        const data = await response.json();
-        const config = {};
+        showStatus('✅ تم حفظ التعديلات بنجاح', 'success', statusDivId);
         
-        // ✅ تحويل الصفوف إلى object
-        data.records.forEach(record => {
-            const key = record.fields['Setting Key'];
-            const value = record.fields['Setting Value'];
-            if (key && value !== undefined) {
-                config[key] = value;
-            }
-        });
-        
-        // ✅ حفظ في localStorage
-        localStorage.setItem('app_config', JSON.stringify(config));
-        localStorage.setItem('app_config_time', now.toString());
-        
-        console.log('✅ تم تحميل الإعدادات بنجاح:', config);
-        return config;
+        setTimeout(() => {
+            closeEditForm();
+            closeReservationDetails();
+            loadAllReservations();
+        }, 1500);
         
     } catch (error) {
-        console.error('❌ فشل تحميل الإعدادات:', error);
-        // ✅ إرجاع قيم افتراضية
-        return getDefaultConfig();
+        console.error('Error saving edits:', error);
+        showStatus(`❌ فشل حفظ التعديلات: ${error.message}`, 'error', statusDivId);
     }
 }
-
 /**
  * إرجاع قيم افتراضية في حال فشل تحميل الإعدادات
  */
