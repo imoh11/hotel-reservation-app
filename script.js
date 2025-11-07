@@ -1974,14 +1974,4 @@ function getStatusColor(arrivalDateStr, departureDateStr) {
     // حالة احتياطية (قد تكون مغادرة سابقة أو حالة غير محددة)
     return '#9e9e9e'; 
 }
-// في الـ console أثناء وجودك في 100% zoom
-let circle = document.querySelector('.status-circle');
-if (circle) {
-    console.log('الدائرة موجودة:', circle);
-    console.log('العرض:', circle.offsetWidth, 'px');
-    console.log('الارتفاع:', circle.offsetHeight, 'px');
-    console.log('الحساب الفعلي:', getComputedStyle(circle).width);
-    
-    // جرب إضافة نمط يدوي
-    circle.style.cssText = 'width: 20px !important; height: 20px !important; background: red !important;';
-}
+
