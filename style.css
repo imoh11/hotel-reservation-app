@@ -1106,60 +1106,20 @@ p[id$="_validation_new"] {
     align-items: center;
 }
 
-.status-circle {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-left: 4px;
-    background-color: var(--circle-color, #000);
-    flex-shrink: 0;
-    vertical-align: middle;
-
-    /* ✅ إنشاء طبقة مستقلة */
-    position: relative;
-    z-index: 10;
-    isolation: isolate;
-    transform: translate3d(0, 0, 0);
-    will-change: transform;
-
-    /* ⚙️ تثبيت اللون وعدم دمجه */
-    mix-blend-mode: normal;
-    opacity: 1;
-    box-shadow: none;
-    border: none;
-}
-
-
-
-.reservation-item-info {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-    overflow: visible; /* ✅ لمنع قصّ الدوائر */
-}
-.reservation-item-info {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-    overflow: visible;
-    isolation: isolate; /* ✅ يجعل الطبقات مرئية فوق الخلفية */
-}
-/* ===============================================
-   إصلاح حجم الدوائر الملونة - نهائي
-   =============================================== */
-
 .status-circle,
 .status-dot {
-    /* أحجام مطلقة (ليست نسبية) */
+    /* أحجام صريحة وثابتة */
     width: 14px !important;
     height: 14px !important;
     min-width: 14px !important;
     min-height: 14px !important;
     
-    /* تأكيد الظهور */
+    /* منع التقلص مع حجم ثابت */
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    flex-basis: 14px !important;
+    
+    /* التأكد من الظهور */
     display: inline-block !important;
     visibility: visible !important;
     opacity: 1 !important;
@@ -1169,18 +1129,12 @@ p[id$="_validation_new"] {
     
     /* محاذاة */
     vertical-align: middle !important;
-    flex-shrink: 0 !important;
-    
-    /* مسافات */
-    margin: 0 8px !important;
-    
-    /* تأكد من عدم التأثر بالخطوط */
-    font-size: 14px !important;
-    line-height: 1 !important;
-    
-    /* تجنب أي تأثيرات خارجية */
-    box-sizing: border-box !important;
-    position: relative !important;
-    z-index: 1000 !important;
 }
 
+/* إذا استمرت المشكلة، جرب هذا الحل الأقوى */
+.status-circle {
+    flex: 0 0 14px !important; /* shorthand: grow, shrink, basis */
+    width: 14px !important;
+    height: 14px !important;
+    box-sizing: border-box !important;
+}
