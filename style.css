@@ -1147,31 +1147,56 @@ p[id$="_validation_new"] {
     overflow: visible;
     isolation: isolate; /* ✅ يجعل الطبقات مرئية فوق الخلفية */
 }
+/* ===============================================
+   إصلاح حجم الدوائر الملونة - نهائي
+   =============================================== */
 
-/* ضع هذا في نهاية style.css - بدون حذف أي شيء */
-
-/* إصلاح محاذاة الدوائر الملونة */
-.reservation-item-info {
-    display: flex !important;
-    align-items: center !important;
-    gap: 10px !important;
-    flex-wrap: nowrap !important;
-    overflow: visible !important;
-    min-width: 0 !important;
-}
-
-.status-circle {
+.status-circle,
+.status-dot {
+    /* أحجام مطلقة (ليست نسبية) */
+    width: 14px !important;
+    height: 14px !important;
+    min-width: 14px !important;
+    min-height: 14px !important;
+    
+    /* تأكيد الظهور */
     display: inline-block !important;
-    width: 12px !important;
-    height: 12px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    
+    /* شكل الدائرة */
     border-radius: 50% !important;
+    
+    /* محاذاة */
+    vertical-align: middle !important;
     flex-shrink: 0 !important;
-    order: -1 !important;
-    margin-left: 0 !important;
-    margin-right: 8px !important;
+    
+    /* مسافات */
+    margin: 0 8px !important;
+    
+    /* تأكد من عدم التأثر بالخطوط */
+    font-size: 14px !important;
+    line-height: 1 !important;
+    
+    /* تجنب أي تأثيرات خارجية */
+    box-sizing: border-box !important;
+    position: relative !important;
+    z-index: 1000 !important;
 }
 
-.reservation-number {
-    min-width: 90px !important;
-    flex-shrink: 0 !important;
+/* ✅ إصلاح خاص للعناصر الأب */
+.reservation-item-info,
+.detail-label {
+    font-size: 14px !important;
+    line-height: normal !important;
+}
+
+.reservation-item-info .status-circle {
+    order: 1 !important;
+    margin-right: 10px !important;
+}
+
+.detail-label .status-dot {
+    margin-left: 8px !important;
+    margin-right: 8px !important;
 }
