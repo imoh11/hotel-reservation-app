@@ -1147,5 +1147,33 @@ p[id$="_validation_new"] {
     overflow: visible;
     isolation: isolate; /* ✅ يجعل الطبقات مرئية فوق الخلفية */
 }
+    .reservation-item-info,
+.reservation-accordion-header {
+  overflow: visible !important;
+}
 
+.status-circle {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  background-color: var(--circle-color, #000) !important;
+  display: inline-block !important;
+  position: relative !important;
+  z-index: 9999 !important;
+  margin-left: 5px !important;
+  flex-shrink: 0 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: none !important;
+
+  /* 👇 إجبار المتصفح على رسمها */
+  transform: scale(1) translateZ(0) !important;
+  will-change: transform;
+  isolation: isolate;
+  mix-blend-mode: normal !important;
+
+  /* 👇 لتفادي القص */
+  overflow: visible !important;
+  clip-path: none !important;
+}
 
