@@ -1,3 +1,6 @@
+/* ===============================================
+   1. المتغيرات العامة والإعدادات الأساسية (Root & Globals)
+   =============================================== */
 :root {
     --primary: #3498db; /* أزرق */
     --primary-dark: #2980b9;
@@ -13,7 +16,6 @@
     --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     --transition: all 0.2s ease;
 }
-
 
 * {
     box-sizing: border-box;
@@ -31,13 +33,16 @@ body {
     font-size: 0.8rem;
 }
 
+/* ===============================================
+   2. الهيكل الرئيسي والتخطيط (Layout)
+   =============================================== */
 .container {
     max-width: 900px;
     margin: 0 auto;
     background: #f9f9f9;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
-    overflow: hidden; 
+    overflow: hidden;
 }
 
 .header {
@@ -47,9 +52,14 @@ body {
     text-align: center;
 }
 
+/* ===============================================
+   3. مكونات واجهة المستخدم العامة (General UI Components)
+   =============================================== */
+
+/* --- 3.1. علامات التبويب (Tabs) --- */
 .tabs {
     display: flex;
-    background-color: var(--gray-light); 
+    background-color: var(--gray-light);
     border-bottom: 1px solid var(--gray-light);
 }
 
@@ -94,66 +104,7 @@ body {
     display: block;
 }
 
-/* ------------------------------------------- */
-/* تنسيقات الأقسام المطوية (Collapsible) */
-/* ------------------------------------------- */
-.collapsible-section {
-    margin-bottom: 15px;
-    border: 1px solid var(--gray-light);
-    border-radius: var(--border-radius);
-    overflow: hidden;
-}
-
-.collapsible-header {
-    background-color: var(--primary);
-    color: white;
-    padding: 9px 12px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.9rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: var(--transition);
-}
-
-.collapsible-header:hover {
-    background-color: var(--primary-dark);
-}
-
-.collapsible-header.active {
-    background-color: var(--primary-dark);
-}
-
-.collapsible-icon {
-    display: inline-block;
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid white; 
-    transition: transform 0.3s ease;
-}
-
-.collapsible-header.active .collapsible-icon {
-    border-top: 5px solid white;
-    transform: rotate(180deg);
-}
-
-.collapsible-content {
-    max-height: 0;
-    padding: 0 12px;
-    overflow: hidden;
-    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out; 
-}
-
-.collapsible-content.active {
-    max-height: 1000px; 
-    padding: 12px;
-}
-
-
-/* تنسيقات حقول النموذج */
+/* --- 3.2. حقول النموذج (Forms) --- */
 .form-group {
     margin-bottom: 10px;
 }
@@ -162,7 +113,7 @@ body {
     display: block;
     margin-bottom: 4px;
     font-weight: 500;
-    color: var(--primary-dark); 
+    color: var(--primary-dark);
     font-size: 0.8rem;
 }
 
@@ -199,44 +150,17 @@ body {
     min-width: 150px;
 }
 
-/* تنسيقات الأجنحة المحجوزة */
-.suite-selection-container {
-    border: 1px solid var(--gray-light);
-    border-radius: var(--border-radius);
-    padding: 8px;
-    background-color: #fafafa;
+#phone_new {
+    direction: rtl;
+    text-align: right;
 }
 
-.suite-item-header {
-    font-weight: 600;
-    color: var(--primary-dark);
-    padding: 6px 0;
-    border-bottom: 1px solid var(--gray-light);
-    font-size: 0.9rem;
+#notes_edit {
+    min-height: 200px;
+    resize: vertical;
 }
 
-/* إزالة الحد السفلي من آخر عنصر (جناح ملكي) */
-.suite-item-header:last-of-type {
-     border-bottom: none;
-}
-
-.suite-summary {
-    font-size: 0.75rem;
-    font-weight: 400;
-    color: var(--secondary-dark); 
-}
-
-.suite-details-area {
-    margin-top: 6px;
-    padding: 10px;
-    border-top: 1px dashed var(--gray-light);
-    background-color: #ffffff;
-    border-radius: var(--border-radius);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    margin-bottom: 10px;
-}
-
-/* الأزرار ورسائل الحالة */
+/* --- 3.3. الأزرار (Buttons) --- */
 .button-group {
     display: flex;
     gap: 8px;
@@ -297,7 +221,13 @@ body {
     border-color: var(--primary);
     color: white;
 }
- 
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+}
+
+/* --- 3.4. رسائل الحالة والتنبيهات (Status Messages & Alerts) --- */
 .status-message-container {
     margin-top: 10px;
     display: flex;
@@ -341,24 +271,110 @@ body {
     display: block !important;
     margin-bottom: 10px;
 }
- 
-#phone_new {
-    direction: rtl; 
-    text-align: right; 
-}
 
-/* تنسيق رسائل التحقق من التوفر */
 p[id$="_validation_new"] {
     text-align: center;
     margin: 10px auto;
     max-width: 100%;
 }
 
-
 /* ===============================================
-   تنسيق قائمة الحجوزات وتفاصيلها
+   4. مكونات متخصصة (Specialized Components)
    =============================================== */
 
+/* --- 4.1. الأقسام القابلة للطي (Collapsible Sections) --- */
+.collapsible-section {
+    margin-bottom: 15px;
+    border: 1px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.collapsible-header {
+    background-color: var(--primary);
+    color: white;
+    padding: 9px 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.collapsible-header:hover,
+.collapsible-header.active {
+    background-color: var(--primary-dark);
+}
+
+.collapsible-icon {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid white;
+    transition: transform 0.3s ease;
+}
+
+.collapsible-header.active .collapsible-icon {
+    transform: rotate(180deg);
+}
+
+.collapsible-content {
+    max-height: 0;
+    padding: 0 12px;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+}
+
+.collapsible-content.active {
+    max-height: 1000px;
+    padding: 12px;
+}
+
+/* --- 4.2. اختيار الأجنحة (Suite Selection) --- */
+.suite-selection-container {
+    border: 1px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    padding: 8px;
+    background-color: #fafafa;
+}
+
+.suite-item-header {
+    font-weight: 600;
+    color: var(--primary-dark);
+    padding: 6px 0;
+    border-bottom: 1px solid var(--gray-light);
+    font-size: 0.9rem;
+}
+
+.suite-item-header:last-of-type {
+    border-bottom: none;
+}
+
+.suite-summary {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--secondary-dark);
+}
+
+.suite-details-area {
+    margin-top: 6px;
+    padding: 10px;
+    border-top: 1px dashed var(--gray-light);
+    background-color: #ffffff;
+    border-radius: var(--border-radius);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    margin-bottom: 10px;
+}
+
+/* ===============================================
+   5. قسم الحجوزات (Reservations Section)
+   =============================================== */
+
+/* --- 5.1. قائمة الحجوزات (Reservations List) --- */
 .reservations-list-container {
     padding: 20px;
 }
@@ -401,17 +417,22 @@ p[id$="_validation_new"] {
 
 .reservation-item-info {
     display: flex;
-    gap: 9px;
     align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    overflow: visible;
+    isolation: isolate;
 }
 
-.reservation-number, .reservation-guest {
-    font-size: 0.75rem; /* تصغير الخط */
+.reservation-number,
+.reservation-guest {
+    font-size: 0.75rem;
 }
 
-.reservation-type {
-    font-size: 0.65rem; /* تصغير خط حالة الحجز */
+.reservation-guest {
+    color: var(--gray);
 }
+
 .reservation-type {
     padding: 4px 10px;
     border-radius: 4px;
@@ -434,12 +455,66 @@ p[id$="_validation_new"] {
     color: #721c24;
 }
 
-.reservation-guest {
-    color: var(--gray);
-    font-size: 0.75rem;  /* ✅ توحيد مع باقي الموقع */
+/* --- 5.2. أكورديون الحجوزات (Reservation Accordion) --- */
+.reservation-accordion {
+    margin-bottom: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background: #f5f5f5;
 }
 
-.reservation-details {
+.reservation-accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: var(--transition);
+    background: #f5f5f5;
+}
+
+.reservation-accordion-header:hover {
+    background: #e8e8e8;
+}
+
+.reservation-accordion-header.active {
+    background: #e0e0e0;
+    border-bottom: 1px solid #d0d0d0;
+}
+
+.reservation-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.accordion-arrow {
+    font-size: 0.8rem;
+    color: var(--gray);
+    transition: transform 0.3s ease;
+}
+
+.reservation-accordion-header.active .accordion-arrow {
+    transform: rotate(180deg);
+}
+
+.reservation-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: #f9f9f9;
+}
+
+.reservation-accordion-content.active {
+    max-height: 600px;
+    padding: 15px;
+}
+
+/* --- 5.3. تفاصيل الحجز (Reservation Details) --- */
+.reservation-details,
+.edit-form {
     padding: 20px;
     background: #f9f9f9;
     border-radius: var(--border-radius);
@@ -477,6 +552,8 @@ p[id$="_validation_new"] {
     font-size: 0.75rem;
     color: var(--gray);
     margin-bottom: 5px;
+    display: flex;
+    align-items: center;
 }
 
 .detail-value {
@@ -485,106 +562,13 @@ p[id$="_validation_new"] {
     color: var(--dark);
 }
 
-.edit-form {
-    padding: 20px;
-    background: #f9f9f9;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
+.day-name {
+    color: #777;
+    font-size: 0.85em;
+    margin-right: 4px;
 }
 
-.edit-form label,
-.edit-form input,
-.edit-form select,
-.edit-form textarea,
-.edit-form h4 {
-    font-size: 0.875rem !important;  /* ✅ توحيد حجم الخط */
-}
-
-.edit-form h4 {
-    font-size: 0.95rem !important;  /* ✅ العناوين أكبر قليلاً */
-}
-
-.hidden {
-    display: none !important;
-}
-
-
-
-/* ===================================
-   Reservation Accordion Styles
-   =================================== */
-
-.reservation-accordion {
-    margin-bottom: 10px;
-    border: 1px solid #e0e0e0;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    background: #f5f5f5;
-}
-
-.reservation-accordion-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 12px;  /* ✅ تقليل الارتفاع أكثر */
-    cursor: pointer;
-    transition: var(--transition);
-    background: #f5f5f5;
-}
-
-.reservation-accordion-header:hover {
-    background: #e8e8e8;
-}
-
-.reservation-accordion-header.active {
-    background: #e0e0e0;
-    border-bottom: 1px solid #d0d0d0;
-}
-
-.reservation-actions {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-
-
-.accordion-arrow {
-    font-size: 0.8rem;
-    color: var(--gray);
-    transition: transform 0.3s ease;
-}
-
-.reservation-accordion-header.active .accordion-arrow {
-    transform: rotate(180deg);
-}
-
-.reservation-accordion-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-    background: #f9f9f9;
-}
-
-.reservation-accordion-content.active {
-    max-height: 600px;  /* ✅ زيادة قليلة للمحتوى */
-    padding: 15px;
-}
-
-.detail-actions {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid #f0f0f0;
-    display: flex;
-    justify-content: center;
-    gap: 10px;  /* ✅ مسافة بين الأزرار */
-}
-
-.detail-actions .btn {
-    min-width: 130px;  /* ✅ أصغر قليلاً */
-    font-size: 0.875rem;  /* ✅ توحيد حجم الخط */
-}
-
+/* --- 5.4. شبكة تفاصيل الحجز (Reservation Details Grid) --- */
 .reservation-details-grid {
     display: flex;
     flex-direction: column;
@@ -599,7 +583,6 @@ p[id$="_validation_new"] {
     border-bottom: 1px solid #f0f0f0;
 }
 
-/* ✅ ألوان متناوبة لصفوف التفاصيل */
 .detail-row:nth-child(odd) {
     background: #ffffff;
 }
@@ -616,23 +599,96 @@ p[id$="_validation_new"] {
     grid-template-columns: 1fr;
 }
 
-.detail-label {
+.detail-row .detail-label {
     font-weight: 600;
-    color: var(--gray);
-    font-size: 0.875rem;  /* ✅ توحيد مع باقي الموقع */
+    font-size: 0.875rem;
 }
 
-.detail-value {
-    color: var(--text);
-    font-size: 0.875rem;  /* ✅ توحيد مع باقي الموقع */
+.detail-row .detail-value {
+    font-size: 0.875rem;
 }
 
+.detail-actions {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
 
+.detail-actions .btn {
+    min-width: 130px;
+    font-size: 0.875rem;
+}
 
-/* ========================================
-   صفحة الإشغال
-======================================== */
+/* --- 5.5. نموذج التعديل (Edit Form) --- */
+.edit-form label,
+.edit-form input,
+.edit-form select,
+.edit-form textarea,
+.edit-form h4 {
+    font-size: 0.875rem !important;
+}
 
+.edit-form h4 {
+    font-size: 0.95rem !important;
+}
+
+/* --- 5.6. شارات الحالة (Status Badges & Dots) --- */
+.status-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: 8px;
+    white-space: nowrap;
+    text-align: center;
+    min-width: 45px;
+}
+
+.status-resident {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-arrival {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+.status-departure {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.status-default {
+    background-color: #e2e3e5;
+    color: #383d41;
+    border: 1px solid #d6d8db;
+}
+
+.status-dot,
+.status-circle {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-left: 6px;
+    vertical-align: middle;
+    flex-shrink: 0;
+    isolation: isolate;
+}
+
+/* ===============================================
+   6. صفحة الإشغال (Occupancy Page)
+   =============================================== */
+
+/* --- 6.1. ملخص الإشغال (Occupancy Summary) --- */
 .occupancy-summary {
     margin-bottom: 30px;
 }
@@ -660,20 +716,21 @@ p[id$="_validation_new"] {
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     border: 1px solid #dee2e6;
-}
-
-/* بطاقة الإجمالي - عادية */
-.summary-card-total {
-    /* لا تأخذ عرض كامل */
-}
-
-.summary-card {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .summary-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.summary-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 15px;
+    direction: rtl;
 }
 
 .summary-label {
@@ -690,15 +747,6 @@ p[id$="_validation_new"] {
     align-items: center;
     gap: 8px;
     flex: 1;
-}
-
-.summary-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    gap: 15px;
-    direction: rtl;
 }
 
 .summary-value .occupied {
@@ -732,44 +780,34 @@ p[id$="_validation_new"] {
     border-radius: 10px;
 }
 
-/* ألوان حسب نسبة الإشغال - تدرج من أحمر إلى أخضر */
-.occupancy-empty {
+/* --- 6.2. ألوان حالة الإشغال (Occupancy Status Colors) --- */
+.occupancy-empty, .occupancy-low {
     background: #fff5f5;
     color: #dc3545;
     border-color: #dc3545;
 }
-
-.occupancy-low {
-    background: #fff5f5;
-    color: #dc3545;
-    border-color: #dc3545;
-}
-
 .occupancy-low-medium {
     background: #fff4e6;
     color: #fd7e14;
     border-color: #fd7e14;
 }
-
 .occupancy-medium {
     background: #fffbeb;
     color: #ffc107;
     border-color: #ffc107;
 }
-
 .occupancy-medium-high {
     background: #e6fffa;
     color: #20c997;
     border-color: #20c997;
 }
-
 .occupancy-high {
     background: #e6f7ed;
     color: #28a745;
     border-color: #28a745;
 }
 
-/* البحث والفلترة */
+/* --- 6.3. فلتر الإشغال (Occupancy Filter) --- */
 .occupancy-filter {
     margin-bottom: 20px;
     padding: 20px;
@@ -777,6 +815,7 @@ p[id$="_validation_new"] {
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
 }
+
 .filter-shortcuts {
     display: flex;
     gap: 8px;
@@ -804,12 +843,7 @@ p[id$="_validation_new"] {
     font-size: 0.875rem;
 }
 
-.btn-sm {
-    padding: 6px 12px;
-    font-size: 0.8rem;
-}
-
-/* الجدول */
+/* --- 6.4. جدول الإشغال (Occupancy Table) --- */
 .occupancy-table-container {
     background: #f9f9f9;
     border-radius: var(--border-radius);
@@ -840,7 +874,6 @@ p[id$="_validation_new"] {
     transition: background-color 0.2s ease;
 }
 
-/* ✅ ألوان متناوبة لصفوف جدول الإشغال */
 .occupancy-table tbody tr:nth-child(odd) {
     background: #ffffff;
 }
@@ -887,24 +920,16 @@ p[id$="_validation_new"] {
     min-width: 35px;
 }
 
-/* ✅ ألوان الخلايا - منطق معكوس */
-.cell-empty {
-    background: #f8d7da;  /* فارغ = أحمر (سيء) */
+.cell-empty, .cell-low {
+    background: #f8d7da;
     color: #721c24;
 }
-
-.cell-low {
-    background: #f8d7da;  /* 1-50% = أحمر (إشغال منخفض) */
-    color: #721c24;
-}
-
 .cell-medium {
-    background: #fff3cd;  /* 51-80% = أصفر (إشغال متوسط) */
+    background: #fff3cd;
     color: #856404;
 }
-
 .cell-high {
-    background: #d4edda;  /* 81-100% = أخضر (إشغال عالي - جيد) */
+    background: #d4edda;
     color: #155724;
 }
 
@@ -913,237 +938,57 @@ p[id$="_validation_new"] {
     color: var(--primary);
 }
 
-/* Responsive للجوال */
+/* ===============================================
+   7. التجاوب مع الشاشات الصغيرة (Responsive Design)
+   =============================================== */
 @media (max-width: 768px) {
-    .occupancy-summary h3 {
-        font-size: 0.85rem;
-    }
-    
     .summary-cards {
         grid-template-columns: 1fr;
     }
-    
-    .summary-card-total {
-        grid-column: 1;
-    }
-    
     .summary-card {
         padding: 12px;
     }
-    
-    .summary-label {
+    .summary-label, .summary-value {
         font-size: 0.8rem;
     }
-    
-    .summary-value {
-        font-size: 0.8rem;
-    }
-    
     .summary-value .occupied {
         font-size: 0.95rem;
     }
-    
     .occupancy-filter {
         padding: 12px;
     }
-    
     .filter-inputs {
         flex-direction: column;
         align-items: stretch;
     }
-    
     .filter-inputs input {
-        max-width: 93%;
+        max-width: 100%;
     }
-    
-    .filter-shortcuts {
-        justify-content: center;
-    }
-    
     .occupancy-table-container {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
-    
     .occupancy-table {
         font-size: 0.75rem;
         min-width: 100%;
     }
-    
     .occupancy-table th {
         padding: 8px 6px;
         font-size: 0.75rem;
         white-space: nowrap;
     }
-    
     .occupancy-table td {
         padding: 6px 4px;
         font-size: 0.75rem;
     }
-    
-    .occupancy-table td:first-child {
+    .occupancy-table td:first-child,
+    .occupancy-table td:nth-child(2) {
         font-size: 0.7rem;
         white-space: nowrap;
     }
-    
-    .occupancy-table td:nth-child(2) {
-        font-size: 0.7rem;
-    }
-    
     .occupancy-cell {
         padding: 3px 6px;
         font-size: 0.75rem;
         min-width: 25px;
     }
-/* =======================================================
-   تنسيق حقل الملاحظات (#notes_edit) 
-   ======================================================= */
-/* ✅ تنسيق الدائرة الصغيرة (حالة الحجز) */
-.status-dot {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    margin-left: 6px;
-    vertical-align: middle;
-}
-
-/* ✅ لتوضيح اليوم بجانب التاريخ */
-.day-name {
-    color: #777;
-    font-size: 0.9em;
-    margin-right: 4px;
-}
-
-/* ✅ تحسين مظهر الصف */
-.reservation-item-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* ✅ عندما تكون القائمة مفتوحة */
-.reservation-accordion.active .reservation-accordion-header {
-    background-color: #f8f8f8;
-}
-
-.reservation-accordion-header {
-    cursor: pointer;
-    user-select: none;
-    transition: background-color 0.2s ease;
-}
-
-
-
-.day-name {
-  color: #777;
-  font-size: 0.85em;
-  margin-right: 4px;
-}
-
-#notes_edit { 
-    /* 1. يحدد الارتفاع الأولي ليتطابق بصرياً مع الحقول المجاورة */
-    min-height: 200px; 
-    
-    /* 2. يسمح للمستخدم بتغيير حجم الحقل عمودياً فقط */
-    resize: vertical; 
-}
-
-
-#notes_edit { 
-    /* 1. يحدد الارتفاع الأولي ليتطابق بصرياً مع الحقول المجاورة */
-    min-height: 200px; 
-    
-    /* 2. يسمح للمستخدم بتغيير حجم الحقل عمودياً فقط */
-    resize: vertical; 
-}
-
-
-
-
-/* ===============================================
-   تنسيق شارات الحالة الملونة (Status Badges)
-   =============================================== */
-.status-badge {
-    display: inline-block;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    margin-left: 8px;
-    white-space: nowrap;
-    text-align: center;
-    min-width: 45px;
-}
-
-/* الألوان */
-.status-resident { /* مقيم حالياً (أخضر) */
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.status-arrival { /* واصل اليوم (أصفر) */
-    background-color: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeeba;
-}
-
-.status-departure { /* مغادر اليوم (أحمر) */
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-.status-default { /* لم يصل بعد / قادم (رمادي) */
-    background-color: #e2e3e5;
-    color: #383d41;
-    border: 1px solid #d6d8db;
-}
-
-.detail-label {
-    display: flex;
-    align-items: center;
-}
-
-.status-circle {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-left: 4px;
-    background-color: var(--circle-color, #000);
-    flex-shrink: 0;
-    vertical-align: left;
-
-    /* ✅ إنشاء طبقة مستقلة */
-    position: relative;
-    z-index: 10;
-    isolation: isolate;
-    transform: translate3d(0, 0, 0);
-    will-change: transform;
-
-    /* ⚙️ تثبيت اللون وعدم دمجه */
-    mix-blend-mode: normal;
-    opacity: 1;
-    box-shadow: none;
-    border: none;
-}
-
-
-
-.reservation-item-info {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-    overflow: visible; /* ✅ لمنع قصّ الدوائر */
-}
-.reservation-item-info {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-    overflow: visible;
-    isolation: isolate; /* ✅ يجعل الطبقات مرئية فوق الخلفية */
 }
