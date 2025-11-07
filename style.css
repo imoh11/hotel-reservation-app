@@ -1106,20 +1106,27 @@ p[id$="_validation_new"] {
     align-items: center;
 }
 
+/* 🔧 إصلاح اختفاء الدوائر في اللابتوب */
 .status-circle {
     width: 8px;
     height: 8px;
     border-radius: 50%;
     display: inline-block;
     margin-left: 4px;
-    background-color: #000; /* سيتم استبداله ديناميكياً */
     flex-shrink: 0;
     vertical-align: middle;
-    box-shadow: none !important;
-    border: none !important;
-    opacity: 1 !important;
-    mix-blend-mode: normal !important;
+
+    /* ✅ الحل الذكي */
+    background-clip: content-box !important;  /* يرسم اللون داخل الحدود فقط */
+    padding: 1px;                             /* يُجبر المتصفح على رسمها فعليًا */
+    outline: 1px solid transparent;           /* يمنع الإخفاء على الخلفيات الرمادية */
+    mix-blend-mode: normal !important;        /* يعطل الدمج مع الخلفية */
+    isolation: isolate !important;            /* يعزل اللون عن الخلفية */
+    opacity: 1 !important;                    /* لا شفافية إطلاقًا */
+    transform: translateZ(0);                 /* يجبر GPU على رسم العنصر */
+    will-change: transform;                   /* تحسين عرض اللون */
 }
+
 
 .reservation-item-info {
     display: flex;
@@ -1136,24 +1143,5 @@ p[id$="_validation_new"] {
     overflow: visible;
     isolation: isolate; /* ✅ يجعل الطبقات مرئية فوق الخلفية */
 }
-    /* إصلاح عرض الدوائر في اللابتوب */
-.status-circle {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-left: 4px;
-    flex-shrink: 0;
-    vertical-align: middle;
 
-    /* ✅ حل مشاكل الظهور */
-    background-color: var(--circle-color, #000) !important;
-    opacity: 1 !important;
-    mix-blend-mode: normal !important;
-    filter: none !important;
-    box-shadow: none !important;
-    border: none !important;
-    position: relative !important;
-    z-index: 5 !important;
-}
 
