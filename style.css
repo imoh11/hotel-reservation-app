@@ -1134,5 +1134,5 @@ p[id$="_validation_new"] {
     gap: 6px;
     flex-wrap: wrap;
     overflow: visible;
-    mix-blend-mode: normal; /* ✅ يمنع بهتان اللون في الشاشات العالية التباين */
+    isolation: isolate; /* ✅ يجعل الطبقات مرئية فوق الخلفية */
 }
