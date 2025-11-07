@@ -1131,10 +1131,3 @@ p[id$="_validation_new"] {
     vertical-align: middle !important;
 }
 
-/* إذا استمرت المشكلة، جرب هذا الحل الأقوى */
-.status-circle {
-    flex: 0 0 14px !important; /* shorthand: grow, shrink, basis */
-    width: 14px !important;
-    height: 14px !important;
-    box-sizing: border-box !important;
-}
