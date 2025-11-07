@@ -1215,28 +1215,16 @@ function openEditForm() {
 }
 
 /**
- * إغلاق نموذج التعديل
- */
-function closeEditForm() {
-    // ✅ إخفاء نموذج التعديل وإظهار قائمة الحجوزات
-    const listContainer = document.querySelector('.reservations-list-container');
-    const editFormDiv = document.getElementById('editReservationForm');
-    
-    editFormDiv.classList.add('hidden');
-    if (listContainer) listContainer.style.display = 'block';
-}
-
-/**
  * حفظ التعديلات
  */
 async function saveReservationEdits() {
     if (!currentEditingReservation) return;
-    
+
     const statusDivId = 'editReservation';
-    
+
     try {
         showStatus('جاري حفظ التعديلات... ⏳', 'info', statusDivId, false);
-        
+
         const updatedFields = {
             [FIELD_IDS.RES_TYPE]: document.getElementById('edit_type').value,
             [FIELD_IDS.GUEST_NAME]: document.getElementById('edit_guestName').value,
@@ -1252,7 +1240,9 @@ async function saveReservationEdits() {
         // ✅ التحقق فقط إذا تغيّر نوع الحجز من انتظار/ملغي إلى مؤكد
         const oldType = currentEditingReservation.fields[FIELD_NAMES.RES_TYPE];
         const newType = updatedFields[FIELD_IDS.RES_TYPE];
-        const isConfirmingNow = (oldType === "قيد الانتظار" || oldType === "ملغي") && newType === "مؤكد";
+        const isConfirmingNow =
+            (oldType === "قيد الانتظار" || oldType === "ملغي") &&
+            newType === "مؤكد";
 
         if (isConfirmingNow) {
             const newArrival = updatedFields[FIELD_IDS.GUEST_ARRIVAL];
@@ -1334,6 +1324,7 @@ async function saveReservationEdits() {
         showStatus(`❌ فشل حفظ التعديلات: ${error.message}`, 'error', statusDivId);
     }
 }
+
 
 
         const requestedCount =
