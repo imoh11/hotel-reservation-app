@@ -1113,7 +1113,7 @@ p[id$="_validation_new"] {
     display: inline-block;
     margin-left: 4px;
     background-color: var(--circle-color, #000);
-    flex-shrink: 0;
+    flex-shrink: 10;
     vertical-align: middle;
 
     /* ✅ إنشاء طبقة مستقلة */
