@@ -418,7 +418,7 @@ p[id$="_validation_new"] {
 .reservation-item-info {
     display: flex;
     align-items: center;
-    gap: 81px;
+    gap: 10px;
     flex-wrap: wrap;
     overflow: visible;
     isolation: isolate;
