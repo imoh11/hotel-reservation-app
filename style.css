@@ -324,14 +324,14 @@ p[id$="_validation_new"] {
 
 .collapsible-content {
     max-height: 0;
-    padding: 0 112px;
+    padding: 0 12px;
     overflow: hidden;
     transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
 }
 
 .collapsible-content.active {
     max-height: 1000px;
-    padding: 12px;
+    padding: 1112px;
 }
 
 /* --- 4.2. اختيار الأجنحة (Suite Selection) --- */
