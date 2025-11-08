@@ -1,4 +1,4 @@
-/* ===============================================
+===============================================
    1. المتغيرات العامة والإعدادات الأساسية (Root & Globals)
    =============================================== */
 :root {
@@ -939,63 +939,107 @@ p[id$="_validation_new"] {
 }
 
 /* ===============================================
-    7. التجاوب مع الشاشات الصغيرة (Responsive Design)
-    =============================================== */
+
+   7. التجاوب مع الشاشات الصغيرة (Responsive Design)
+
+   =============================================== */
+
 @media (max-width: 768px) {
+
     .summary-cards {
+
         grid-template-columns: 1fr;
+
     }
+
     .summary-card {
+
         padding: 12px;
+
     }
+
     .summary-label, .summary-value {
-        /* زيادة حجم الخط قليلاً لبطاقات الملخص */
-        font-size: 0.8rem; 
+
+        font-size: 0.7rem;
+
     }
+
     .summary-value .occupied {
-        /* زيادة حجم الخط قليلاً */
-        font-size: 0.85rem;
+
+        font-size: 0.75rem;
+
     }
+
     .occupancy-filter {
+
         padding: 12px;
+
     }
+
     .filter-inputs {
+
         flex-direction: column;
+
         align-items: stretch;
+
     }
+
     .filter-inputs input {
+
         max-width: 100%;
+
     }
+
     .occupancy-table-container {
+
         overflow-x: auto;
+
         -webkit-overflow-scrolling: touch;
+
     }
+
     .occupancy-table {
-        /* زيادة مقاس الخط الأساسي للجدول */
-        font-size: 0.8rem; 
+
+        font-size: 0.75rem;
+
         min-width: 100%;
+
     }
+
     .occupancy-table th {
-        /* زيادة حشو وحجم خط رؤوس الأعمدة */
-        padding: 10px 8px; 
-        font-size: 0.75rem; 
+
+        padding: 8px 6px;
+
+        font-size: 0.65rem;
+
         white-space: nowrap;
+
     }
+
     .occupancy-table td {
-        /* زيادة حشو خلايا الجدول */
-        padding: 8px 6px; 
-        font-size: 0.8rem;
+
+        padding: 6px 4px;
+
+        font-size: 0.75rem;
+
     }
+
     .occupancy-table td:first-child,
+
     .occupancy-table td:nth-child(2) {
-        /* زيادة مقاس خط العمودين الأول والثاني */
-        font-size: 0.8rem; 
+
+        font-size: 0.7rem;
+
         white-space: nowrap;
+
     }
+
     .occupancy-cell {
-        /* تعديل الحشو لخلية الإشغال وتثبيت مقاس الخط */
-        padding: 5px 8px; 
-        font-size: 0.8rem; 
-        min-width: 30px; /* زيادة قليلة لعرض الخلية */
+
+        padding: 3px 6px;
+
+        font-size: 0.75rem;
+
+        min-width: 25px;
+
     }
-}
