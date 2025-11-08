@@ -2,795 +2,526 @@
    نظام التصميم - Design System
    =============================================== */
 
-/* --- 1. المتغيرات العامة (CSS Variables) --- */
 :root {
-  /* نظام الألوان (Color System) */
+  /* الألوان الأساسية */
   --primary: #3498db;
   --primary-dark: #2980b9;
-  --primary-light: #ebf5fb;
   --secondary: #2ecc71;
   --secondary-dark: #27ae60;
-  --secondary-light: #eafaf1;
   --danger: #e74c3c;
   --danger-dark: #c0392b;
-  --danger-light: #fdedec;
-  --warning: #f39c12;
-  --warning-dark: #d68910;
-  --warning-light: #fef9e7;
   --info: #007bff;
-  --info-dark: #0056b3;
-  --info-light: #e3f2fd;
+  --dark: #343a40;
+  --gray: #6c757d;
+  --gray-light: #e9ecef;
   
-  /* الألوان المحايدة (Neutral Colors) */
-  --dark: #2c3e50;
-  --gray-dark: #5d6d7e;
-  --gray: #85929e;
-  --gray-light: #d5dbdb;
-  --gray-lighter: #ecf0f1;
-  --light: #f8f9fa;
-  --white: #ffffff;
-  
-  /* الظلال والتأثيرات (Shadows & Effects) */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-  --shadow-primary: 0 4px 12px rgba(52, 152, 219, 0.2);
-  
-  /* الزوايا والانتقالات (Borders & Transitions) */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --transition-fast: 0.15s ease;
-  --transition-normal: 0.25s ease;
-  --transition-slow: 0.4s ease;
-  
-  /* التباعد (Spacing) */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
-  --space-xxl: 48px;
-  
-  /* الطبقات (Z-index) */
-  --z-dropdown: 1000;
-  --z-sticky: 1020;
-  --z-fixed: 1030;
-  --z-modal: 1040;
-  --z-popover: 1050;
-  --z-tooltip: 1060;
+  /* التصميم */
+  --border-radius: 6px;
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --transition: all 0.2s ease;
 }
 
-/* --- 2. الإعدادات الأساسية (Base Styles) --- */
+/* ===============================================
+   الإعدادات الأساسية
+   =============================================== */
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
-  font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  line-height: 1.6;
+  font-family: 'Tajawal', sans-serif;
+  line-height: 1.5;
   color: var(--dark);
   background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+  padding: 15px;
   min-height: 100vh;
-  font-size: 14px;
-  padding: var(--space-md);
+  font-size: 0.8rem;
 }
 
 /* ===============================================
-   المكونات الأساسية (Core Components)
+   الهيكل الرئيسي
    =============================================== */
 
-/* --- 3. الحاوية والتخطيط (Container & Layout) --- */
 .container {
-  max-width: 1000px;
+  max-width: 900px;
   margin: 0 auto;
-  background: var(--white);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  background: #f9f9f9;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
   overflow: hidden;
-  transition: transform var(--transition-normal);
-}
-
-.container:hover {
-  transform: translateY(-2px);
 }
 
 .header {
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  color: var(--white);
-  padding: var(--space-xl) var(--space-lg);
+  color: white;
+  padding: 20px 25px;
   text-align: center;
-  position: relative;
-  overflow: hidden;
 }
 
-.header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
-  animation: shimmer 3s infinite;
-}
+/* ===============================================
+   علامات التبويب
+   =============================================== */
 
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-/* --- 4. نظام علامات التبويب (Tab System) --- */
 .tabs {
   display: flex;
-  background: var(--gray-lighter);
+  background-color: var(--gray-light);
   border-bottom: 1px solid var(--gray-light);
-  position: relative;
 }
 
 .tab-button {
   flex: 1;
-  padding: var(--space-md);
-  font-size: 0.9rem;
+  padding: 10px 12px;
+  font-size: 0.8rem;
   text-align: center;
-  background: transparent;
+  background: none;
   border: none;
   cursor: pointer;
-  font-family: inherit;
-  font-weight: 600;
-  color: var(--gray-dark);
-  transition: all var(--transition-normal);
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 500;
+  color: var(--gray);
+  transition: var(--transition);
   position: relative;
-  overflow: hidden;
-}
-
-.tab-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  opacity: 0;
-  transition: opacity var(--transition-normal);
-  z-index: -1;
-}
-
-.tab-button:hover {
-  color: var(--primary-dark);
-  background: rgba(52, 152, 219, 0.05);
+  outline: none;
 }
 
 .tab-button.active {
-  color: var(--white);
-  background: var(--primary);
+  color: var(--primary);
+  background-color: white;
 }
 
-.tab-button.active::before {
-  opacity: 1;
+.tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary);
 }
 
 .tab-content {
-  padding: var(--space-xl);
+  padding: 20px;
   display: none;
-  animation: fadeInUp 0.5s ease;
+  animation: fadeIn 0.4s ease;
 }
 
 .tab-content.active {
   display: block;
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* ===============================================
+   النماذج والإدخال
+   =============================================== */
 
-/* --- 5. نماذج الإدخال (Form Elements) --- */
 .form-group {
-  margin-bottom: var(--space-lg);
-  position: relative;
+  margin-bottom: 10px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: var(--space-sm);
-  font-weight: 600;
+  margin-bottom: 4px;
+  font-weight: 500;
   color: var(--primary-dark);
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 0.8rem;
 }
 
 .form-control {
   width: 100%;
-  padding: var(--space-md);
-  border: 2px solid var(--gray-light);
-  border-radius: var(--radius-md);
-  font-family: inherit;
-  font-size: 0.9rem;
-  transition: all var(--transition-normal);
-  background: var(--white);
-  position: relative;
+  padding: 5px 10px;
+  border: 1px solid var(--gray-light);
+  border-radius: var(--border-radius);
+  font-family: 'Tajawal', sans-serif;
+  font-size: 0.85rem;
+  transition: var(--transition);
+  background-color: white;
 }
 
 .form-control:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: var(--shadow-primary);
-  transform: translateY(-1px);
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
 .form-control[readonly] {
-  background: var(--gray-lighter);
+  background-color: var(--gray-light);
   cursor: not-allowed;
-  opacity: 0.7;
 }
 
 .form-row {
   display: flex;
-  gap: var(--space-md);
+  gap: 10px;
   flex-wrap: wrap;
 }
 
 .form-row .form-group {
   flex: 1;
-  min-width: 200px;
+  min-width: 150px;
 }
 
-/* --- 6. نظام الأزرار (Button System) --- */
+/* ===============================================
+   الأزرار
+   =============================================== */
+
+.button-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
 .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-sm);
-  padding: var(--space-md) var(--space-lg);
+  display: inline-block;
+  padding: 8px 16px;
   border: none;
-  border-radius: var(--radius-md);
-  font-family: inherit;
-  font-size: 0.9rem;
-  font-weight: 600;
+  border-radius: var(--border-radius);
+  font-family: 'Tajawal', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-normal);
-  text-decoration: none;
-  position: relative;
-  overflow: hidden;
-}
-
-.btn::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  transition: all 0.6s ease;
-  transform: translate(-50%, -50%);
-}
-
-.btn:hover::before {
-  width: 300px;
-  height: 300px;
-}
-
-.btn:active {
-  transform: translateY(1px);
+  transition: var(--transition);
+  text-align: center;
+  outline: none;
 }
 
 .btn[disabled] {
   opacity: 0.6;
   cursor: not-allowed;
-  transform: none !important;
 }
 
-/* أنواع الأزرار (Button Variants) */
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  color: var(--white);
-  box-shadow: var(--shadow-primary);
+  background-color: var(--primary);
+  color: white;
 }
 
 .btn-success {
-  background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
-  color: var(--white);
+  background-color: var(--secondary);
+  color: white;
+}
+
+.btn-success:hover:not(:disabled) {
+  background-color: var(--secondary-dark);
 }
 
 .btn-danger {
-  background: linear-gradient(135deg, var(--danger) 0%, var(--danger-dark) 100%);
-  color: var(--white);
+  background-color: var(--danger);
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: var(--danger-dark);
 }
 
 .btn-outline {
-  background: transparent;
-  border: 2px solid var(--gray-light);
-  color: var(--gray-dark);
+  background-color: transparent;
+  border: 1px solid var(--gray-light);
+  color: var(--gray);
 }
 
 .btn-outline.active {
-  background: var(--primary);
+  background-color: var(--primary);
   border-color: var(--primary);
-  color: var(--white);
+  color: white;
 }
 
-/* أحجام الأزرار (Button Sizes) */
 .btn-sm {
-  padding: var(--space-sm) var(--space-md);
+  padding: 6px 12px;
   font-size: 0.8rem;
 }
 
-.btn-lg {
-  padding: var(--space-lg) var(--space-xl);
-  font-size: 1rem;
-}
+/* ===============================================
+   الرسائل والتنبيهات
+   =============================================== */
 
-/* مجموعة الأزرار (Button Groups) */
-.button-group {
-  display: flex;
-  gap: var(--space-md);
-  margin-top: var(--space-lg);
-  flex-wrap: wrap;
-}
-
-/* --- 7. رسائل الحالة (Status Messages) --- */
 .status-message-container {
-  margin-top: var(--space-md);
+  margin-top: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .status-message {
-  padding: var(--space-md);
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  font-size: 0.9rem;
+  padding: 10px;
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  font-size: 0.8rem;
+  margin-top: 5px;
   text-align: center;
   max-width: 100%;
-  width: 100%;
-  animation: slideInDown 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-sm);
 }
 
-@keyframes slideInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.status-message::before {
-  font-family: 'Font Awesome 6 Free';
-  font-weight: 900;
-  font-size: 1rem;
-}
-
-.success {
-  background: var(--secondary-light);
-  color: var(--secondary-dark);
-  border: 1px solid rgba(46, 204, 113, 0.3);
-}
-
-.success::before {
-  content: '✓';
-}
-
-.error {
-  background: var(--danger-light);
-  color: var(--danger-dark);
-  border: 1px solid rgba(231, 76, 60, 0.3);
-}
-
-.error::before {
-  content: '✗';
-}
-
-.info {
-  background: var(--primary-light);
-  color: var(--primary-dark);
-  border: 1px solid rgba(52, 152, 219, 0.3);
-}
-
-.info::before {
-  content: 'ℹ';
-}
-
-/* ===============================================
-   المكونات المتقدمة (Advanced Components)
-   =============================================== */
-
-/* --- 8. الأقسام القابلة للطي (Collapsible Sections) --- */
-.collapsible-section {
-  margin-bottom: var(--space-lg);
-  border: 1px solid var(--gray-light);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  background: var(--white);
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow var(--transition-normal);
-}
-
-.collapsible-section:hover {
-  box-shadow: var(--shadow-md);
-}
-
-.collapsible-header {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  color: var(--white);
-  padding: var(--space-md) var(--space-lg);
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 0.95rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: all var(--transition-normal);
-  user-select: none;
-}
-
-.collapsible-header:hover {
-  background: linear-gradient(135deg, var(--primary-dark) 0%, #1f6391 100%);
-}
-
-.collapsible-icon {
-  width: 16px;
-  height: 16px;
-  position: relative;
-  transition: transform var(--transition-normal);
-}
-
-.collapsible-icon::before,
-.collapsible-icon::after {
-  content: '';
-  position: absolute;
-  background: var(--white);
-  transition: all var(--transition-normal);
-}
-
-.collapsible-icon::before {
-  width: 2px;
-  height: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.collapsible-icon::after {
-  width: 100%;
-  height: 2px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.collapsible-header.active .collapsible-icon::before {
-  transform: translateX(-50%) rotate(90deg);
-  opacity: 0;
-}
-
-.collapsible-content {
-  max-height: 0;
-  overflow: hidden;
-  transition: all var(--transition-slow);
-}
-
-.collapsible-content.active {
-  max-height: 2000px;
-  padding: var(--space-lg);
-}
-
-/* --- 9. البطاقات والإحصائيات (Cards & Statistics) --- */
-.summary-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--space-lg);
-  margin: var(--space-lg) 0;
-}
-
-.summary-card {
-  background: linear-gradient(135deg, var(--white) 0%, var(--light) 100%);
-  padding: var(--space-xl);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--gray-light);
-  transition: all var(--transition-normal);
-  position: relative;
-  overflow: hidden;
-}
-
-.summary-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  background: linear-gradient(to bottom, var(--primary), var(--secondary));
-  transition: width var(--transition-normal);
-}
-
-.summary-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-lg);
-}
-
-.summary-card:hover::before {
-  width: 8px;
-}
-
-.summary-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-md);
-}
-
-.summary-label {
-  font-size: 0.9rem;
-  color: var(--gray-dark);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.summary-value {
-  font-size: 1.1rem;
-  color: var(--dark);
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.summary-bar {
-  height: 8px;
-  background: var(--gray-lighter);
-  border-radius: 10px;
-  overflow: hidden;
-  margin-top: var(--space-md);
-  border: 1px solid var(--gray-light);
-}
-
-.summary-bar-fill {
-  height: 100%;
-  border-radius: 10px;
-  transition: all 1s ease;
-  background: linear-gradient(90deg, var(--primary), var(--secondary));
-}
-
-/* --- 10. الجداول (Tables) --- */
-.table-container {
-  background: var(--white);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-  margin: var(--space-lg) 0;
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-}
-
-.data-table thead {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  color: var(--white);
-}
-
-.data-table th {
-  padding: var(--space-md);
-  text-align: center;
-  font-weight: 600;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.data-table tbody tr {
-  border-bottom: 1px solid var(--gray-lighter);
-  transition: background-color var(--transition-fast);
-}
-
-.data-table tbody tr:nth-child(even) {
-  background: var(--light);
-}
-
-.data-table tbody tr:hover {
-  background: var(--primary-light) !important;
-  transform: scale(1.01);
-}
-
-.data-table td {
-  padding: var(--space-md);
-  text-align: center;
-  font-size: 0.9rem;
-}
-
-/* --- 11. شارات الحالة (Status Badges) --- */
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border: 1px solid transparent;
-}
-
-.status-resident {
-  background: var(--secondary-light);
-  color: var(--secondary-dark);
-  border-color: var(--secondary);
-}
-
-.status-arrival {
-  background: var(--warning-light);
-  color: var(--warning-dark);
-  border-color: var(--warning);
-}
-
-.status-departure {
-  background: var(--danger-light);
-  color: var(--danger-dark);
-  border-color: var(--danger);
-}
-
-.status-default {
-  background: var(--gray-lighter);
-  color: var(--gray-dark);
-  border-color: var(--gray);
-}
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-/* ===============================================
-   التجاوب مع الشاشات (Responsive Design)
-   =============================================== */
-@media (max-width: 768px) {
-  body {
-    padding: var(--space-sm);
-    font-size: 13px;
-  }
-  
-  .container {
-    border-radius: var(--radius-md);
-  }
-  
-  .header {
-    padding: var(--space-lg);
-  }
-  
-  .tabs {
-    flex-direction: column;
-  }
-  
-  .tab-button {
-    border-bottom: 1px solid var(--gray-light);
-  }
-  
-  .tab-content {
-    padding: var(--space-lg);
-  }
-  
-  .form-row {
-    flex-direction: column;
-    gap: var(--space-sm);
-  }
-  
-  .form-row .form-group {
-    min-width: 100%;
-  }
-  
-  .summary-cards {
-    grid-template-columns: 1fr;
-    gap: var(--space-md);
-  }
-  
-  .summary-card {
-    padding: var(--space-lg);
-  }
-  
-  .button-group {
-    flex-direction: column;
-  }
-  
-  .btn {
-    width: 100%;
-    justify-content: center;
-  }
-  
-  .table-container {
-    overflow-x: auto;
-  }
-  
-  .data-table {
-    min-width: 600px;
-  }
-}
-
-@media (max-width: 480px) {
-  :root {
-    --space-md: 12px;
-    --space-lg: 16px;
-    --space-xl: 20px;
-  }
-  
-  body {
-    font-size: 12px;
-  }
-  
-  .header {
-    padding: var(--space-md);
-  }
-  
-  .tab-content {
-    padding: var(--space-md);
-  }
-  
-  .summary-card {
-    padding: var(--space-md);
-  }
-}
-
-/* --- 12. فئات المساعدة (Utility Classes) --- */
 .hidden {
   display: none !important;
 }
 
-.text-center {
+.success {
+  background-color: rgba(46, 204, 113, 0.15);
+  color: var(--secondary-dark);
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.error {
+  background-color: rgba(231, 76, 60, 0.15);
+  color: var(--danger-dark);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.info {
+  background-color: rgba(52, 152, 219, 0.15);
+  color: var(--primary-dark);
+  border: 1px solid rgba(52, 152, 219, 0.3);
+}
+
+/* ===============================================
+   الأقسام القابلة للطي
+   =============================================== */
+
+.collapsible-section {
+  margin-bottom: 15px;
+  border: 1px solid var(--gray-light);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.collapsible-header {
+  background-color: var(--primary);
+  color: white;
+  padding: 9px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: var(--transition);
+}
+
+.collapsible-header:hover,
+.collapsible-header.active {
+  background-color: var(--primary-dark);
+}
+
+.collapsible-icon {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid white;
+  transition: transform 0.3s ease;
+}
+
+.collapsible-header.active .collapsible-icon {
+  transform: rotate(180deg);
+}
+
+.collapsible-content {
+  max-height: 0;
+  padding: 0 12px;
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+}
+
+.collapsible-content.active {
+  max-height: 1000px;
+  padding: 12px;
+}
+
+/* ===============================================
+   الحجوزات
+   =============================================== */
+
+.reservations-list-container {
+  padding: 20px;
+}
+
+.reservations-list-container h3 {
+  margin-bottom: 15px;
+  color: var(--primary);
+}
+
+.reservations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reservation-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.reservation-item:hover {
+  background: #e8e8e8;
+  border-color: var(--primary);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.reservation-type {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.reservation-type.confirmed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.reservation-type.waiting {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.reservation-type.cancelled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* ===============================================
+   الإشغال
+   =============================================== */
+
+.occupancy-summary {
+  margin-bottom: 30px;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  background: #f9f9f9;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 20px;
+}
+
+.summary-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border: 1px solid #dee2e6;
+}
+
+.summary-bar {
+  height: 10px;
+  background: #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #dee2e6;
+}
+
+.summary-bar-fill {
+  height: 100%;
+  transition: width 0.5s ease, background-color 0.3s ease;
+  border-radius: 10px;
+}
+
+/* ===============================================
+   الجداول
+   =============================================== */
+
+.occupancy-table-container {
+  background: #f9f9f9;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+}
+
+.occupancy-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.occupancy-table thead {
+  background: var(--primary);
+  color: white;
+}
+
+.occupancy-table th {
+  padding: 10px 12px;
   text-align: center;
+  font-weight: 600;
+  font-size: 0.875rem;
 }
 
-.text-left {
-  text-align: left;
+.occupancy-table tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
 }
 
-.text-right {
-  text-align: right;
+.occupancy-table tbody tr:nth-child(odd) {
+  background: #ffffff;
 }
 
-.mt-1 { margin-top: var(--space-xs); }
-.mt-2 { margin-top: var(--space-sm); }
-.mt-3 { margin-top: var(--space-md); }
-.mt-4 { margin-top: var(--space-lg); }
-.mt-5 { margin-top: var(--space-xl); }
+.occupancy-table tbody tr:nth-child(even) {
+  background: #f8f9fa;
+}
 
-.mb-1 { margin-bottom: var(--space-xs); }
-.mb-2 { margin-bottom: var(--space-sm); }
-.mb-3 { margin-bottom: var(--space-md); }
-.mb-4 { margin-bottom: var(--space-lg); }
-.mb-5 { margin-bottom: var(--space-xl); }
+.occupancy-table tbody tr:hover {
+  background: #e3f2fd !important;
+}
 
-.p-1 { padding: var(--space-xs); }
-.p-2 { padding: var(--space-sm); }
-.p-3 { padding: var(--space-md); }
-.p-4 { padding: var(--space-lg); }
-.p-5 { padding: var(--space-xl); }
+.occupancy-table td {
+  padding: 8px 12px;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+/* ===============================================
+   التجاوب مع الشاشات الصغيرة
+   =============================================== */
+
+@media (max-width: 768px) {
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .occupancy-filter {
+    padding: 12px;
+  }
+  
+  .filter-inputs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-inputs input {
+    max-width: 100%;
+  }
+  
+  .occupancy-table-container {
+    overflow-x: auto;
+  }
+  
+  .occupancy-table {
+    font-size: 0.75rem;
+    min-width: 100%;
+  }
+}
+
+/* ===============================================
+   الرسوم المتحركة
+   =============================================== */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes highlightFade {
+  0% { background: #ffc107; }
+  100% { background: #fff3cd; }
+}
