@@ -578,9 +578,9 @@ p[id$="_validation_new"] {
 .detail-row {
     display: grid;
     grid-template-columns: 120px 1fr;
-    gap: 61px;
+    gap: 10px;
     padding: 0px 10px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #dedede;
 }
 
 .detail-row:nth-child(odd) {
