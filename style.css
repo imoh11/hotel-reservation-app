@@ -1,318 +1,1334 @@
-/* ===========================================================
-   🌤️  Soft Modern Theme with Auto Dark Mode
-   Author: ChatGPT (2025)
-   =========================================================== */
-
-/* 1. Root variables and color scheme
---------------------------------------------------------------*/
+/* ===============================================
+   1. المتغيرات العامة والإعدادات الأساسية (Root & Globals)
+   =============================================== */
 :root {
-  /* Light mode palette (soft pastel) */
-  --primary: #8ab4f8;
-  --primary-dark: #5b8de5;
-  --secondary: #a8e6cf;
-  --secondary-dark: #81c9b3;
-  --danger: #ffb3b3;
-  --danger-dark: #e59393;
-  --gray: #b0bec5;
-  --gray-light: #eceff1;
-  --dark: #37474f;
-  --background: linear-gradient(135deg, #f8fbff 0%, #eef4fa 100%);
-  --border-radius: 10px;
-  --shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
-  --transition: all 0.25s ease;
+    --primary: #667eea; /* أزرق بنفسجي ناعم */
+    --primary-dark: #5a6fd8;
+    --primary-light: #f0f4ff;
+    --secondary: #76c7c0; /* تركواز ناعم */
+    --secondary-dark: #64b3ad;
+    --secondary-light: #e8f6f5;
+    --danger: #ff6b6b; /* أحمر مرجاني */
+    --danger-dark: #ff5252;
+    --danger-light: #ffeaea;
+    --info: #4ecdc4; /* تركواز فاتح */
+    --dark: #2d3748;
+    --gray: #718096;
+    --gray-light: #e2e8f0;
+    --gray-lighter: #f7fafc;
+    --border-radius: 10px;
+    --border-radius-sm: 6px;
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --box-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Dark mode adjustments */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary: #a0c4ff;
-    --primary-dark: #6c8edb;
-    --secondary: #7cd7b3;
-    --secondary-dark: #5bb897;
-    --danger: #f28b82;
-    --danger-dark: #e57373;
-    --gray: #90a4ae;
-    --gray-light: #455a64;
-    --dark: #eceff1;
-    --background: linear-gradient(135deg, #263238 0%, #37474f 100%);
-    --shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
-  }
-}
-
-/* 2. Global styles
---------------------------------------------------------------*/
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-  font-family: "Tajawal", sans-serif;
-  background: var(--background);
-  color: var(--dark);
-  min-height: 100vh;
-  padding: 20px;
-  line-height: 1.6;
-  font-size: 0.9rem;
-  transition: var(--transition);
+    font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.6;
+    color: var(--dark);
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+    padding: 20px;
+    min-height: 100vh;
+    font-size: 0.9rem;
 }
 
-/* 3. Layout
---------------------------------------------------------------*/
+/* ===============================================
+   2. الهيكل الرئيسي والتخطيط (Layout)
+   =============================================== */
 .container {
-  max-width: 900px;
-  margin: 0 auto;
-  background: #fff;
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  transition: var(--transition);
+    max-width: 1000px;
+    margin: 0 auto;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    transition: var(--transition);
 }
 
-@media (prefers-color-scheme: dark) {
-  .container {
-    background: #2c3e46;
-  }
+.container:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
 .header {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  color: white;
-  text-align: center;
-  padding: 25px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  box-shadow: var(--shadow);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 25px 30px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
 }
 
-/* 4. Tabs
---------------------------------------------------------------*/
+.header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* ===============================================
+   3. مكونات واجهة المستخدم العامة (General UI Components)
+   =============================================== */
+
+/* --- 3.1. علامات التبويب (Tabs) --- */
 .tabs {
-  display: flex;
-  background-color: var(--gray-light);
-  border-bottom: 1px solid var(--gray);
+    display: flex;
+    background-color: var(--gray-lighter);
+    border-bottom: 1px solid var(--gray-light);
+    position: relative;
 }
 
 .tab-button {
-  flex: 1;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 12px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--gray);
-  transition: var(--transition);
+    flex: 1;
+    padding: 15px 20px;
+    font-size: 0.85rem;
+    text-align: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    color: var(--gray);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.tab-button::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    transition: var(--transition);
 }
 
 .tab-button:hover {
-  color: var(--primary-dark);
-  background-color: rgba(138, 180, 248, 0.15);
+    color: var(--primary);
+    background-color: rgba(102, 126, 234, 0.05);
 }
 
 .tab-button.active {
-  color: var(--primary-dark);
-  background-color: #fff;
-  box-shadow: inset 0 -2px 0 var(--primary-dark);
+    color: var(--primary);
+    background-color: white;
+}
+
+.tab-button.active::before {
+    width: 80%;
 }
 
 .tab-content {
-  padding: 20px;
-  display: none;
-  animation: fadeIn 0.4s ease;
+    padding: 30px;
+    display: none;
+    animation: fadeInUp 0.5s ease;
 }
 
 .tab-content.active {
-  display: block;
+    display: block;
 }
 
-/* 5. Forms
---------------------------------------------------------------*/
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- 3.2. حقول النموذج (Forms) --- */
 .form-group {
-  margin-bottom: 12px;
+    margin-bottom: 20px;
+    position: relative;
 }
 
 .form-group label {
-  display: block;
-  margin-bottom: 4px;
-  font-weight: 600;
-  color: var(--primary-dark);
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--dark);
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-group label::before {
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: var(--primary);
+    font-size: 0.8rem;
 }
 
 .form-control {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid var(--gray-light);
-  border-radius: var(--border-radius);
-  font-family: inherit;
-  font-size: 0.9rem;
-  transition: var(--transition);
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid var(--gray-light);
+    border-radius: var(--border-radius-sm);
+    font-family: inherit;
+    font-size: 0.9rem;
+    transition: var(--transition);
+    background-color: white;
 }
 
 .form-control:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(138, 180, 248, 0.25);
-  outline: none;
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transform: translateY(-1px);
 }
 
 .form-control[readonly] {
-  background-color: var(--gray-light);
-  cursor: not-allowed;
+    background-color: var(--gray-lighter);
+    cursor: not-allowed;
+    border-color: var(--gray-light);
 }
 
-/* 6. Buttons
---------------------------------------------------------------*/
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    align-items: start;
+}
+
+.form-row .form-group {
+    margin-bottom: 0;
+}
+
+/* أيقونات الحقول */
+#guest_name_new + .form-group label::before { content: "👤"; }
+#phone_new + .form-group label::before { content: "📱"; }
+#suite_type_new + .form-group label::before { content: "🏨"; }
+#check_in_date_new + .form-group label::before { content: "📅"; }
+#check_out_date_new + .form-group label::before { content: "📅"; }
+#notes_edit + .form-group label::before { content: "📝"; }
+
+#phone_new {
+    direction: rtl;
+    text-align: right;
+}
+
+#notes_edit {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+/* --- 3.3. الأزرار (Buttons) --- */
 .button-group {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 15px;
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .btn {
-  display: inline-block;
-  padding: 8px 18px;
-  border: none;
-  border-radius: var(--border-radius);
-  font-family: inherit;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-  box-shadow: var(--shadow);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: center;
+    outline: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transition: all 0.6s ease;
+    transform: translate(-50%, -50%);
+}
+
+.btn:hover::before {
+    width: 300px;
+    height: 300px;
 }
 
 .btn:hover {
-  transform: translateY(-2px);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
 }
 
 .btn-primary {
-  background-color: var(--primary);
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: var(--primary-dark);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    box-shadow: var(--box-shadow-sm);
 }
 
 .btn-success {
-  background-color: var(--secondary);
-  color: #004d40;
+    background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
+    color: white;
+    box-shadow: var(--box-shadow-sm);
 }
 
-.btn-success:hover {
-  background-color: var(--secondary-dark);
+.btn-success:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--secondary-dark) 0%, #559a94 100%);
 }
 
 .btn-danger {
-  background-color: var(--danger);
-  color: #721c24;
+    background: linear-gradient(135deg, var(--danger) 0%, var(--danger-dark) 100%);
+    color: white;
+    box-shadow: var(--box-shadow-sm);
 }
 
-.btn-danger:hover {
-  background-color: var(--danger-dark);
+.btn-danger:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--danger-dark) 0%, #e04545 100%);
 }
 
 .btn-outline {
-  background: transparent;
-  border: 1px solid var(--gray);
-  color: var(--dark);
+    background: transparent;
+    border: 2px solid var(--gray-light);
+    color: var(--gray);
 }
 
-.btn-outline:hover {
-  background: var(--primary);
-  color: #fff;
+.btn-outline.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
 }
 
-/* 7. Collapsible sections
---------------------------------------------------------------*/
-.collapsible-section {
-  border: 1px solid var(--gray-light);
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  margin-bottom: 15px;
-  box-shadow: var(--shadow);
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 0.85rem;
 }
 
-.collapsible-header {
-  background: var(--primary);
-  color: #fff;
-  padding: 10px 14px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: var(--transition);
+/* أيقونات الأزرار */
+.btn i {
+    font-size: 0.9rem;
 }
 
-.collapsible-header:hover {
-  background: var(--primary-dark);
+/* --- 3.4. رسائل الحالة والتنبيهات (Status Messages & Alerts) --- */
+.status-message-container {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.collapsible-icon {
-  transition: transform 0.3s ease;
-}
-
-.collapsible-header.active .collapsible-icon {
-  transform: rotate(180deg);
-}
-
-.collapsible-content {
-  max-height: 0;
-  overflow: hidden;
-  padding: 0 14px;
-  transition: max-height 0.4s ease, padding 0.3s ease;
-}
-
-.collapsible-content.active {
-  max-height: 1000px;
-  padding: 14px;
-}
-
-/* 8. Status messages
---------------------------------------------------------------*/
 .status-message {
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: var(--border-radius);
-  text-align: center;
-  font-weight: 500;
+    padding: 15px 20px;
+    border-radius: var(--border-radius-sm);
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-top: 10px;
+    text-align: center;
+    max-width: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    animation: slideInDown 0.3s ease;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hidden {
+    display: none !important;
 }
 
 .success {
-  background-color: rgba(168, 230, 207, 0.2);
-  color: #2e7d32;
+    background: var(--secondary-light);
+    color: var(--secondary-dark);
+    border: 1px solid rgba(118, 199, 192, 0.3);
+}
+
+.success::before {
+    content: "✅";
 }
 
 .error {
-  background-color: rgba(255, 179, 179, 0.2);
-  color: #b71c1c;
+    background: var(--danger-light);
+    color: var(--danger-dark);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.error::before {
+    content: "❌";
 }
 
 .info {
-  background-color: rgba(138, 180, 248, 0.2);
-  color: var(--primary-dark);
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border: 1px solid rgba(102, 126, 234, 0.3);
 }
 
-/* 9. Animations
---------------------------------------------------------------*/
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+.info::before {
+    content: "ℹ️";
 }
 
-/* Buttons subtle bounce */
-.btn:active {
-  transform: scale(0.97);
+.info-message-block {
+    display: block !important;
+    margin-bottom: 15px;
 }
 
-/* 10. Responsive adjustments
---------------------------------------------------------------*/
+p[id$="_validation_new"] {
+    text-align: center;
+    margin: 15px auto;
+    max-width: 100%;
+}
+
+/* ===============================================
+   4. مكونات متخصصة (Specialized Components)
+   =============================================== */
+
+/* --- 4.1. الأقسام القابلة للطي (Collapsible Sections) --- */
+.collapsible-section {
+    margin-bottom: 20px;
+    border: 1px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background: white;
+    box-shadow: var(--box-shadow-sm);
+    transition: var(--transition);
+}
+
+.collapsible-section:hover {
+    box-shadow: var(--box-shadow);
+}
+
+.collapsible-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 15px 20px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.collapsible-header:hover {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #4a5fc4 100%);
+}
+
+.collapsible-icon {
+    width: 16px;
+    height: 16px;
+    position: relative;
+    transition: var(--transition);
+}
+
+.collapsible-icon::before,
+.collapsible-icon::after {
+    content: '';
+    position: absolute;
+    background: white;
+    transition: var(--transition);
+}
+
+.collapsible-icon::before {
+    width: 2px;
+    height: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.collapsible-icon::after {
+    width: 100%;
+    height: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.collapsible-header.active .collapsible-icon::before {
+    transform: translateX(-50%) rotate(90deg);
+    opacity: 0;
+}
+
+.collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.collapsible-content.active {
+    max-height: 2000px;
+    padding: 20px;
+}
+
+/* --- 4.2. اختيار الأجنحة (Suite Selection) --- */
+.suite-selection-container {
+    border: 1px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    padding: 15px;
+    background: var(--gray-lighter);
+}
+
+.suite-item-header {
+    font-weight: 700;
+    color: var(--primary-dark);
+    padding: 10px 0;
+    border-bottom: 1px solid var(--gray-light);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.suite-item-header:last-of-type {
+    border-bottom: none;
+}
+
+.suite-item-header::before {
+    content: "🏠";
+    font-size: 1rem;
+}
+
+.suite-summary {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--secondary-dark);
+    margin-left: auto;
+}
+
+.suite-details-area {
+    margin-top: 10px;
+    padding: 15px;
+    border-top: 1px dashed var(--gray-light);
+    background: white;
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--box-shadow-sm);
+    margin-bottom: 15px;
+}
+
+/* ===============================================
+   5. قسم الحجوزات (Reservations Section)
+   =============================================== */
+
+/* --- 5.1. قائمة الحجوزات (Reservations List) --- */
+.reservations-list-container {
+    padding: 25px;
+}
+
+.reservations-list-container h3 {
+    margin-bottom: 20px;
+    color: var(--primary);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.reservations-list-container h3::before {
+    content: "📋";
+}
+
+.loading-message {
+    text-align: center;
+    padding: 30px;
+    color: var(--gray);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.loading-message::before {
+    content: "⏳";
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.reservations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.reservation-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: white;
+    border: 1px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--box-shadow-sm);
+}
+
+.reservation-item:hover {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    box-shadow: var(--box-shadow);
+    transform: translateY(-2px);
+}
+
+.reservation-item-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.reservation-number,
+.reservation-guest {
+    font-size: 0.85rem;
+}
+
+.reservation-guest {
+    color: var(--gray);
+}
+
+.reservation-type {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+}
+
+.reservation-type.confirmed {
+    background: var(--secondary-light);
+    color: var(--secondary-dark);
+    border-color: var(--secondary);
+}
+
+.reservation-type.waiting {
+    background: #fff8e6;
+    color: #b38b00;
+    border-color: #ffd166;
+}
+
+.reservation-type.cancelled {
+    background: var(--danger-light);
+    color: var(--danger-dark);
+    border-color: var(--danger);
+}
+
+/* --- 5.2. أكورديون الحجوزات (Reservation Accordion) --- */
+.reservation-accordion {
+    margin-bottom: 15px;
+    border: 1px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background: white;
+    box-shadow: var(--box-shadow-sm);
+    transition: var(--transition);
+}
+
+.reservation-accordion:hover {
+    box-shadow: var(--box-shadow);
+}
+
+.reservation-accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: var(--transition);
+    background: white;
+}
+
+.reservation-accordion-header:hover {
+    background: var(--gray-lighter);
+}
+
+.reservation-accordion-header.active {
+    background: var(--primary-light);
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.reservation-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.accordion-arrow {
+    font-size: 0.9rem;
+    color: var(--gray);
+    transition: var(--transition);
+}
+
+.reservation-accordion-header.active .accordion-arrow {
+    transform: rotate(180deg);
+    color: var(--primary);
+}
+
+.reservation-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--gray-lighter);
+}
+
+.reservation-accordion-content.active {
+    max-height: 800px;
+    padding: 25px;
+}
+
+/* --- 5.3. تفاصيل الحجز (Reservation Details) --- */
+.reservation-details,
+.edit-form {
+    padding: 25px;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow-sm);
+}
+
+.details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--gray-light);
+}
+
+.details-header h3 {
+    margin: 0;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.details-header h3::before {
+    content: "📄";
+}
+
+.details-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.detail-item {
+    padding: 15px;
+    background: var(--gray-lighter);
+    border-radius: var(--border-radius-sm);
+    border-left: 4px solid var(--primary);
+}
+
+.detail-label {
+    font-size: 0.8rem;
+    color: var(--gray);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.detail-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.day-name {
+    color: var(--gray);
+    font-size: 0.8em;
+    margin-right: 4px;
+}
+
+/* --- 5.4. شبكة تفاصيل الحجز (Reservation Details Grid) --- */
+.reservation-details-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.detail-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 15px;
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--gray-light);
+    align-items: center;
+}
+
+.detail-row:nth-child(odd) {
+    background: white;
+}
+
+.detail-row:nth-child(even) {
+    background: var(--gray-lighter);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-row.full-width {
+    grid-template-columns: 1fr;
+}
+
+.detail-row .detail-label {
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+.detail-row .detail-value {
+    font-size: 0.85rem;
+}
+
+.detail-actions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--gray-light);
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.detail-actions .btn {
+    min-width: 140px;
+    font-size: 0.9rem;
+}
+
+/* --- 5.5. نموذج التعديل (Edit Form) --- */
+.edit-form label,
+.edit-form input,
+.edit-form select,
+.edit-form textarea,
+.edit-form h4 {
+    font-size: 0.9rem !important;
+}
+
+.edit-form h4 {
+    font-size: 1rem !important;
+    color: var(--primary);
+    margin-bottom: 15px;
+}
+
+/* --- 5.6. شارات الحالة (Status Badges & Dots) --- */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-left: 10px;
+    white-space: nowrap;
+    text-align: center;
+    min-width: 50px;
+    border: 1px solid transparent;
+}
+
+.status-resident {
+    background-color: var(--secondary-light);
+    color: var(--secondary-dark);
+    border-color: var(--secondary);
+}
+
+.status-arrival {
+    background-color: #fff8e6;
+    color: #b38b00;
+    border-color: #ffd166;
+}
+
+.status-departure {
+    background-color: var(--danger-light);
+    color: var(--danger-dark);
+    border-color: var(--danger);
+}
+
+.status-default {
+    background-color: var(--gray-lighter);
+    color: var(--gray);
+    border-color: var(--gray-light);
+}
+
+.status-dot,
+.status-circle {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-left: 8px;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+/* ===============================================
+   6. صفحة الإشغال (Occupancy Page)
+   =============================================== */
+
+/* --- 6.1. ملخص الإشغال (Occupancy Summary) --- */
+.occupancy-summary {
+    margin-bottom: 35px;
+}
+
+.occupancy-summary h3 {
+    font-size: 1.1rem;
+    color: var(--primary);
+    margin-bottom: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.occupancy-summary h3::before {
+    content: "📊";
+}
+
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow-sm);
+    padding: 25px;
+}
+
+.summary-card {
+    background: linear-gradient(135deg, #ffffff 0%, var(--gray-lighter) 100%);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow-sm);
+    border: 1px solid var(--gray-light);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.summary-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--primary), var(--secondary));
+}
+
+.summary-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--box-shadow);
+}
+
+.summary-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    gap: 15px;
+}
+
+.summary-label {
+    font-size: 0.9rem;
+    color: var(--dark);
+    font-weight: 600;
+}
+
+.summary-value {
+    font-size: 0.9rem;
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.summary-value .occupied {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.summary-value .total {
+    color: var(--gray);
+}
+
+.summary-value .percentage {
+    font-weight: 700;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    margin-left: 10px;
+    color: var(--secondary-dark);
+}
+
+.summary-bar {
+    height: 12px;
+    background: var(--gray-light);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--gray-light);
+}
+
+.summary-bar-fill {
+    height: 100%;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+}
+
+/* --- 6.2. ألوان حالة الإشغال (Occupancy Status Colors) --- */
+.occupancy-empty, .occupancy-low {
+    background: var(--danger-light);
+    color: var(--danger-dark);
+    border-color: var(--danger);
+}
+.occupancy-low-medium {
+    background: #fff4e6;
+    color: #fd7e14;
+    border-color: #fd7e14;
+}
+.occupancy-medium {
+    background: #fffbeb;
+    color: #ffc107;
+    border-color: #ffc107;
+}
+.occupancy-medium-high {
+    background: var(--secondary-light);
+    color: var(--secondary-dark);
+    border-color: var(--secondary);
+}
+.occupancy-high {
+    background: #e6f7ed;
+    color: #28a745;
+    border-color: #28a745;
+}
+
+/* --- 6.3. فلتر الإشغال (Occupancy Filter) --- */
+.occupancy-filter {
+    margin-bottom: 25px;
+    padding: 25px;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow-sm);
+}
+
+.filter-shortcuts {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.filter-inputs {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.filter-inputs input {
+    flex: 1;
+    min-width: 160px;
+    max-width: 220px;
+    font-size: 0.9rem;
+}
+
+.filter-inputs .btn {
+    font-size: 0.9rem;
+}
+
+/* --- 6.4. جدول الإشغال (Occupancy Table) --- */
+.occupancy-table-container {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+}
+
+.occupancy-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.occupancy-table thead {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+}
+
+.occupancy-table th {
+    padding: 15px 12px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.occupancy-table tbody tr {
+    border-bottom: 1px solid var(--gray-light);
+    transition: var(--transition);
+}
+
+.occupancy-table tbody tr:nth-child(odd) {
+    background: white;
+}
+
+.occupancy-table tbody tr:nth-child(even) {
+    background: var(--gray-lighter);
+}
+
+.occupancy-table tbody tr:hover {
+    background: var(--primary-light) !important;
+    transform: scale(1.01);
+}
+
+.occupancy-table tbody tr.highlight {
+    background: #fff8e6 !important;
+    animation: highlightFade 2s ease;
+}
+
+@keyframes highlightFade {
+    0% { background: #ffd166; }
+    100% { background: #fff8e6; }
+}
+
+.occupancy-table td {
+    padding: 12px 10px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.occupancy-table td:first-child {
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.occupancy-table td:nth-child(2) {
+    color: var(--gray);
+    font-size: 0.85rem;
+}
+
+.occupancy-cell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    min-width: 40px;
+    border: 1px solid transparent;
+}
+
+.cell-empty, .cell-low {
+    background: var(--danger-light);
+    color: var(--danger-dark);
+    border-color: var(--danger);
+}
+.cell-medium {
+    background: #fff8e6;
+    color: #b38b00;
+    border-color: #ffd166;
+}
+.cell-high {
+    background: var(--secondary-light);
+    color: var(--secondary-dark);
+    border-color: var(--secondary);
+}
+
+.occupancy-table .total-cell {
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* ===============================================
+   7. التجاوب مع الشاشات الصغيرة (Responsive Design)
+   =============================================== */
 @media (max-width: 768px) {
-  body { font-size: 0.85rem; }
-  .container { padding: 10px; }
-  .tab-button { font-size: 0.8rem; padding: 10px; }
-  .form-control { font-size: 0.8rem; }
-  .btn { font-size: 0.8rem; padding: 7px 14px; }
+    body {
+        padding: 15px;
+        font-size: 0.85rem;
+    }
+    
+    .container {
+        border-radius: var(--border-radius-sm);
+    }
+    
+    .header {
+        padding: 20px;
+    }
+    
+    .tab-content {
+        padding: 20px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .form-row .form-group {
+        margin-bottom: 0;
+    }
+    
+    .button-group {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .summary-cards {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+    
+    .summary-card {
+        padding: 15px;
+    }
+    
+    .summary-label, .summary-value {
+        font-size: 0.85rem;
+    }
+    
+    .summary-value .occupied {
+        font-size: 1.1rem;
+    }
+    
+    .occupancy-filter {
+        padding: 20px;
+    }
+    
+    .filter-inputs {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-inputs input {
+        max-width: 100%;
+    }
+    
+    .occupancy-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .occupancy-table {
+        font-size: 0.85rem;
+        min-width: 100%;
+    }
+    
+    .occupancy-table th {
+        padding: 12px 8px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+    
+    .occupancy-table td {
+        padding: 10px 6px;
+        font-size: 0.85rem;
+    }
+    
+    .occupancy-table td:first-child,
+    .occupancy-table td:nth-child(2) {
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+    
+    .occupancy-cell {
+        padding: 4px 8px;
+        font-size: 0.8rem;
+        min-width: 35px;
+    }
+    
+    .detail-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .detail-actions {
+        flex-direction: column;
+    }
+    
+    .detail-actions .btn {
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 15px;
+    }
+    
+    .tab-button {
+        padding: 12px 8px;
+        font-size: 0.8rem;
+    }
+    
+    .tab-content {
+        padding: 15px;
+    }
+    
+    .reservation-item {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .reservation-actions {
+        align-self: flex-end;
+    }
 }
