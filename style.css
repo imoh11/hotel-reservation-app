@@ -564,7 +564,7 @@ p[id$="_validation_new"] {
 
 .day-name {
     color: #777;
-    font-size: 0.3em;
+    font-size: 0.85em;
     margin-right: 4px;
 }
 
@@ -601,7 +601,7 @@ p[id$="_validation_new"] {
 
 .detail-row .detail-label {
     font-weight: 600;
-    font-size: 0.875rem;
+    font-size: 1.875rem;
 }
 
 .detail-row .detail-value {
