@@ -1,4 +1,4 @@
-===============================================
+/* ===============================================
    1. المتغيرات العامة والإعدادات الأساسية (Root & Globals)
    =============================================== */
 :root {
@@ -312,7 +312,7 @@ p[id$="_validation_new"] {
     display: inline-block;
     width: 0;
     height: 0;
-    border-left: 11px solid transparent;
+    border-left: 5px solid transparent;
     border-right: 11px solid transparent;
     border-top: 5px solid white;
     transition: transform 0.3s ease;
@@ -939,107 +939,56 @@ p[id$="_validation_new"] {
 }
 
 /* ===============================================
-
    7. التجاوب مع الشاشات الصغيرة (Responsive Design)
-
    =============================================== */
-
 @media (max-width: 768px) {
-
     .summary-cards {
-
         grid-template-columns: 1fr;
-
     }
-
     .summary-card {
-
         padding: 12px;
-
     }
-
     .summary-label, .summary-value {
-
         font-size: 0.7rem;
-
     }
-
     .summary-value .occupied {
-
         font-size: 0.75rem;
-
     }
-
     .occupancy-filter {
-
         padding: 12px;
-
     }
-
     .filter-inputs {
-
         flex-direction: column;
-
         align-items: stretch;
-
     }
-
     .filter-inputs input {
-
         max-width: 100%;
-
     }
-
     .occupancy-table-container {
-
         overflow-x: auto;
-
         -webkit-overflow-scrolling: touch;
-
     }
-
     .occupancy-table {
-
         font-size: 0.75rem;
-
         min-width: 100%;
-
     }
-
     .occupancy-table th {
-
         padding: 8px 6px;
-
         font-size: 0.65rem;
-
         white-space: nowrap;
-
     }
-
     .occupancy-table td {
-
         padding: 6px 4px;
-
         font-size: 0.75rem;
-
     }
-
     .occupancy-table td:first-child,
-
     .occupancy-table td:nth-child(2) {
-
         font-size: 0.7rem;
-
         white-space: nowrap;
-
     }
-
     .occupancy-cell {
-
         padding: 3px 6px;
-
         font-size: 0.75rem;
-
         min-width: 25px;
-
     }
+}
