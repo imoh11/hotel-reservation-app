@@ -159,21 +159,7 @@ body {
     min-height: 200px;
     resize: vertical;
 }
-/* --- إضافة تنسيق جديد لصف يتكون من 3 أعمدة متساوية --- */
-.form-row-3col {
-    display: grid;
-    /* يقسم المساحة إلى 3 أعمدة متساوية (1fr) */
-    grid-template-columns: repeat(3, 1fr); 
-    gap: 10px; /* استخدام نفس الفاصل الموجود في .form-row */
-    margin-bottom: 10px;
-}
 
-/* لضمان عدم تعارض .form-group مع تنسيق grid */
-.form-row-3col .form-group {
-    /* إلغاء خصائص flex التي قد تتعارض مع grid */
-    flex: unset; 
-    min-width: unset;
-}
 /* --- 3.3. الأزرار (Buttons) --- */
 .button-group {
     display: flex;
