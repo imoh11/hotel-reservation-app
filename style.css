@@ -312,7 +312,7 @@ p[id$="_validation_new"] {
     display: inline-block;
     width: 0;
     height: 0;
-    border-left: 5px solid transparent;
+    border-left: 11px solid transparent;
     border-right: 11px solid transparent;
     border-top: 5px solid white;
     transition: transform 0.3s ease;
