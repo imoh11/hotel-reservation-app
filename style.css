@@ -949,10 +949,10 @@ p[id$="_validation_new"] {
         padding: 12px;
     }
     .summary-label, .summary-value {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
     }
     .summary-value .occupied {
-        font-size: 0.95rem;
+        font-size: 0.75rem;
     }
     .occupancy-filter {
         padding: 12px;
@@ -969,7 +969,7 @@ p[id$="_validation_new"] {
         -webkit-overflow-scrolling: touch;
     }
     .occupancy-table {
-        font-size: 0.65rem;
+        font-size: 0.75rem;
         min-width: 100%;
     }
     .occupancy-table th {
