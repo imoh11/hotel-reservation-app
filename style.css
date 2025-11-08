@@ -969,12 +969,12 @@ p[id$="_validation_new"] {
         -webkit-overflow-scrolling: touch;
     }
     .occupancy-table {
-        font-size: 0.75rem;
+        font-size: 0.65rem;
         min-width: 100%;
     }
     .occupancy-table th {
         padding: 8px 6px;
-        font-size: 0.75rem;
+        font-size: 0.65rem;
         white-space: nowrap;
     }
     .occupancy-table td {
