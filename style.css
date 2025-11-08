@@ -401,7 +401,7 @@ p[id$="_validation_new"] {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 157px;
+    padding: 12px 15px;
     background: #f5f5f5;
     border: 1px solid #e0e0e0;
     border-radius: var(--border-radius);
@@ -418,7 +418,7 @@ p[id$="_validation_new"] {
 .reservation-item-info {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 81px;
     flex-wrap: wrap;
     overflow: visible;
     isolation: isolate;
