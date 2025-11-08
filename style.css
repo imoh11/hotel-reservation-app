@@ -2,25 +2,19 @@
    1. المتغيرات العامة والإعدادات الأساسية (Root & Globals)
    =============================================== */
 :root {
-    --primary: #667eea; /* أزرق بنفسجي ناعم */
-    --primary-dark: #5a6fd8;
-    --primary-light: #f0f4ff;
-    --secondary: #76c7c0; /* تركواز ناعم */
-    --secondary-dark: #64b3ad;
-    --secondary-light: #e8f6f5;
-    --danger: #ff6b6b; /* أحمر مرجاني */
-    --danger-dark: #ff5252;
-    --danger-light: #ffeaea;
-    --info: #4ecdc4; /* تركواز فاتح */
-    --dark: #2d3748;
-    --gray: #718096;
-    --gray-light: #e2e8f0;
-    --gray-lighter: #f7fafc;
-    --border-radius: 10px;
-    --border-radius-sm: 6px;
-    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --box-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --primary: #3498db; /* أزرق */
+    --primary-dark: #2980b9;
+    --secondary: #2ecc71; /* أخضر */
+    --secondary-dark: #27ae60;
+    --danger: #e74c3c; /* أحمر */
+    --danger-dark: #c0392b;
+    --info: #007bff; /* أزرق معلومات */
+    --dark: #343a40;
+    --gray: #6c757d;
+    --gray-light: #e9ecef;
+    --border-radius: 6px;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --transition: all 0.2s ease;
 }
 
 * {
@@ -30,55 +24,32 @@
 }
 
 body {
-    font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    line-height: 1.6;
+    font-family: 'Tajawal', sans-serif;
+    line-height: 1.5;
     color: var(--dark);
-    background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
-    padding: 20px;
+    background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+    padding: 15px;
     min-height: 100vh;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
 }
 
 /* ===============================================
    2. الهيكل الرئيسي والتخطيط (Layout)
    =============================================== */
 .container {
-    max-width: 1000px;
+    max-width: 900px;
     margin: 0 auto;
-    background: white;
+    background: #f9f9f9;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     overflow: hidden;
-    transition: var(--transition);
-}
-
-.container:hover {
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
 .header {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     color: white;
-    padding: 25px 30px;
+    padding: 20px 25px;
     text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-
-.header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
-    animation: shimmer 3s infinite;
-}
-
-@keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
 }
 
 /* ===============================================
@@ -88,42 +59,24 @@ body {
 /* --- 3.1. علامات التبويب (Tabs) --- */
 .tabs {
     display: flex;
-    background-color: var(--gray-lighter);
+    background-color: var(--gray-light);
     border-bottom: 1px solid var(--gray-light);
-    position: relative;
 }
 
 .tab-button {
     flex: 1;
-    padding: 15px 20px;
-    font-size: 0.85rem;
+    padding: 10px 12px;
+    font-size: 0.8rem;
     text-align: center;
     background: none;
     border: none;
     cursor: pointer;
-    font-family: inherit;
-    font-weight: 600;
+    font-family: 'Tajawal', sans-serif;
+    font-weight: 500;
     color: var(--gray);
     transition: var(--transition);
     position: relative;
-    overflow: hidden;
-}
-
-.tab-button::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--primary), var(--secondary));
-    transition: var(--transition);
-}
-
-.tab-button:hover {
-    color: var(--primary);
-    background-color: rgba(102, 126, 234, 0.05);
+    outline: none;
 }
 
 .tab-button.active {
@@ -131,62 +84,46 @@ body {
     background-color: white;
 }
 
-.tab-button.active::before {
-    width: 80%;
+.tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--primary);
 }
 
 .tab-content {
-    padding: 30px;
+    padding: 20px;
     display: none;
-    animation: fadeInUp 0.5s ease;
+    animation: fadeIn 0.4s ease;
 }
 
 .tab-content.active {
     display: block;
 }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 /* --- 3.2. حقول النموذج (Forms) --- */
 .form-group {
-    margin-bottom: 20px;
-    position: relative;
+    margin-bottom: 10px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: var(--dark);
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.form-group label::before {
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-    color: var(--primary);
+    margin-bottom: 4px;
+    font-weight: 500;
+    color: var(--primary-dark);
     font-size: 0.8rem;
 }
 
 .form-control {
     width: 100%;
-    padding: 12px 15px;
-    border: 2px solid var(--gray-light);
-    border-radius: var(--border-radius-sm);
-    font-family: inherit;
-    font-size: 0.9rem;
+    padding: 5px 10px;
+    border: 1px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.85rem;
     transition: var(--transition);
     background-color: white;
 }
@@ -194,34 +131,24 @@ body {
 .form-control:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    transform: translateY(-1px);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
 .form-control[readonly] {
-    background-color: var(--gray-lighter);
+    background-color: var(--gray-light);
     cursor: not-allowed;
-    border-color: var(--gray-light);
 }
 
 .form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    align-items: start;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 .form-row .form-group {
-    margin-bottom: 0;
+    flex: 1;
+    min-width: 150px;
 }
-
-/* أيقونات الحقول */
-#guest_name_new + .form-group label::before { content: "👤"; }
-#phone_new + .form-group label::before { content: "📱"; }
-#suite_type_new + .form-group label::before { content: "🏨"; }
-#check_in_date_new + .form-group label::before { content: "📅"; }
-#check_out_date_new + .form-group label::before { content: "📅"; }
-#notes_edit + .form-group label::before { content: "📝"; }
 
 #phone_new {
     direction: rtl;
@@ -229,153 +156,93 @@ body {
 }
 
 #notes_edit {
-    min-height: 120px;
+    min-height: 200px;
     resize: vertical;
-    line-height: 1.5;
 }
 
 /* --- 3.3. الأزرار (Buttons) --- */
 .button-group {
     display: flex;
-    gap: 12px;
-    margin-top: 25px;
+    gap: 8px;
+    margin-top: 15px;
     flex-wrap: wrap;
-    justify-content: center;
 }
 
 .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 24px;
+    display: inline-block;
+    padding: 8px 16px;
     border: none;
-    border-radius: var(--border-radius-sm);
-    font-family: inherit;
-    font-size: 0.9rem;
-    font-weight: 600;
+    border-radius: var(--border-radius);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
     cursor: pointer;
     transition: var(--transition);
     text-align: center;
     outline: none;
-    position: relative;
-    overflow: hidden;
-}
-
-.btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    transition: all 0.6s ease;
-    transform: translate(-50%, -50%);
-}
-
-.btn:hover::before {
-    width: 300px;
-    height: 300px;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
-
-.btn:active {
-    transform: translateY(0);
 }
 
 .btn[disabled] {
     opacity: 0.6;
     cursor: not-allowed;
-    transform: none !important;
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    background-color: var(--primary);
     color: white;
-    box-shadow: var(--box-shadow-sm);
 }
 
 .btn-success {
-    background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
+    background-color: var(--secondary);
     color: white;
-    box-shadow: var(--box-shadow-sm);
 }
 
 .btn-success:hover:not(:disabled) {
-    background: linear-gradient(135deg, var(--secondary-dark) 0%, #559a94 100%);
+    background-color: var(--secondary-dark);
 }
 
 .btn-danger {
-    background: linear-gradient(135deg, var(--danger) 0%, var(--danger-dark) 100%);
+    background-color: var(--danger);
     color: white;
-    box-shadow: var(--box-shadow-sm);
 }
 
 .btn-danger:hover:not(:disabled) {
-    background: linear-gradient(135deg, var(--danger-dark) 0%, #e04545 100%);
+    background-color: var(--danger-dark);
 }
 
 .btn-outline {
-    background: transparent;
-    border: 2px solid var(--gray-light);
+    background-color: transparent;
+    border: 1px solid var(--gray-light);
     color: var(--gray);
 }
 
 .btn-outline.active {
-    background: var(--primary);
+    background-color: var(--primary);
     border-color: var(--primary);
     color: white;
 }
 
 .btn-sm {
-    padding: 8px 16px;
-    font-size: 0.85rem;
-}
-
-/* أيقونات الأزرار */
-.btn i {
-    font-size: 0.9rem;
+    padding: 6px 12px;
+    font-size: 0.8rem;
 }
 
 /* --- 3.4. رسائل الحالة والتنبيهات (Status Messages & Alerts) --- */
 .status-message-container {
-    margin-top: 15px;
+    margin-top: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .status-message {
-    padding: 15px 20px;
-    border-radius: var(--border-radius-sm);
-    font-weight: 600;
-    font-size: 0.85rem;
-    margin-top: 10px;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    font-size: 0.8rem;
+    margin-top: 5px;
     text-align: center;
     max-width: 100%;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    animation: slideInDown 0.3s ease;
-}
-
-@keyframes slideInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 .hidden {
@@ -383,43 +250,31 @@ body {
 }
 
 .success {
-    background: var(--secondary-light);
+    background-color: rgba(46, 204, 113, 0.15);
     color: var(--secondary-dark);
-    border: 1px solid rgba(118, 199, 192, 0.3);
-}
-
-.success::before {
-    content: "✅";
+    border: 1px solid rgba(46, 204, 113, 0.3);
 }
 
 .error {
-    background: var(--danger-light);
+    background-color: rgba(231, 76, 60, 0.15);
     color: var(--danger-dark);
-    border: 1px solid rgba(255, 107, 107, 0.3);
-}
-
-.error::before {
-    content: "❌";
+    border: 1px solid rgba(231, 76, 60, 0.3);
 }
 
 .info {
-    background: var(--primary-light);
+    background-color: rgba(52, 152, 219, 0.15);
     color: var(--primary-dark);
-    border: 1px solid rgba(102, 126, 234, 0.3);
-}
-
-.info::before {
-    content: "ℹ️";
+    border: 1px solid rgba(52, 152, 219, 0.3);
 }
 
 .info-message-block {
     display: block !important;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 p[id$="_validation_new"] {
     text-align: center;
-    margin: 15px auto;
+    margin: 10px auto;
     max-width: 100%;
 }
 
@@ -429,124 +284,90 @@ p[id$="_validation_new"] {
 
 /* --- 4.1. الأقسام القابلة للطي (Collapsible Sections) --- */
 .collapsible-section {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     border: 1px solid var(--gray-light);
     border-radius: var(--border-radius);
     overflow: hidden;
-    background: white;
-    box-shadow: var(--box-shadow-sm);
-    transition: var(--transition);
-}
-
-.collapsible-section:hover {
-    box-shadow: var(--box-shadow);
 }
 
 .collapsible-header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    background-color: var(--primary);
     color: white;
-    padding: 15px 20px;
+    padding: 9px 12px;
     cursor: pointer;
-    font-weight: 700;
-    font-size: 0.95rem;
+    font-weight: 600;
+    font-size: 0.9rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     transition: var(--transition);
 }
 
-.collapsible-header:hover {
-    background: linear-gradient(135deg, var(--primary-dark) 0%, #4a5fc4 100%);
+.collapsible-header:hover,
+.collapsible-header.active {
+    background-color: var(--primary-dark);
 }
 
 .collapsible-icon {
-    width: 16px;
-    height: 16px;
-    position: relative;
-    transition: var(--transition);
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid white;
+    transition: transform 0.3s ease;
 }
 
-.collapsible-icon::before,
-.collapsible-icon::after {
-    content: '';
-    position: absolute;
-    background: white;
-    transition: var(--transition);
-}
-
-.collapsible-icon::before {
-    width: 2px;
-    height: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.collapsible-icon::after {
-    width: 100%;
-    height: 2px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.collapsible-header.active .collapsible-icon::before {
-    transform: translateX(-50%) rotate(90deg);
-    opacity: 0;
+.collapsible-header.active .collapsible-icon {
+    transform: rotate(180deg);
 }
 
 .collapsible-content {
     max-height: 0;
+    padding: 0 12px;
     overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
 }
 
 .collapsible-content.active {
-    max-height: 2000px;
-    padding: 20px;
+    max-height: 1000px;
+    padding: 12px;
 }
 
 /* --- 4.2. اختيار الأجنحة (Suite Selection) --- */
 .suite-selection-container {
     border: 1px solid var(--gray-light);
     border-radius: var(--border-radius);
-    padding: 15px;
-    background: var(--gray-lighter);
+    padding: 8px;
+    background-color: #fafafa;
 }
 
 .suite-item-header {
-    font-weight: 700;
+    font-weight: 600;
     color: var(--primary-dark);
-    padding: 10px 0;
+    padding: 6px 0;
     border-bottom: 1px solid var(--gray-light);
     font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
 }
 
 .suite-item-header:last-of-type {
     border-bottom: none;
 }
 
-.suite-item-header::before {
-    content: "🏠";
-    font-size: 1rem;
-}
-
 .suite-summary {
-    font-size: 0.8rem;
-    font-weight: 500;
+    font-size: 0.75rem;
+    font-weight: 400;
     color: var(--secondary-dark);
-    margin-left: auto;
 }
 
 .suite-details-area {
-    margin-top: 10px;
-    padding: 15px;
+    margin-top: 6px;
+    padding: 10px;
     border-top: 1px dashed var(--gray-light);
-    background: white;
-    border-radius: var(--border-radius-sm);
-    box-shadow: var(--box-shadow-sm);
-    margin-bottom: 15px;
+    background-color: #ffffff;
+    border-radius: var(--border-radius);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    margin-bottom: 10px;
 }
 
 /* ===============================================
@@ -555,79 +376,57 @@ p[id$="_validation_new"] {
 
 /* --- 5.1. قائمة الحجوزات (Reservations List) --- */
 .reservations-list-container {
-    padding: 25px;
+    padding: 20px;
 }
 
 .reservations-list-container h3 {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     color: var(--primary);
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.reservations-list-container h3::before {
-    content: "📋";
 }
 
 .loading-message {
     text-align: center;
-    padding: 30px;
+    padding: 20px;
     color: var(--gray);
-    font-size: 0.95rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-
-.loading-message::before {
-    content: "⏳";
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    font-size: 0.9rem;
 }
 
 .reservations-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .reservation-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
-    background: white;
-    border: 1px solid var(--gray-light);
+    padding: 12px 15px;
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
     border-radius: var(--border-radius);
     cursor: pointer;
     transition: var(--transition);
-    box-shadow: var(--box-shadow-sm);
 }
 
 .reservation-item:hover {
-    background: var(--primary-light);
+    background: #e8e8e8;
     border-color: var(--primary);
-    box-shadow: var(--box-shadow);
-    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .reservation-item-info {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
     flex-wrap: wrap;
+    overflow: visible;
+    isolation: isolate;
 }
 
 .reservation-number,
 .reservation-guest {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
 }
 
 .reservation-guest {
@@ -635,157 +434,137 @@ p[id$="_validation_new"] {
 }
 
 .reservation-type {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    border: 1px solid transparent;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
 }
 
 .reservation-type.confirmed {
-    background: var(--secondary-light);
-    color: var(--secondary-dark);
-    border-color: var(--secondary);
+    background: #d4edda;
+    color: #155724;
 }
 
 .reservation-type.waiting {
-    background: #fff8e6;
-    color: #b38b00;
-    border-color: #ffd166;
+    background: #fff3cd;
+    color: #856404;
 }
 
 .reservation-type.cancelled {
-    background: var(--danger-light);
-    color: var(--danger-dark);
-    border-color: var(--danger);
+    background: #f8d7da;
+    color: #721c24;
 }
 
 /* --- 5.2. أكورديون الحجوزات (Reservation Accordion) --- */
 .reservation-accordion {
-    margin-bottom: 15px;
-    border: 1px solid var(--gray-light);
+    margin-bottom: 10px;
+    border: 1px solid #e0e0e0;
     border-radius: var(--border-radius);
     overflow: hidden;
-    background: white;
-    box-shadow: var(--box-shadow-sm);
-    transition: var(--transition);
-}
-
-.reservation-accordion:hover {
-    box-shadow: var(--box-shadow);
+    background: #f5f5f5;
 }
 
 .reservation-accordion-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
+    padding: 6px 12px;
     cursor: pointer;
     user-select: none;
     transition: var(--transition);
-    background: white;
+    background: #f5f5f5;
 }
 
 .reservation-accordion-header:hover {
-    background: var(--gray-lighter);
+    background: #e8e8e8;
 }
 
 .reservation-accordion-header.active {
-    background: var(--primary-light);
-    border-bottom: 1px solid var(--gray-light);
+    background: #e0e0e0;
+    border-bottom: 1px solid #d0d0d0;
 }
 
 .reservation-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
 }
 
 .accordion-arrow {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: var(--gray);
-    transition: var(--transition);
+    transition: transform 0.3s ease;
 }
 
 .reservation-accordion-header.active .accordion-arrow {
     transform: rotate(180deg);
-    color: var(--primary);
 }
 
 .reservation-accordion-content {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    background: var(--gray-lighter);
+    transition: max-height 0.3s ease;
+    background: #f9f9f9;
 }
 
 .reservation-accordion-content.active {
-    max-height: 800px;
-    padding: 25px;
+    max-height: 600px;
+    padding: 15px;
 }
 
 /* --- 5.3. تفاصيل الحجز (Reservation Details) --- */
 .reservation-details,
 .edit-form {
-    padding: 25px;
-    background: white;
+    padding: 20px;
+    background: #f9f9f9;
     border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow-sm);
+    box-shadow: var(--box-shadow);
 }
 
 .details-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
     border-bottom: 2px solid var(--gray-light);
 }
 
 .details-header h3 {
     margin: 0;
     color: var(--primary);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.details-header h3::before {
-    content: "📄";
 }
 
 .details-content {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-bottom: 15px;
 }
 
 .detail-item {
-    padding: 15px;
-    background: var(--gray-lighter);
-    border-radius: var(--border-radius-sm);
-    border-left: 4px solid var(--primary);
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: var(--border-radius);
 }
 
 .detail-label {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--gray);
-    margin-bottom: 8px;
+    margin-bottom: 5px;
     display: flex;
     align-items: center;
-    gap: 6px;
 }
 
 .detail-value {
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-size: 0.9rem;
+    font-weight: 500;
     color: var(--dark);
 }
 
 .day-name {
-    color: var(--gray);
-    font-size: 0.8em;
+    color: #777;
+    font-size: 0.85em;
     margin-right: 4px;
 }
 
@@ -793,24 +572,23 @@ p[id$="_validation_new"] {
 .reservation-details-grid {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .detail-row {
     display: grid;
-    grid-template-columns: 140px 1fr;
-    gap: 15px;
-    padding: 12px 15px;
-    border-bottom: 1px solid var(--gray-light);
-    align-items: center;
+    grid-template-columns: 120px 1fr;
+    gap: 10px;
+    padding: 0px 10px;
+    border-bottom: 1px solid #dedede;
 }
 
 .detail-row:nth-child(odd) {
-    background: white;
+    background: #ffffff;
 }
 
 .detail-row:nth-child(even) {
-    background: var(--gray-lighter);
+    background: #f8f9fa;
 }
 
 .detail-row:last-child {
@@ -822,28 +600,26 @@ p[id$="_validation_new"] {
 }
 
 .detail-row .detail-label {
-    font-weight: 700;
-    font-size: 0.8rem;
-    margin: 0;
+    font-weight: 600;
+    font-size: 0.75rem;
 }
 
 .detail-row .detail-value {
-    font-size: 0.85rem;
+    font-size:  0.75rem;
 }
 
 .detail-actions {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid var(--gray-light);
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
     display: flex;
     justify-content: center;
-    gap: 15px;
-    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .detail-actions .btn {
-    min-width: 140px;
-    font-size: 0.9rem;
+    min-width: 130px;
+    font-size: 0.875rem;
 }
 
 /* --- 5.5. نموذج التعديل (Edit Form) --- */
@@ -852,53 +628,48 @@ p[id$="_validation_new"] {
 .edit-form select,
 .edit-form textarea,
 .edit-form h4 {
-    font-size: 0.9rem !important;
+    font-size: 0.875rem !important;
 }
 
 .edit-form h4 {
-    font-size: 1rem !important;
-    color: var(--primary);
-    margin-bottom: 15px;
+    font-size: 0.95rem !important;
 }
 
 /* --- 5.6. شارات الحالة (Status Badges & Dots) --- */
 .status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    margin-left: 10px;
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: 8px;
     white-space: nowrap;
     text-align: center;
-    min-width: 50px;
-    border: 1px solid transparent;
+    min-width: 45px;
 }
 
 .status-resident {
-    background-color: var(--secondary-light);
-    color: var(--secondary-dark);
-    border-color: var(--secondary);
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
 }
 
 .status-arrival {
-    background-color: #fff8e6;
-    color: #b38b00;
-    border-color: #ffd166;
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
 }
 
 .status-departure {
-    background-color: var(--danger-light);
-    color: var(--danger-dark);
-    border-color: var(--danger);
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
 }
 
 .status-default {
-    background-color: var(--gray-lighter);
-    color: var(--gray);
-    border-color: var(--gray-light);
+    background-color: #e2e3e5;
+    color: #383d41;
+    border: 1px solid #d6d8db;
 }
 
 .status-dot,
@@ -907,9 +678,10 @@ p[id$="_validation_new"] {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    margin-left: 8px;
+    margin-left: 6px;
     vertical-align: middle;
     flex-shrink: 0;
+    isolation: isolate;
 }
 
 /* ===============================================
@@ -918,120 +690,101 @@ p[id$="_validation_new"] {
 
 /* --- 6.1. ملخص الإشغال (Occupancy Summary) --- */
 .occupancy-summary {
-    margin-bottom: 35px;
+    margin-bottom: 30px;
 }
 
 .occupancy-summary h3 {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     color: var(--primary);
-    margin-bottom: 20px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.occupancy-summary h3::before {
-    content: "📊";
+    margin-bottom: 15px;
+    font-weight: 600;
 }
 
 .summary-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-    background: white;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    background: #f9f9f9;
     border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow-sm);
-    padding: 25px;
+    box-shadow: var(--box-shadow);
+    padding: 20px;
 }
 
 .summary-card {
-    background: linear-gradient(135deg, #ffffff 0%, var(--gray-lighter) 100%);
-    padding: 20px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow-sm);
-    border: 1px solid var(--gray-light);
-    transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-}
-
-.summary-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: linear-gradient(to bottom, var(--primary), var(--secondary));
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 1px solid #dee2e6;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .summary-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--box-shadow);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
 .summary-card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     gap: 15px;
+    direction: rtl;
 }
 
 .summary-label {
-    font-size: 0.9rem;
-    color: var(--dark);
+    font-size: 0.875rem;
+    color: #495057;
     font-weight: 600;
+    min-width: 150px;
 }
 
 .summary-value {
-    font-size: 0.9rem;
-    color: var(--dark);
+    font-size: 0.875rem;
+    color: #212529;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     flex: 1;
 }
 
 .summary-value .occupied {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 700;
-    color: var(--primary);
+    color: #495057;
 }
 
 .summary-value .total {
-    color: var(--gray);
+    color: #6c757d;
 }
 
 .summary-value .percentage {
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     white-space: nowrap;
-    margin-left: 10px;
-    color: var(--secondary-dark);
+    margin-left: 8px;
 }
 
 .summary-bar {
-    height: 12px;
-    background: var(--gray-light);
+    height: 10px;
+    background: #e9ecef;
     border-radius: 10px;
     overflow: hidden;
-    border: 1px solid var(--gray-light);
+    border: 1px solid #dee2e6;
 }
 
 .summary-bar-fill {
     height: 100%;
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 0.5s ease, background-color 0.3s ease;
     border-radius: 10px;
-    background: linear-gradient(90deg, var(--primary), var(--secondary));
 }
 
 /* --- 6.2. ألوان حالة الإشغال (Occupancy Status Colors) --- */
 .occupancy-empty, .occupancy-low {
-    background: var(--danger-light);
-    color: var(--danger-dark);
-    border-color: var(--danger);
+    background: #fff5f5;
+    color: #dc3545;
+    border-color: #dc3545;
 }
 .occupancy-low-medium {
     background: #fff4e6;
@@ -1044,9 +797,9 @@ p[id$="_validation_new"] {
     border-color: #ffc107;
 }
 .occupancy-medium-high {
-    background: var(--secondary-light);
-    color: var(--secondary-dark);
-    border-color: var(--secondary);
+    background: #e6fffa;
+    color: #20c997;
+    border-color: #20c997;
 }
 .occupancy-high {
     background: #e6f7ed;
@@ -1056,24 +809,24 @@ p[id$="_validation_new"] {
 
 /* --- 6.3. فلتر الإشغال (Occupancy Filter) --- */
 .occupancy-filter {
-    margin-bottom: 25px;
-    padding: 25px;
-    background: white;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #f9f9f9;
     border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow-sm);
+    box-shadow: var(--box-shadow);
 }
 
 .filter-shortcuts {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     justify-content: center;
     flex-wrap: wrap;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .filter-inputs {
     display: flex;
-    gap: 15px;
+    gap: 10px;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
@@ -1081,18 +834,18 @@ p[id$="_validation_new"] {
 
 .filter-inputs input {
     flex: 1;
-    min-width: 160px;
-    max-width: 220px;
-    font-size: 0.9rem;
+    min-width: 150px;
+    max-width: 200px;
+    font-size: 0.875rem;
 }
 
 .filter-inputs .btn {
-    font-size: 0.9rem;
+    font-size: 0.875rem;
 }
 
 /* --- 6.4. جدول الإشغال (Occupancy Table) --- */
 .occupancy-table-container {
-    background: white;
+    background: #f9f9f9;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     overflow: hidden;
@@ -1101,53 +854,52 @@ p[id$="_validation_new"] {
 .occupancy-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
 }
 
 .occupancy-table thead {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    background: var(--primary);
     color: white;
 }
 
 .occupancy-table th {
-    padding: 15px 12px;
+    padding: 10px 12px;
     text-align: center;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
 }
 
 .occupancy-table tbody tr {
-    border-bottom: 1px solid var(--gray-light);
-    transition: var(--transition);
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease;
 }
 
 .occupancy-table tbody tr:nth-child(odd) {
-    background: white;
+    background: #ffffff;
 }
 
 .occupancy-table tbody tr:nth-child(even) {
-    background: var(--gray-lighter);
+    background: #f8f9fa;
 }
 
 .occupancy-table tbody tr:hover {
-    background: var(--primary-light) !important;
-    transform: scale(1.01);
+    background: #e3f2fd !important;
 }
 
 .occupancy-table tbody tr.highlight {
-    background: #fff8e6 !important;
+    background: #fff3cd !important;
     animation: highlightFade 2s ease;
 }
 
 @keyframes highlightFade {
-    0% { background: #ffd166; }
-    100% { background: #fff8e6; }
+    0% { background: #ffc107; }
+    100% { background: #fff3cd; }
 }
 
 .occupancy-table td {
-    padding: 12px 10px;
+    padding: 8px 12px;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
 }
 
 .occupancy-table td:first-child {
@@ -1157,34 +909,28 @@ p[id$="_validation_new"] {
 
 .occupancy-table td:nth-child(2) {
     color: var(--gray);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
 }
 
 .occupancy-cell {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px 12px;
-    border-radius: 20px;
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
     font-weight: 600;
-    min-width: 40px;
-    border: 1px solid transparent;
+    min-width: 35px;
 }
 
 .cell-empty, .cell-low {
-    background: var(--danger-light);
-    color: var(--danger-dark);
-    border-color: var(--danger);
+    background: #f8d7da;
+    color: #721c24;
 }
 .cell-medium {
-    background: #fff8e6;
-    color: #b38b00;
-    border-color: #ffd166;
+    background: #fff3cd;
+    color: #856404;
 }
 .cell-high {
-    background: var(--secondary-light);
-    color: var(--secondary-dark);
-    border-color: var(--secondary);
+    background: #d4edda;
+    color: #155724;
 }
 
 .occupancy-table .total-cell {
@@ -1196,139 +942,53 @@ p[id$="_validation_new"] {
    7. التجاوب مع الشاشات الصغيرة (Responsive Design)
    =============================================== */
 @media (max-width: 768px) {
-    body {
-        padding: 15px;
-        font-size: 0.85rem;
-    }
-    
-    .container {
-        border-radius: var(--border-radius-sm);
-    }
-    
-    .header {
-        padding: 20px;
-    }
-    
-    .tab-content {
-        padding: 20px;
-    }
-    
-    .form-row {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-    
-    .form-row .form-group {
-        margin-bottom: 0;
-    }
-    
-    .button-group {
-        flex-direction: column;
-    }
-    
-    .btn {
-        width: 100%;
-        justify-content: center;
-    }
-    
     .summary-cards {
         grid-template-columns: 1fr;
-        padding: 20px;
     }
-    
     .summary-card {
-        padding: 15px;
+        padding: 12px;
     }
-    
     .summary-label, .summary-value {
-        font-size: 0.85rem;
+        font-size: 0.7rem;
     }
-    
     .summary-value .occupied {
-        font-size: 1.1rem;
+        font-size: 0.75rem;
     }
-    
     .occupancy-filter {
-        padding: 20px;
+        padding: 12px;
     }
-    
     .filter-inputs {
         flex-direction: column;
         align-items: stretch;
     }
-    
     .filter-inputs input {
         max-width: 100%;
     }
-    
     .occupancy-table-container {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
-    
     .occupancy-table {
-        font-size: 0.85rem;
+        font-size: 0.75rem;
         min-width: 100%;
     }
-    
     .occupancy-table th {
-        padding: 12px 8px;
-        font-size: 0.8rem;
+        padding: 8px 6px;
+        font-size: 0.65rem;
         white-space: nowrap;
     }
-    
     .occupancy-table td {
-        padding: 10px 6px;
-        font-size: 0.85rem;
+        padding: 6px 4px;
+        font-size: 0.75rem;
     }
-    
     .occupancy-table td:first-child,
     .occupancy-table td:nth-child(2) {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         white-space: nowrap;
     }
-    
     .occupancy-cell {
-        padding: 4px 8px;
-        font-size: 0.8rem;
-        min-width: 35px;
-    }
-    
-    .detail-row {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
-    
-    .detail-actions {
-        flex-direction: column;
-    }
-    
-    .detail-actions .btn {
-        min-width: 100%;
-    }
-}
-
-@media (max-width: 480px) {
-    .header {
-        padding: 15px;
-    }
-    
-    .tab-button {
-        padding: 12px 8px;
-        font-size: 0.8rem;
-    }
-    
-    .tab-content {
-        padding: 15px;
-    }
-    
-    .reservation-item {
-        flex-direction: column;
-        gap: 10px;
-        align-items: flex-start;
-    }
-    
-    .reservation-actions {
-        align-self: flex-end;
+        padding: 3px 6px;
+        font-size: 0.75rem;
+        min-width: 25px;
     }
 }
