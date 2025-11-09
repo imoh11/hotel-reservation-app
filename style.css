@@ -567,7 +567,7 @@ p[id$="_validation_new"] {
 }
 
 .accordion-arrow::before {
-    content: "\2b"; /* أيقونة + */
+    content: "\2b"; /* أيقونة + فقط */
 }
 
 .reservation-accordion-header.active .accordion-arrow {
@@ -1065,4 +1065,23 @@ p[id$="_validation_new"] {
         font-size: 0.75rem;
         min-width: 25px;
     }
+}
+/* المثلث القديم */
+.collapsible-icon {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid white;
+    transition: transform 0.3s ease;
+}
+
+/* أو */
+.accordion-arrow {
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid var(--gray);
 }
