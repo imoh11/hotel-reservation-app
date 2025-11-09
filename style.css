@@ -566,6 +566,13 @@ p[id$="_validation_new"] {
     transition: transform 0.3s ease;
 }
 
+.accordion-arrow::before {
+    content: "\2b"; /* أيقونة + */
+}
+
+.reservation-accordion-header.active .accordion-arrow {
+    transform: rotate(45deg); /* تحويل + إلى x */
+}
 
 .reservation-accordion-content {
     max-height: 0;
@@ -1059,4 +1066,3 @@ p[id$="_validation_new"] {
         min-width: 25px;
     }
 }
-
