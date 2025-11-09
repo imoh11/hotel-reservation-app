@@ -48,8 +48,35 @@ body {
 .header {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     color: white;
-    padding: 20px 25px;
+    padding: 25px;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.header::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, 
+        rgba(255,255,255,0.1) 0%, 
+        rgba(255,255,255,0.2) 50%, 
+        rgba(255,255,255,0.1) 100%);
+    animation: shimmer 3s infinite linear;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.header h1 {
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 /* ===============================================
@@ -65,23 +92,46 @@ body {
 
 .tab-button {
     flex: 1;
-    padding: 10px 12px;
-    font-size: 0.8rem;
+    padding: 12px 15px;
+    font-size: 0.85rem;
     text-align: center;
     background: none;
     border: none;
     cursor: pointer;
     font-family: 'Tajawal', sans-serif;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--gray);
     transition: var(--transition);
     position: relative;
     outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.tab-button::before {
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    font-size: 0.9rem;
+}
+
+.tab-button:nth-child(1)::before {
+    content: "\f0c9"; /* أيقونة القائمة */
+}
+
+.tab-button:nth-child(2)::before {
+    content: "\f0c0"; /* أيقونة المستخدمين */
+}
+
+.tab-button:nth-child(3)::before {
+    content: "\f201"; /* أيقونة الإشغال */
 }
 
 .tab-button.active {
     color: var(--primary);
     background-color: white;
+    font-weight: 700;
 }
 
 .tab-button.active::after {
@@ -90,8 +140,8 @@ body {
     bottom: 0;
     right: 0;
     width: 100%;
-    height: 2px;
-    background-color: var(--primary);
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
 }
 
 .tab-content {
@@ -293,7 +343,7 @@ p[id$="_validation_new"] {
 .collapsible-header {
     background-color: var(--primary);
     color: white;
-    padding: 9px 12px;
+    padding: 12px 15px;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.9rem;
@@ -303,23 +353,31 @@ p[id$="_validation_new"] {
     transition: var(--transition);
 }
 
+.collapsible-header::before {
+    content: "\f1b2"; /* أيقونة المبنى */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    margin-left: 8px;
+}
+
 .collapsible-header:hover,
 .collapsible-header.active {
     background-color: var(--primary-dark);
 }
 
 .collapsible-icon {
-    display: inline-block;
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid white;
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    font-size: 0.8rem;
     transition: transform 0.3s ease;
 }
 
+.collapsible-icon::before {
+    content: "\2b"; /* أيقونة + */
+}
+
 .collapsible-header.active .collapsible-icon {
-    transform: rotate(180deg);
+    transform: rotate(45deg); /* تحويل + إلى x */
 }
 
 .collapsible-content {
@@ -345,8 +403,18 @@ p[id$="_validation_new"] {
 .suite-item-header {
     font-weight: 600;
     color: var(--primary-dark);
-    padding: 6px 0;
+    padding: 8px 0;
     border-bottom: 1px solid var(--gray-light);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.suite-item-header::before {
+    content: "\f015"; /* أيقونة المنزل */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
     font-size: 0.9rem;
 }
 
@@ -468,7 +536,7 @@ p[id$="_validation_new"] {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 12px;
+    padding: 8px 12px;
     cursor: pointer;
     user-select: none;
     transition: var(--transition);
@@ -491,13 +559,19 @@ p[id$="_validation_new"] {
 }
 
 .accordion-arrow {
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
     font-size: 0.8rem;
     color: var(--gray);
     transition: transform 0.3s ease;
 }
 
+.accordion-arrow::before {
+    content: "\2b"; /* أيقونة + */
+}
+
 .reservation-accordion-header.active .accordion-arrow {
-    transform: rotate(180deg);
+    transform: rotate(45deg); /* تحويل + إلى x */
 }
 
 .reservation-accordion-content {
