@@ -558,13 +558,7 @@ p[id$="_validation_new"] {
     gap: 6px;
 }
 
-.accordion-arrow {
-    font-family: 'Font Awesome 5 Free';
-    font-weight: 900;
-    font-size: 0.8rem;
-    color: var(--gray);
-    transition: transform 0.3s ease;
-}
+
 
 .accordion-arrow::before {
     content: "\2b"; /* أيقونة + */
