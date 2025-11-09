@@ -332,6 +332,14 @@ p[id$="_validation_new"] {
    4. مكونات متخصصة (Specialized Components)
    =============================================== */
 
+/* --- 4.1. الأقسام القابلة للطي (Collapsible Sections) --- */
+.collapsible-section {
+    margin-bottom: 15px;
+    border: 1px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
 .collapsible-header {
     background-color: var(--primary);
     color: white;
@@ -360,7 +368,7 @@ p[id$="_validation_new"] {
 .collapsible-icon {
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     transition: transform 0.3s ease;
 }
 
@@ -370,6 +378,18 @@ p[id$="_validation_new"] {
 
 .collapsible-header.active .collapsible-icon {
     transform: rotate(45deg); /* تحويل + إلى x */
+}
+
+.collapsible-content {
+    max-height: 0;
+    padding: 0 12px;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+}
+
+.collapsible-content.active {
+    max-height: 1000px;
+    padding: 12px;
 }
 
 /* --- 4.2. اختيار الأجنحة (Suite Selection) --- */
@@ -504,6 +524,14 @@ p[id$="_validation_new"] {
 }
 
 /* --- 5.2. أكورديون الحجوزات (Reservation Accordion) --- */
+.reservation-accordion {
+    margin-bottom: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background: #f5f5f5;
+}
+
 .reservation-accordion-header {
     display: flex;
     justify-content: space-between;
@@ -533,7 +561,7 @@ p[id$="_validation_new"] {
 .accordion-arrow {
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: var(--gray);
     transition: transform 0.3s ease;
 }
@@ -544,6 +572,18 @@ p[id$="_validation_new"] {
 
 .reservation-accordion-header.active .accordion-arrow {
     transform: rotate(45deg); /* تحويل + إلى x */
+}
+
+.reservation-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: #f9f9f9;
+}
+
+.reservation-accordion-content.active {
+    max-height: 600px;
+    padding: 15px;
 }
 
 /* --- 5.3. تفاصيل الحجز (Reservation Details) --- */
