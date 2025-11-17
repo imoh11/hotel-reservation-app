@@ -3,323 +3,282 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة الحجوزات</title>
+    <title>نظام إدارة الحجوزات </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="apple-touch-icon" href="/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css"> 
 </head>
 <body>
     <div class="container">
-        <header class="header">
-            <h1 id="hotel-name">الفندق / الشقق الفندقية</h1>
-            <p>إدارة الحجوزات</p>
-        </header>
+        <div class="header">
+            <h2 id="hotel-name">.. مرحبا بك..</h2>
+            <p>إدارة الحجوزات </p>
+        </div>
 
-        <nav class="tabs">
+        <div class="tabs">
             <button class="tab-button active" data-tab="newReservation">حجز جديد</button>
-            <button class="tab-button" data-tab="editReservation">إدارة حجز</button>
+            <button class="tab-button" data-tab="editReservation">إدارة حجز</button> 
             <button class="tab-button" data-tab="query">الإشغال</button>
-        </nav>
+        </div>
 
-        <main>
-            <section id="newReservation" class="tab-content active">
-                <form id="newReservationForm">
-
-                    <div class="collapsible-section">
-                        <div class="collapsible-header">
-                            بيانات الحجز
-                            <span class="collapsible-icon"></span>
+        <div id="newReservation" class="tab-content active">
+            <form id="newReservationForm">
+                 
+                <div class="collapsible-section">
+                    <div class="collapsible-header">
+                        الحجز
+                        <span class="collapsible-icon"></span>
+                    </div>
+                    <div class="collapsible-content"> 
+                        <div class="form-row">
+                            <div class="form-group">
+                                <select id="type_new" class="form-control" required>
+                                    <option value="" disabled selected>اختر نوع الحجز</option>
+                                    <option value="مؤكد">مؤكد</option>
+                                    <option value="قيد الانتظار">انتظار</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select id="counter_new" class="form-control" required>
+                                    <option value="" disabled selected>اختر الكونتر</option>
+                                    <option value="A1">A1</option>
+                                    <option value="A2">A2</option>
+                                    <option value="A3">A3</option>
+                                    <option value="A4">A4</option>
+                                    <option value="A5">A5</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="collapsible-content">
-                            <fieldset class="reservation-details">
-                                <legend class="visually-hidden">معلومات الحجز الأساسية</legend>
 
+                        <div class="form-group">
+                            <input type="text" id="guestName_new" class="form-control" placeholder="اسم النزيل الكامل" required>
+                        </div>
+                         
+                        <div class="form-group">
+                            <input type="tel" id="phone_new" class="form-control" placeholder="رقم الجوال (05XXXXXXXX)" required inputmode="numeric">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <select id="source_new" class="form-control">
+                                    <option value="" disabled selected>جهة الحجز</option>
+                                    <option value="WhatsApp">WhatsApp</option>
+                                    <option value="Booking">Booking</option>
+                                    <option value="Counter">Counter</option>
+                                    <option value="Management">Management</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" id="amount_new" class="form-control" placeholder="المبلغ" inputmode="numeric">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <div class="collapsible-header">
+                        الأجنحة
+                        <span class="collapsible-icon"></span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div id="suitesContainer_new" class="suite-selection-container">
+                             
+                            <div class="suite-item-header"><span data-suite-name="guest">.. مرحبا بك..</span> <span id="guest_summary_new" class="suite-summary"></span></div>
+                            <div id="suiteDetails_new_guest" class="suite-details-area">
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="type_new" class="visually-hidden">نوع الحجز</label>
-                                        <select id="type_new" class="form-control" required>
-                                            <option value="" disabled selected>اختر نوع الحجز</option>
-                                            <option value="مؤكد">مؤكد</option>
-                                            <option value="قيد الانتظار">انتظار</option>
-                                        </select>
+                                        <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="guestArrival_new" class="form-control suite-date-input" placeholder="تاريخ الوصول" onchange="calculateDaysPerSuite('new', 'guest')">
                                     </div>
                                     <div class="form-group">
-                                        <label for="counter_new" class="visually-hidden">الكونتر</label>
-                                        <select id="counter_new" class="form-control" required>
-                                            <option value="" disabled selected>اختر الكونتر</option>
-                                            <option value="A1">A1</option>
-                                            <option value="A2">A2</option>
-                                            <option value="A3">A3</option>
-                                            <option value="A4">A4</option>
-                                            <option value="A5">A5</option>
-                                        </select>
+                                        <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="guestDeparture_new" class="form-control suite-date-input" placeholder="تاريخ المغادرة" onchange="calculateDaysPerSuite('new', 'guest')">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="number" id="guestDays_new" class="form-control" placeholder="عدد الأيام" readonly>
                                     </div>
                                 </div>
-
                                 <div class="form-group">
-                                    <label for="guestName_new" class="visually-hidden">اسم النزيل الكامل</label>
-                                    <input type="text" id="guestName_new" class="form-control" placeholder="اسم النزيل الكامل" required>
+                                    <input type="text" id="guestSuiteCount_new" class="form-control" value="" min="0" placeholder="عدد الغرف" oninput="updateSuiteSummary('new', 'guest')" inputmode="numeric">
                                 </div>
+                                <p id="guest_validation_new" class="status-message hidden error"></p> 
+                            </div>
 
-                                <div class="form-group">
-                                    <label for="phone_new" class="visually-hidden">رقم الجوال</label>
-                                    <input type="tel" id="phone_new" class="form-control" placeholder="رقم الجوال (05XXXXXXXX)" required inputmode="numeric">
-                                </div>
-
+                            <div class="suite-item-header"><span data-suite-name="vip">.. مرحبا بك..</span> <span id="vip_summary_new" class="suite-summary"></span></div>
+                            <div id="suiteDetails_new_vip" class="suite-details-area">
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="source_new" class="visually-hidden">جهة الحجز</label>
-                                        <select id="source_new" class="form-control">
-                                            <option value="" disabled selected>جهة الحجز</option>
-                                            <option value="WhatsApp">WhatsApp</option>
-                                            <option value="Booking">Booking</option>
-                                            <option value="Counter">Counter</option>
-                                            <option value="Management">Management</option>
-                                        </select>
+                                        <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="vipArrival_new" class="form-control suite-date-input" placeholder="تاريخ الوصول" onchange="calculateDaysPerSuite('new', 'vip')">
                                     </div>
                                     <div class="form-group">
-                                        <label for="amount_new" class="visually-hidden">المبلغ</label>
-                                        <input type="text" id="amount_new" class="form-control" placeholder="المبلغ">
-                                    </div>
-                                </div>
-                            </fieldset>
-                        </div>
-                    </div>
-
-                    <div class="collapsible-section">
-                        <div class="collapsible-header">
-                            الأجنحة المطلوبة
-                            <span class="collapsible-icon"></span>
-                        </div>
-                        <div class="collapsible-content">
-                            <div id="suitesContainer_new" class="suite-selection-container">
-                                <div class="suite-item-header"><span data-suite-name="guest">ضيافة</span> <span id="guest_summary_new" class="suite-summary"></span></div>
-                                <div id="suiteDetails_new_guest" class="suite-details-area">
-                                    <fieldset class="suite-dates-counts">
-                                        <legend class="visually-hidden">تفاصيل جناح ضيافة</legend>
-                                        <div class="form-row">
-                                            <div class="form-group">
-                                                <label for="guestArrival_new" class="visually-hidden">تاريخ الوصول - ضيافة</label>
-                                                <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="guestArrival_new" class="form-control suite-date-input" placeholder="تاريخ الوصول" onchange="calculateDaysPerSuite('new', 'guest')">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="guestDeparture_new" class="visually-hidden">تاريخ المغادرة - ضيافة</label>
-                                                <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="guestDeparture_new" class="form-control suite-date-input" placeholder="تاريخ المغادرة" onchange="calculateDaysPerSuite('new', 'guest')">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="guestDays_new" class="visually-hidden">عدد الأيام - ضيافة</label>
-                                                <input type="number" id="guestDays_new" class="form-control" placeholder="عدد الأيام" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="guestSuiteCount_new" class="visually-hidden">عدد غرف الضيافة</label>
-                                            <input type="text" id="guestSuiteCount_new" class="form-control" value="" min="0" placeholder="عدد الغرف" oninput="updateSuiteSummary('new', 'guest')" inputmode="numeric">
-                                        </div>
-                                    </fieldset>
-                                    <p id="guest_validation_new" class="status-message hidden error" aria-live="polite"></p>
-                                </div>
-
-                                <div class="suite-item-header"><span data-suite-name="vip">VIP</span> <span id="vip_summary_new" class="suite-summary"></span></div>
-                                <div id="suiteDetails_new_vip" class="suite-details-area">
-                                    <fieldset class="suite-dates-counts">
-                                        <legend class="visually-hidden">تفاصيل جناح VIP</legend>
-                                        <div class="form-row">
-                                            <div class="form-group">
-                                                <label for="vipArrival_new" class="visually-hidden">تاريخ الوصول - VIP</label>
-                                                <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="vipArrival_new" class="form-control suite-date-input" placeholder="تاريخ الوصول" onchange="calculateDaysPerSuite('new', 'vip')">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="vipDeparture_new" class="visually-hidden">تاريخ المغادرة - VIP</label>
-                                                <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="vipDeparture_new" class="form-control suite-date-input" placeholder="تاريخ المغادرة" onchange="calculateDaysPerSuite('new', 'vip')">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="vipDays_new" class="visually-hidden">عدد الأيام - VIP</label>
-                                                <input type="number" id="vipDays_new" class="form-control" placeholder="عدد الأيام" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="vipSuiteCount_new" class="visually-hidden">عدد غرف VIP</label>
-                                            <input type="text" id="vipSuiteCount_new" class="form-control" value="" min="0" placeholder="عدد الغرف" oninput="updateSuiteSummary('new', 'vip')" inputmode="numeric">
-                                        </div>
-                                    </fieldset>
-                                    <p id="vip_validation_new" class="status-message hidden error" aria-live="polite"></p>
-                                </div>
-
-                                <div class="suite-item-header"><span data-suite-name="royal">ملكي</span> <span id="royal_summary_new" class="suite-summary"></span></div>
-                                <div id="suiteDetails_new_royal" class="suite-details-area">
-                                    <fieldset class="suite-dates-counts">
-                                        <legend class="visually-hidden">تفاصيل الجناح الملكي</legend>
-                                        <div class="form-row">
-                                            <div class="form-group">
-                                                <label for="royalArrival_new" class="visually-hidden">تاريخ الوصول - ملكي</label>
-                                                <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="royalArrival_new" class="form-control suite-date-input" placeholder="تاريخ الوصول" onchange="calculateDaysPerSuite('new', 'royal')">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="royalDeparture_new" class="visually-hidden">تاريخ المغادرة - ملكي</label>
-                                                <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="royalDeparture_new" class="form-control suite-date-input" placeholder="تاريخ المغادرة" onchange="calculateDaysPerSuite('new', 'royal')">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="royalDays_new" class="visually-hidden">عدد الأيام - ملكي</label>
-                                                <input type="number" id="royalDays_new" class="form-control" placeholder="عدد الأيام" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="royalSuiteCount_new" class="visually-hidden">عدد الغرف الملكية</label>
-                                            <input type="text" id="royalSuiteCount_new" class="form-control" value="" min="0" placeholder="عدد الغرف" oninput="updateSuiteSummary('new', 'royal')" inputmode="numeric">
-                                        </div>
-                                    </fieldset>
-                                    <p id="royal_validation_new" class="status-message hidden error" aria-live="polite"></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="collapsible-section">
-                        <div class="collapsible-header">
-                            ملاحظات وتفاصيل إضافية
-                            <span class="collapsible-icon"></span>
-                        </div>
-                        <div class="collapsible-content">
-                            <fieldset class="additional-notes">
-                                <legend class="visually-hidden">ملاحظات التحويل</legend>
-                                <div id="transfererField_new" class="form-row">
-                                    <div class="form-group">
-                                        <label for="transfererName_new" class="visually-hidden">اسم المحول</label>
-                                        <input type="text" id="transfererName_new" class="form-control" placeholder="اسم المحول (اختياري)">
+                                        <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="vipDeparture_new" class="form-control suite-date-input" placeholder="تاريخ المغادرة" onchange="calculateDaysPerSuite('new', 'vip')">
                                     </div>
                                     <div class="form-group">
-                                        <label for="currentDate_new" class="visually-hidden">تاريخ التحويل</label>
-                                        <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="currentDate_new" class="form-control" placeholder="تاريخ التحويل (اختياري)">
-                                    </div>
-                                    <div class="form-group notes-stretch">
-                                        <label for="notes_new" class="visually-hidden">ملاحظات إضافية</label>
-                                        <textarea id="notes_new" rows="3" class="form-control" placeholder="ملاحظات إضافية"></textarea>
+                                        <input type="number" id="vipDays_new" class="form-control" placeholder="عدد الأيام" readonly>
                                     </div>
                                 </div>
-                            </fieldset>
-                        </div>
-                    </div>
-
-                    <div class="button-group">
-                        <button type="submit" class="btn btn-primary">حفظ الحجز</button>
-                        <button type="reset" class="btn btn-outline">مسح الحقول</button>
-                    </div>
-                    <div class="status-message-container">
-                        <div id="statusMessage_newReservation" class="status-message hidden" aria-live="polite"></div>
-                    </div>
-                </form>
-            </section>
-
-            <section id="editReservation" class="tab-content">
-                <div class="reservations-list-container">
-                    <div id="loadingReservations" class="loading-message" role="status">جاري تحميل الحجوزات... ⏳</div>
-                    <div id="reservationsList" class="reservations-list"></div>
-                </div>
-
-                <div id="editReservationForm" class="edit-form hidden">
-                    <div class="details-header">
-                        <h3>تعديل الحجز</h3>
-                    </div>
-                    <div id="editFormContent"></div>
-                    <div class="button-group">
-                        <button id="saveEditBtn" class="btn btn-primary">حفظ التعديلات</button>
-                        <button id="closeEditFormBtn" class="btn btn-danger">إلغاء</button>
-                    </div>
-                    <div class="status-message-container">
-                        <div id="statusMessage_editReservation" class="status-message hidden" aria-live="polite"></div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="query" class="tab-content">
-                <div class="occupancy-filter">
-                    <fieldset class="filter-shortcuts">
-                        <legend class="visually-hidden">اختصارات البحث عن الإشغال</legend>
-                        <button id="filterTodayBtn" class="btn btn-outline btn-sm">اليوم</button>
-                        <button id="filterTomorrowBtn" class="btn btn-outline btn-sm">غداً</button>
-                        <button id="filterWeekBtn" class="btn btn-outline btn-sm">أسبوع</button>
-                        <button id="filterMonthBtn" class="btn btn-outline btn-sm">شهر</button>
-                        <button id="filterAllBtn" class="btn btn-outline btn-sm">50 يوم</button>
-                    </fieldset>
-                    <div class="filter-inputs">
-                        <label for="filterFromDate" class="visually-hidden">من تاريخ</label>
-                        <input type="date" id="filterFromDate" class="form-control" placeholder="من تاريخ">
-                        <label for="filterToDate" class="visually-hidden">إلى تاريخ</label>
-                        <input type="date" id="filterToDate" class="form-control" placeholder="إلى تاريخ">
-                        <button id="applyFilterBtn" class="btn btn-primary">بحث</button>
-                    </div>
-                </div>
-
-                <div class="occupancy-summary">
-                    <h3>ملخص الإشغال</h3>
-                    <div class="summary-cards">
-                        <div class="summary-card">
-                            <div class="summary-card-header">
-                                <div class="summary-label" data-suite-name="guest">ضيافة</div>
-                                <div class="summary-value" id="guestSummary">
-                                    <span class="occupied">0</span> / <span class="total">700</span>
-                                    <span class="percentage">0%</span>
+                                <div class="form-group">
+                                    <input type="text" id="vipSuiteCount_new" class="form-control" value="" min="0" placeholder="عدد الغرف" oninput="updateSuiteSummary('new', 'vip')" inputmode="numeric">
                                 </div>
+                                <p id="vip_validation_new" class="status-message hidden error"></p> 
                             </div>
-                            <div class="summary-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="700"><div class="summary-bar-fill" id="guestBar"></div></div>
-                        </div>
-                        <div class="summary-card">
-                            <div class="summary-card-header">
-                                <div class="summary-label" data-suite-name="vip">VIP</div>
-                                <div class="summary-value" id="vipSummary">
-                                    <span class="occupied">0</span> / <span class="total">200</span>
-                                    <span class="percentage">0%</span>
+
+                            <div class="suite-item-header"><span data-suite-name="royal">.. مرحبا بك..</span> <span id="royal_summary_new" class="suite-summary"></span></div>
+                            <div id="suiteDetails_new_royal" class="suite-details-area">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="royalArrival_new" class="form-control suite-date-input" placeholder="تاريخ الوصول" onchange="calculateDaysPerSuite('new', 'royal')">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="royalDeparture_new" class="form-control suite-date-input" placeholder="تاريخ المغادرة" onchange="calculateDaysPerSuite('new', 'royal')">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="number" id="royalDays_new" class="form-control" placeholder="عدد الأيام" readonly>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="summary-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="200"><div class="summary-bar-fill" id="vipBar"></div></div>
-                        </div>
-                        <div class="summary-card">
-                            <div class="summary-card-header">
-                                <div class="summary-label" data-suite-name="royal">ملكي</div>
-                                <div class="summary-value" id="royalSummary">
-                                    <span class="occupied">0</span> / <span class="total">100</span>
-                                    <span class="percentage">0%</span>
+                                <div class="form-group">
+                                    <input type="text" id="royalSuiteCount_new" class="form-control" value="" min="0" placeholder="عدد الغرف" oninput="updateSuiteSummary('new', 'royal')" inputmode="numeric">
                                 </div>
+                                <p id="royal_validation_new" class="status-message hidden error"></p> 
                             </div>
-                            <div class="summary-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div class="summary-bar-fill" id="royalBar"></div></div>
-                        </div>
-                        <div class="summary-card summary-card-total">
-                            <div class="summary-card-header">
-                                <div class="summary-label">إجمالي الأجنحة</div>
-                                <div class="summary-value" id="totalSummary">
-                                    <span class="occupied">0</span> / <span class="total">1000</span>
-                                    <span class="percentage">0%</span>
-                                </div>
-                            </div>
-                            <div class="summary-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="1000"><div class="summary-bar-fill" id="totalBar"></div></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="occupancy-table-container">
-                    <div id="loadingOccupancy" class="loading-message" role="status">جاري تحميل بيانات الإشغال... ⏳</div>
-                    <table id="occupancyTable" class="occupancy-table hidden">
-                        <caption>جدول الإشغال اليومي للفترة المحددة</caption>
-                        <thead>
-                            <tr>
-                                <th>التاريخ</th>
-                                <th>اليوم</th>
-                                <th>ضيافة</th>
-                                <th>VIP</th>
-                                <th>ملكي</th>
-                                <th>الإجمالي</th>
-                            </tr>
-                        </thead>
-                        <tbody id="occupancyTableBody">
+                <div class="collapsible-section">
+                    <div class="collapsible-header">
+                        ملاحظات
+                        <span class="collapsible-icon"></span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div id="transfererField_new" class="form-row">
+                            <div class="form-group">
+                                <input type="text" id="transfererName_new" class="form-control" placeholder="اسم المحول (اختياري)">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" onfocus="(this.type='date')" onblur="if(!this.value)this.type='text'" id="currentDate_new" class="form-control" placeholder="تاريخ التحويل (اختياري)">
+                            </div>
+                            <div class="form-group **notes-stretch**">
+                                <textarea id="notes_new" rows="3" class="form-control" placeholder="ملاحظات إضافية"></textarea>
+                            </div>
+                            </div>
+
+                        </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">حفظ الحجز</button>
+                    <button type="reset" class="btn btn-outline">مسح الحقول</button>
+                </div>
+                <div class="status-message-container">
+                    <div id="statusMessage_newReservation" class="status-message hidden"></div>
+                </div>
+            </form>
+        </div>
+
+        <div id="editReservation" class="tab-content">
+            <div class="reservations-list-container">
+                <div id="loadingReservations" class="loading-message">جاري تحميل الحجوزات... ⏳</div>
+                <div id="reservationsList" class="reservations-list"></div>
+            </div>
+             
+            <div id="editReservationForm" class="edit-form hidden">
+                <div class="details-header">
+                    <h3>تعديل الحجز</h3>
+                </div>
+                <div id="editFormContent"></div>
+                <div class="button-group">
+                    <button id="saveEditBtn" class="btn btn-primary">حفظ التعديلات</button>
+                    <button id="closeEditFormBtn" class="btn btn-danger">إلغاء</button>
+                </div>
+                <div class="status-message-container">
+                    <div id="statusMessage_editReservation" class="status-message hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="query" class="tab-content">
+            <div class="occupancy-filter">
+                <div class="filter-shortcuts">
+                    <button id="filterTodayBtn" class="btn btn-outline btn-sm">اليوم</button>
+                    <button id="filterTomorrowBtn" class="btn btn-outline btn-sm">غداً</button>
+                    <button id="filterWeekBtn" class="btn btn-outline btn-sm">أسبوع</button>
+                    <button id="filterMonthBtn" class="btn btn-outline btn-sm">شهر</button>
+                    <button id="filterAllBtn" class="btn btn-outline btn-sm">50 يوم</button>
+                </div>
+                <div class="filter-inputs">
+                    <input type="date" id="filterFromDate" class="form-control" placeholder="من تاريخ">
+                    <input type="date" id="filterToDate" class="form-control" placeholder="إلى تاريخ">
+                    <button id="applyFilterBtn" class="btn btn-primary">بحث</button>
+                </div>
+            </div>
+
+            <div class="occupancy-summary">
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="summary-card-header">
+                            <div class="summary-label" data-suite-name="guest">.. مرحبا بك..</div>
+                            <div class="summary-value" id="guestSummary">
+                                <span class="occupied">0</span> / <span class="total">700</span>
+                                <span class="percentage">0%</span>
+                            </div>
+                        </div>
+                        <div class="summary-bar"><div class="summary-bar-fill" id="guestBar"></div></div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-card-header">
+                            <div class="summary-label" data-suite-name="vip">.. مرحبا بك..</div>
+                            <div class="summary-value" id="vipSummary">
+                                <span class="occupied">0</span> / <span class="total">200</span>
+                                <span class="percentage">0%</span>
+                            </div>
+                        </div>
+                        <div class="summary-bar"><div class="summary-bar-fill" id="vipBar"></div></div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-card-header">
+                            <div class="summary-label" data-suite-name="royal">.. مرحبا بك..</div>
+                            <div class="summary-value" id="royalSummary">
+                                <span class="occupied">0</span> / <span class="total">100</span>
+                                <span class="percentage">0%</span>
+                            </div>
+                        </div>
+                        <div class="summary-bar"><div class="summary-bar-fill" id="royalBar"></div></div>
+                    </div>
+                    <div class="summary-card summary-card-total">
+                        <div class="summary-card-header">
+                            <div class="summary-label">إجمالي الأجنحة</div>
+                            <div class="summary-value" id="totalSummary">
+                                <span class="occupied">0</span> / <span class="total">1000</span>
+                                <span class="percentage">0%</span>
+                            </div>
+                        </div>
+                        <div class="summary-bar"><div class="summary-bar-fill" id="totalBar"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="occupancy-table-container">
+                <div id="loadingOccupancy" class="loading-message">جاري تحميل بيانات الإشغال... ⏳</div>
+                <table id="occupancyTable" class="occupancy-table hidden">
+                    <thead>
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>اليوم</th>
+                            <th>ضيافة</th>
+                            <th>VIP</th>
+                            <th>ملكي</th>
+                            <th>الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody id="occupancyTableBody">
                         </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
+                </table>
+            </div>
+        </div>
+
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js"></script> 
 </body>
 </html>
